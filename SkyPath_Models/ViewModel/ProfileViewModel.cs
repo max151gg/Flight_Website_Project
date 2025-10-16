@@ -9,6 +9,6 @@ namespace SkyPath_Models.ViewModel
 {
     public class ProfileViewModel
     {
-        public List<User> users { get; set; }
+        public User user { get; set; }
     }
 }
