@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models.Model;
 
-namespace SkyPath_Models
+namespace SkyPath_Models.ViewModel
 {
-    public class CatalogViewModel
+    public class BrowseViewModel
     {
         public List<Flight> flights { get; set; }
         public List<Arrival_City> arrival_Cities { get; set; }
