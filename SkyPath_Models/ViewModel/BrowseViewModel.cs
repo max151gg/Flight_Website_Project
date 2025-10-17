@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SkyPath_Models.Model;
+using SkyPath_Models.Models;
 
 namespace SkyPath_Models.ViewModel
 {

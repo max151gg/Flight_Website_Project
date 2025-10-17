@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkyPath_Models.Model
+namespace SkyPath_Models
 {
     public class FirstLetterCapitalAttribute : ValidationAttribute
     {

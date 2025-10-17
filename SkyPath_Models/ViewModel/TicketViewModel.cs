@@ -1,4 +1,4 @@
-﻿using SkyPath_Models.Model;
+﻿using SkyPath_Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

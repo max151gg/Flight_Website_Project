@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models;
 
-namespace SkyPath_Models.Model
+namespace SkyPath_Models.Models
 {
-    public class Ticket
+    public class Ticket : Model
     {
         string ticket_Id;
         string user_Id;
@@ -34,13 +35,13 @@ namespace SkyPath_Models.Model
         public string Purchase_Date
         {
             get { return purchase_Date; }
-            set { purchase_Date = value; }
+            set { purchase_Date = value; ValidateProperty(value, "Purchase_Date"); }
         }
         [Required(ErrorMessage = "Ticket status is required")]
         public bool Status
         {
             get { return status; }
-            set { status = value; }
+            set { status = value; ValidateProperty(value, "Status"); }
         }
     }
 }

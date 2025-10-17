@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkyPath_Models", "SkyPath_Models\SkyPath_Models.csproj", "{3E4DA00F-B3D3-48B6-B522-FB3EC85C9246}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{D4D311BC-64C0-4CAD-9C8D-AF9BF32C55FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3E4DA00F-B3D3-48B6-B522-FB3EC85C9246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E4DA00F-B3D3-48B6-B522-FB3EC85C9246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E4DA00F-B3D3-48B6-B522-FB3EC85C9246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D311BC-64C0-4CAD-9C8D-AF9BF32C55FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D311BC-64C0-4CAD-9C8D-AF9BF32C55FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D311BC-64C0-4CAD-9C8D-AF9BF32C55FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D311BC-64C0-4CAD-9C8D-AF9BF32C55FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

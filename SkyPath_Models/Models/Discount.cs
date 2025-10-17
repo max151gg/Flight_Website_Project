@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models;
 
-namespace SkyPath_Models.Model
+namespace SkyPath_Models.Models
 {
-    public class Discount
+    public class Discount : Model
     {
         string discount_Id;
         string description;
@@ -31,19 +32,19 @@ namespace SkyPath_Models.Model
         public int Percentage
         {
             get { return percentage; }
-            set { percentage = value; }
+            set { percentage = value; ValidateProperty(value, "Percentage"); }
         }
         [Required(ErrorMessage = "Valid from is required")]
         public string Valid_From
         {
             get { return valid_From; }
-            set { valid_From = value; }
+            set { valid_From = value; ValidateProperty(value, "Valid_From"); }
         }
         [Required(ErrorMessage = "Valid to is required")]
         public string Valid_To
         {
             get { return valid_To; }
-            set { valid_To = value; }
+            set { valid_To = value; ValidateProperty(value, "Valid_To"); }
         }
     }
 }

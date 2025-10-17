@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models;
 
-namespace SkyPath_Models.Model
+namespace SkyPath_Models.Models
 {
-    public class Flight
+    public class Flight : Model
     {
         string flight_Id;
         string flight_Number;
@@ -28,13 +29,13 @@ namespace SkyPath_Models.Model
         public string Flight_Number
         {
             get { return flight_Number; }
-            set { flight_Number = value; }
+            set { flight_Number = value; ValidateProperty(value, "Flight_Number"); }
         }
         [Required(ErrorMessage = "Airline is required")]
         public string Airline
         {
             get { return airline; }
-            set { airline = value; }
+            set { airline = value; ValidateProperty(value, "Airline"); }
         }
         public string Departure_Id
         {
@@ -50,27 +51,27 @@ namespace SkyPath_Models.Model
         public string Departure_Time
         {
             get { return departure_Time; }
-            set { departure_Time = value; }
+            set { departure_Time = value; ValidateProperty(value, "Departure_Time"); }
         }
         [Required(ErrorMessage = "Arrival time is required")]
         public string Arrival_Time
         {
             get { return arrival_Time; }
-            set { arrival_Time = value; }
+            set { arrival_Time = value; ValidateProperty(value, "Arrival_Time"); }
         }
         [Required(ErrorMessage = "Price is required")]
         [IsDigits(ErrorMessage = "Must be digits only")]
         public double Price
         {
             get { return price; }
-            set { price = value; }
+            set { price = value; ValidateProperty(value, "Price"); }
         }
         [Required(ErrorMessage = "its required to set the number of seats available")]
         [IsDigits(ErrorMessage = "Must be digits only")]
         public int Seats_Available
         {
             get { return seats_Available; }
-            set { seats_Available = value; }
+            set { seats_Available = value; ValidateProperty(value, "Seats_Available"); }
         }
     }
 }

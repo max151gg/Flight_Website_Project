@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models;
 
-namespace SkyPath_Models.Model
+namespace SkyPath_Models.Models
 {
-    public class Arrival_City
+    public class Arrival_City : Model
     {
         string arrival_Id;
         string arrival_City;
@@ -20,7 +21,7 @@ namespace SkyPath_Models.Model
         public string ArrivalCity
         {
             get { return arrival_City; }
-            set { arrival_City = value; }
+            set { arrival_City = value; ValidateProperty(value, "ArrivalCity"); }
         }
     }
 }

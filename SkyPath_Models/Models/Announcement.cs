@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkyPath_Models;
 
-namespace SkyPath_Models.Model
+namespace ModelSkyPath.Models
 {
-    public class Announcement
+    public class Announcement : Model
     {
         string announcement_Id;
         string admin_Id;
@@ -19,7 +20,7 @@ namespace SkyPath_Models.Model
         public string Announcement_Id
         {
             get { return announcement_Id; }
-            set { announcement_Id = value; }
+            set { announcement_Id = value;}
         }
         public string Admin_Id
         {
@@ -32,8 +33,9 @@ namespace SkyPath_Models.Model
         public string Title
         {
             get { return title; }
-            set { title = value; }
+            set { title = value; ValidateProperty(value, "Title"); }
         }
+        [StringLength(500, ErrorMessage = "Content must be no longer than 500 characters")]
         public string Content
         {
             get { return content; }
@@ -43,7 +45,7 @@ namespace SkyPath_Models.Model
         public string Announcement_Date
         {
             get { return announcement_Date; }
-            set { announcement_Date = value; }
+            set { announcement_Date = value; ValidateProperty(value, "Announcement_Id"); }
         }
     }
 }
