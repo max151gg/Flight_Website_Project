@@ -10,5 +10,6 @@ namespace SkyPath_Models.ViewModel
     public class TicketViewModel
     {
         public List<Ticket> tickets { get; set; }
+        public List<Flight> flights { get; set; }
     }
 }
