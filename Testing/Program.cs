@@ -5,28 +5,7 @@ using Testing;
 
 await checkcurrency();
 
-static void TestAnnouncement()
-{
-    Announcement announcement = new Announcement();
-    announcement.Announcement_Id = "1";
-    announcement.Announcement_Date = "17/10/2025";
-    announcement.Title = "Title";
-    announcement.Content = "content";
-    announcement.Admin_Id = "010";
-    if(announcement.HasErrors==true)
-    {
-        foreach(KeyValuePair<string,List<string>> keyValuePair in announcement.AllErrors())
-        {
-            Console.WriteLine(keyValuePair.Key);
-            foreach(string str in keyValuePair.Value)
-            {
-                Console.WriteLine($"        {str}"); 
-            }
-            Console.WriteLine("--------------------------------------------");
-        }
-    }
-    else { Console.WriteLine("there were no errors"); }
-}
+
 static async Task checkcurrency()
 {
     Console.WriteLine(">>>Insert Currency from");
