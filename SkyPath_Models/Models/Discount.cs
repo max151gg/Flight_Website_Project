@@ -12,7 +12,7 @@ namespace SkyPath_Models.Models
     {
         string discount_Id;
         string description;
-        int percentage;
+        short percentage;
         string valid_From;
         string valid_To;
 
@@ -29,7 +29,7 @@ namespace SkyPath_Models.Models
         [Required(ErrorMessage = "Percentage is required")]
         [IsDigits(ErrorMessage = "Must be digits only")]
         [RightPercentage(ErrorMessage = "the percentage must be between 1 and 100 percent")]
-        public int Percentage
+        public short Percentage
         {
             get { return percentage; }
             set { percentage = value; ValidateProperty(value, "Percentage"); }
