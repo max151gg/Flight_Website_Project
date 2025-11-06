@@ -1,4 +1,4 @@
-﻿namespace SkyPathWS
+﻿namespace SkyPathWS.Repositories
 {
     public class Repository
     {
@@ -7,8 +7,8 @@
 
         public Repository()
         {
-            this.helperOleDb = new DbHelperOleDb();
-            this.modelCreators = new ModelCreators();
+            helperOleDb = new DbHelperOleDb();
+            modelCreators = new ModelCreators();
         }
     }
 }

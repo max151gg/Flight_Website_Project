@@ -1,8 +1,8 @@
 ﻿using SkyPath_Models.Models;
 
-namespace SkyPathWS
+namespace SkyPathWS.Repositories
 {
-    public class UserRepository : Repository, IRepository<User>
+    public class DiscountRepository : Repository, IRepository<User>
     {
         public bool Create()
         {
