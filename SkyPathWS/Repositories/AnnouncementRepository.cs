@@ -1,28 +1,72 @@
-﻿using SkyPath_Models.Models;
+﻿using ModelSkyPath.Models;
+using SkyPath_Models.Models;
+using System.Data;
 
 namespace SkyPathWS.Repositories
 {
-    public class AnnouncementRepository : Repository, IRepository<User>
+    public class AnnouncementRepository : Repository, IRepository<Announcement>
     {
-        public bool Create()
+        public bool Create(Announcement model)
         {
-            throw new NotImplementedException();
+            string sql = $@"Insert into User
+                            (
+                            Admin_Id, Title, Content,
+                            Announcement_Date
+                            )
+                            values
+                            (
+                                @Admin_Id, @Title, @Content, @Announcement_Date
+                            )";
+            this.helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
+            this.helperOleDb.AddParameter("@Title", model.Title);
+            this.helperOleDb.AddParameter("@Content", model.Content);
+            this.helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
+            return this.helperOleDb.Insert(sql) > 0;
         }
-        public bool Delete()
+
+        public bool Delete(string id)
         {
-            throw new NotImplementedException();
+            string sql = @"Delete from Announcement where Announcement_Id=@Announcement_Id";
+            this.helperOleDb.AddParameter("@Announcement_Id", id);
+            return this.helperOleDb.Delete(sql) > 0;
         }
-        public List<User> GetALL()
+
+        public List<Announcement> GetALL()
         {
-            throw new NotImplementedException();
+            string sql = "Select * from Announcement";
+
+            List<Announcement> announcements = new List<Announcement>();
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                while (reader.Read())
+                {
+                    announcements.Add(this.modelCreators.AnnouncementCreator.CreateModel(reader));
+                }
+            }
+            return announcements;
         }
-        public User GetById(string id)
+
+        public Announcement GetById(string id)
         {
-            throw new NotImplementedException();
+            string sql = "Select * from Announcement where Announcement_Id=@Announcement_Id";
+            this.helperOleDb.AddParameter("@Announcement_Id", id);
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                reader.Read();
+                return this.modelCreators.AnnouncementCreator.CreateModel(reader);
+            }
         }
-        public bool Update()
+
+        public bool Update(Announcement model)
         {
-            throw new NotImplementedException();
+            string sql = @"Update Announcement set 
+                            Admin_Id=@Admin_Id, Title=@Title, Content=@Content,
+                            Announcement_Date=@Announcement_Date";
+            this.helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
+            this.helperOleDb.AddParameter("@Title", model.Title);
+            this.helperOleDb.AddParameter("@Content", model.Content);
+            this.helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
+            return this.helperOleDb.Insert(sql) > 0;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using SkyPath_Models.Models;
 using System.Data;
 
-namespace SkyPathWS.CreatorsModels
+namespace SkyPathWS.ORM.CreatorsModels
 {
     public class Departure_CityCreator : IModelCreator<Departure_City>
     {

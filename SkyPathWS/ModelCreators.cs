@@ -1,4 +1,4 @@
-﻿using SkyPathWS.CreatorsModels;
+﻿using SkyPathWS.ORM.CreatorsModels;
 
 namespace SkyPathWS
 {

@@ -40,13 +40,17 @@ namespace SkyPathWS
         public int Delete(string sql)
         {
             this.dbCommand.CommandText = sql;
-            return this.dbCommand.ExecuteNonQuery();
+            int records= this.dbCommand.ExecuteNonQuery();
+            this.dbCommand.Parameters.Clear();
+            return records;
         }
 
         public int Insert(string sql)
         {
             this.dbCommand.CommandText = sql;
-            return this.dbCommand.ExecuteNonQuery();
+            int records= this.dbCommand.ExecuteNonQuery();
+            this.dbCommand.Parameters.Clear();
+            return records;
         }
 
         public void OpenConnection()
@@ -67,13 +71,21 @@ namespace SkyPathWS
         public IDataReader Select(string sql)
         {
             this.dbCommand.CommandText = sql;
-            return this.dbCommand.ExecuteReader();
+            IDataReader reader= this.dbCommand.ExecuteReader();
+            this.dbCommand.Parameters.Clear();
+            return reader;
         }
 
         public int Update(string sql)
         {
             this.dbCommand.CommandText = sql;
-            return this.dbCommand.ExecuteNonQuery();
+            int records= this.dbCommand.ExecuteNonQuery();
+            this.dbCommand.Parameters.Clear();
+            return records;
+        }
+        public void AddParameter(string name, string value)
+        {
+            this.dbCommand.Parameters.Add(new OleDbParameter(name, value));
         }
     }
 }
