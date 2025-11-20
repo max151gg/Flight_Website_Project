@@ -83,7 +83,7 @@ namespace SkyPathWS
             this.dbCommand.Parameters.Clear();
             return records;
         }
-        public void AddParameter(string name, string value)
+        public void AddParameter(string name, object value)
         {
             this.dbCommand.Parameters.Add(new OleDbParameter(name, value));
         }

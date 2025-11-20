@@ -6,6 +6,9 @@ namespace SkyPathWS.Repositories
 {
     public class TicketRepository : Repository, IRepository<Ticket>
     {
+        public TicketRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
+        {
+        }
         public bool Create(Ticket model)
         {
             string sql = $@"Insert into Ticket
@@ -20,7 +23,7 @@ namespace SkyPathWS.Repositories
             this.helperOleDb.AddParameter("@User_Id", model.User_Id);
             this.helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
             this.helperOleDb.AddParameter("@Purchase_Date", model.Purchase_Date);
-            this.helperOleDb.AddParameter("@Status", model.Status.ToString());
+            this.helperOleDb.AddParameter("@Status", model.Status);
             return this.helperOleDb.Insert(sql) > 0;
         }
 
@@ -65,7 +68,7 @@ namespace SkyPathWS.Repositories
             this.helperOleDb.AddParameter("@User_Id", model.User_Id);
             this.helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
             this.helperOleDb.AddParameter("@Purchase_Date", model.Purchase_Date);
-            this.helperOleDb.AddParameter("@Status", model.Status.ToString());
+            this.helperOleDb.AddParameter("@Status", model.Status);
             return this.helperOleDb.Insert(sql) > 0;
         }
     }

@@ -5,7 +5,10 @@ using System.Data;
 namespace SkyPathWS.Repositories
 {
     public class UserRepository : Repository, IRepository<User>
-    { 
+    {
+        public UserRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
+        {
+        }
         public bool Create(User model)
         {
             //string sql = $@"Insert into User

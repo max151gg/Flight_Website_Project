@@ -5,6 +5,9 @@ namespace SkyPathWS.Repositories
 {
     public class Departure_CityRepository : Repository, IRepository<Departure_City>
     {
+        public Departure_CityRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
+        {
+        }
         public bool Create(Departure_City model)
         {
             string sql = $@"Insert into Departure_City

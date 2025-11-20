@@ -6,6 +6,9 @@ namespace SkyPathWS.Repositories
 {
     public class AnnouncementRepository : Repository, IRepository<Announcement>
     {
+        public AnnouncementRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
+        {
+        }
         public bool Create(Announcement model)
         {
             string sql = $@"Insert into User
