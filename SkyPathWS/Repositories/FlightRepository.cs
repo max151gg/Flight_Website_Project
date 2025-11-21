@@ -1,6 +1,8 @@
 ﻿using ModelSkyPath.Models;
+using SkyPath_Models;
 using SkyPath_Models.Models;
 using System.Data;
+using System.Reflection;
 
 namespace SkyPathWS.Repositories
 {
@@ -84,9 +86,39 @@ namespace SkyPathWS.Repositories
             return this.helperOleDb.Insert(sql) > 0;
         }
         //מעתיקים GET ALL FUNCTION ומשנים את משפטי SQL לפי הUSE CASE כגון(FILTER BY DATE, BY PRICE...)
-        public List<Flight> GetFlightsByDepartureAndArrival(string departureCityId, string arrivalCityId)
+        public List<Flight> GetFlightsByDeparture(string departureCityId)
+        {
+            string sql = @"Select * from Flight where Departure_Id=@Departure_Id";
+            this.helperOleDb.AddParameter("@Departure_Id", departureCityId);
+            List<Flight> flights = new List<Flight>();
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                while (reader.Read())
+                {
+                    flights.Add(this.modelCreators.FlightCreator.CreateModel(reader));
+                }
+            }
+            return flights;
+        }
+        public List<Flight> GetFlightsByArrival(string arrivalCityId)
+        {
+            string sql = @"Select * from Flight where Arrival_Id=@Arrival_Id";
+            this.helperOleDb.AddParameter("@Arrival_Id", arrivalCityId);
+            List<Flight> flights = new List<Flight>();
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                while (reader.Read())
+                {
+                    flights.Add(this.modelCreators.FlightCreator.CreateModel(reader));
+                }
+            }
+            return flights;
+        }
+        public List<Flight> GetFlightsByDepartureAndArrival(string arrivalCityId, string departureCityId)
         {
             string sql = @"Select * from Flight where Departure_Id=@Departure_Id AND Arrival_Id=@Arrival_Id";
+            this.helperOleDb.AddParameter("@Departure_Id", departureCityId);
+            this.helperOleDb.AddParameter("@Arrival_Id", arrivalCityId);
             List<Flight> flights = new List<Flight>();
             using (IDataReader reader = this.helperOleDb.Select(sql))
             {
@@ -100,6 +132,8 @@ namespace SkyPathWS.Repositories
         public List<Flight> GetFlightsByDepartureTimeAndArrivalTime(string departure_Time, string arrival_Time)
         {
             string sql = @"Select * from Flight where Departure_Time=@Departure_Time AND Arrival_Time=@Arrival_Time";
+            this.helperOleDb.AddParameter("@Departure_Time", departure_Time);
+            this.helperOleDb.AddParameter("@Arrival_Time", arrival_Time);
             List<Flight> flights = new List<Flight>();
             using (IDataReader reader = this.helperOleDb.Select(sql))
             {
@@ -109,6 +143,12 @@ namespace SkyPathWS.Repositories
                 }
             }
             return flights;
+        }
+        public List<Flight> GetFlightsByPage(int page)
+        {
+            int flightsPerPage = 10;
+            List<Flight> flights = this.GetALL();
+            return flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
         }
     }
 }
