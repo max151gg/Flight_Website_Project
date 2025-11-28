@@ -1,4 +1,4 @@
-﻿namespace SkyPathWS.Repositories
+﻿namespace SkyPathWS.ORM.Repositories
 {
     public interface IRepository<T>
     {

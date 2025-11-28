@@ -15,11 +15,6 @@ namespace SkyPath_Models
             char FirstLetter = word[0];
             if (FirstLetter < 'A' || FirstLetter > 'Z')
                 return false;
-            for (int i = 1; i < word.Length; i++)
-            {
-                if (word[i] < 'a' || word[i] > 'z')
-                    return false;
-            }
             return true;
         }
     }

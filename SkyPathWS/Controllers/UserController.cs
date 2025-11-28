@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ModelSkyPath.Models;
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
@@ -9,20 +8,20 @@ namespace SkyPathWS.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class GuestController : ControllerBase
+    public class UserController : ControllerBase
     {
         RepositoryUOW repositoryUOW;
-        public GuestController()
+        public UserController()
         {
             this.repositoryUOW = new RepositoryUOW();
         }
         [HttpGet]
         public BrowseViewModel GetFlightCatalog(string flight_id = null, int page = 0, string departure_id = null, string arrival_id = null)
         {
-            this.repositoryUOW.HelperOleDb.OpenConnection();
             BrowseViewModel browseViewModel = new BrowseViewModel();
             try
             {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
 
                 if (page == 0 && departure_id == null && arrival_id == null)
                 {
@@ -80,35 +79,63 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
-        [HttpPost]
-        public bool Register(User user)
+        [HttpGet]
+        public AnnouncementViewModel GetAnnouncement()
         {
+            AnnouncementViewModel announcementViewModel = new AnnouncementViewModel();
             try
             {
                 this.repositoryUOW.HelperOleDb.OpenConnection();
-                return this.repositoryUOW.UserRepository.Create(user);
+                announcementViewModel.announcements = this.repositoryUOW.AnnouncementRepository.GetALL();
+                return announcementViewModel;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                return false;
+                return null;
             }
             finally
             {
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
-        //ToDo
-        //i added controller for guest, need to add more "filters" like above, the "filters" are connected to Repositories, for example if i want to do:"
-        //else if (page != 0 && departure_id != null && arrival_id != null)
-        //        {
-        //            int flightsPerPage = 10;
-        //browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-        //            browseViewModel.flights.Skip(flightsPerPage* (page - 1)).Take(flightsPerPage).ToList();
-        //
-        //I need to have the "GetFlightsByDepartureAndArrival" on the FlightRepository page
-        //
-        //need to check hte filters on swagger which turns on when you run the site, need to create more filters like on usecase
+        [HttpGet]
+        public TicketViewModel GetTicketByUserId(string user_id = null)
+        {
+            TicketViewModel ticketViewModel = new TicketViewModel();
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                ticketViewModel.tickets = this.repositoryUOW.TicketRepository.GetByUserId(user_id);
+                return ticketViewModel;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        [HttpGet]
+        public DiscountViewModel GetDiscountByUserId(string user_id = null)
+        {
+            DiscountViewModel discountViewModel = new DiscountViewModel();
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                discountViewModel.discounts = this.repositoryUOW.DiscountRepository.GetByUserId(user_id);
+                return discountViewModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
     }
 }
-

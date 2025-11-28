@@ -13,7 +13,8 @@ namespace SkyPathWS.ORM.CreatorsModels
                 Description = Convert.ToString(dataReader["Description"]),
                 Percentage = Convert.ToInt16(dataReader["Percentage"]),
                 Valid_From = Convert.ToString(dataReader["Valid_From"]),
-                Valid_To = Convert.ToString(dataReader["Valid_To"])
+                Valid_To = Convert.ToString(dataReader["Valid_To"]),
+                User_Id = Convert.ToString(dataReader["User_Id"])
             };
             return discount;
         }

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.OleDb;
 
-namespace SkyPathWS
+namespace SkyPathWS.ORM
 {
     public class DbHelperOleDb : IDatabaseHelper
     {
@@ -20,72 +20,73 @@ namespace SkyPathWS
 
         public DbHelperOleDb()
         {
-            this.oleDbConnetction = new OleDbConnection();
+            oleDbConnetction = new OleDbConnection();
             //הסבר לאיזה מוסד נתונים ליצור קשר על ידי מחרוזת התחברות
-            this.oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\maxka\source\repos\Flight_Website_Project\SkyPathWS\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
+            oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\maxka\source\repos\Flight_Website_Project\SkyPathWS\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
             //this.oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={Directory.GetCurrentDirectory()}\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
-            this.dbCommand = new OleDbCommand();
-            this.dbCommand.Connection = this.oleDbConnetction;
+            dbCommand = new OleDbCommand();
+            dbCommand.Connection = oleDbConnetction;
         }
         public void CloseConnection()
         {
-            this.oleDbConnetction.Close();
+            oleDbConnetction.Close();
         }
 
         public void Commit()
         {
-            this.dbTransaction.Commit();
+            dbTransaction.Commit();
         }
 
         public int Delete(string sql)
         {
-            this.dbCommand.CommandText = sql;
-            int records= this.dbCommand.ExecuteNonQuery();
-            this.dbCommand.Parameters.Clear();
+            dbCommand.CommandText = sql;
+            int records= dbCommand.ExecuteNonQuery();
+            dbCommand.Parameters.Clear();
             return records;
         }
 
         public int Insert(string sql)
         {
-            this.dbCommand.CommandText = sql;
-            int records= this.dbCommand.ExecuteNonQuery();
-            this.dbCommand.Parameters.Clear();
+            dbCommand.CommandText = sql;
+            int records= dbCommand.ExecuteNonQuery();
+            dbCommand.Parameters.Clear();
             return records;
         }
 
         public void OpenConnection()
         {
-            this.oleDbConnetction.Open();
+            oleDbConnetction.Open();
         }
 
         public void OpenTransaction()
         {
-            this.dbTransaction = this.oleDbConnetction.BeginTransaction();
+            dbTransaction = oleDbConnetction.BeginTransaction();
         }
 
         public void RollBack()
         {
-            this.dbTransaction?.Rollback();
+            dbTransaction?.Rollback();
         }
 
         public IDataReader Select(string sql)
         {
-            this.dbCommand.CommandText = sql;
-            IDataReader reader= this.dbCommand.ExecuteReader();
-            this.dbCommand.Parameters.Clear();
+            dbCommand.CommandText = sql;
+            Console.WriteLine(sql);
+            IDataReader reader= dbCommand.ExecuteReader();
+            dbCommand.Parameters.Clear();
             return reader;
         }
 
         public int Update(string sql)
         {
-            this.dbCommand.CommandText = sql;
-            int records= this.dbCommand.ExecuteNonQuery();
-            this.dbCommand.Parameters.Clear();
+            dbCommand.CommandText = sql;
+            int records= dbCommand.ExecuteNonQuery();
+            dbCommand.Parameters.Clear();
             return records;
         }
         public void AddParameter(string name, object value)
         {
-            this.dbCommand.Parameters.Add(new OleDbParameter(name, value));
+            dbCommand.Parameters.Add(new OleDbParameter(name, value));
         }
     }
 }
