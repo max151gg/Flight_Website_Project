@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace SkyPathWS
+namespace SkyPathWS.ORM.CreatorsModels
 {
     public interface IModelCreator<T>
     {

@@ -1,6 +1,6 @@
 ﻿using SkyPathWS.ORM.CreatorsModels;
 
-namespace SkyPathWS
+namespace SkyPathWS.ORM
 {
     public class ModelCreators
     {
@@ -16,77 +16,77 @@ namespace SkyPathWS
         {
             get
             { 
-                if(this.UserCreator == null)
+                if(userCreator == null)
                 {
                     userCreator = new UserCreator();
                 }
-                return this.userCreator;
+                return userCreator;
             }
         }
         public FlightCreator FlightCreator
         {
             get
             {
-                if (this.flightCreator == null)
+                if (flightCreator == null)
                 {
                     flightCreator = new FlightCreator();
                 }
-                return this.flightCreator;
+                return flightCreator;
             }
         }
         public AnnouncementCreator AnnouncementCreator
         {
             get
             {
-                if (this.announcementCreator == null)
+                if (announcementCreator == null)
                 {
                     announcementCreator = new AnnouncementCreator();
                 }
-                return this.announcementCreator;
+                return announcementCreator;
             }
         }
         public DiscountCreator DiscountCreator
         {
             get
             {
-                if (this.discountCreator == null)
+                if (discountCreator == null)
                 {
                     discountCreator = new DiscountCreator();
                 }
-                return this.discountCreator;
+                return discountCreator;
             }
         }
         public Arrival_CityCreator Arrival_CityCreator
         {
             get
             {
-                if (this.arrival_CityCreator == null)
+                if (arrival_CityCreator == null)
                 {
                     arrival_CityCreator = new Arrival_CityCreator();
                 }
-                return this.arrival_CityCreator;
+                return arrival_CityCreator;
             }
         }
         public Departure_CityCreator Departure_CityCreator
         {
             get
             {
-                if (this.departure_CityCreator == null)
+                if (departure_CityCreator == null)
                 {
                     departure_CityCreator = new Departure_CityCreator();
                 }
-                return this.departure_CityCreator;
+                return departure_CityCreator;
             }
         }
         public TicketCreator TicketCreator
         {
             get
             {
-                if (this.ticketCreator == null)
+                if (ticketCreator == null)
                 {
                     ticketCreator = new TicketCreator();
                 }
-                return this.ticketCreator;
+                return ticketCreator;
             }
         }
 

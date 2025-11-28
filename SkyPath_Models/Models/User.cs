@@ -58,10 +58,10 @@ namespace SkyPath_Models.Models
         }
         [Required(ErrorMessage = "Full name is required")]
         [FirstLetterCapital(ErrorMessage = "Name must start with a capital letter")]
-        public string UserFullName
+        public string User_FullName
         {
             get { return user_FullName; }
-            set { user_FullName = value; ValidateProperty(value, "UserFullName"); }
+            set { user_FullName = value; ValidateProperty(value, "User_FullName"); }
         }
         public string Role_Id
         {

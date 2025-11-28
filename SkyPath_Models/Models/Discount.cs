@@ -15,6 +15,7 @@ namespace SkyPath_Models.Models
         short percentage;
         string valid_From;
         string valid_To;
+        string user_Id;
 
         public string Discount_Id
         {
@@ -45,6 +46,11 @@ namespace SkyPath_Models.Models
         {
             get { return valid_To; }
             set { valid_To = value; ValidateProperty(value, "Valid_To"); }
+        }
+        public string User_Id
+        {
+            get { return user_Id; }
+            set { user_Id = value; }
         }
     }
 }

@@ -2,7 +2,7 @@
 using SkyPath_Models.Models;
 using System.Data;
 
-namespace SkyPathWS.Repositories
+namespace SkyPathWS.ORM.Repositories
 {
     public class AnnouncementRepository : Repository, IRepository<Announcement>
     {
@@ -11,7 +11,7 @@ namespace SkyPathWS.Repositories
         }
         public bool Create(Announcement model)
         {
-            string sql = $@"Insert into User
+            string sql = $@"Insert into Announcement
                             (
                             Admin_Id, Title, Content,
                             Announcement_Date
@@ -20,18 +20,18 @@ namespace SkyPathWS.Repositories
                             (
                                 @Admin_Id, @Title, @Content, @Announcement_Date
                             )";
-            this.helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
-            this.helperOleDb.AddParameter("@Title", model.Title);
-            this.helperOleDb.AddParameter("@Content", model.Content);
-            this.helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
-            return this.helperOleDb.Insert(sql) > 0;
+            helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
+            helperOleDb.AddParameter("@Title", model.Title);
+            helperOleDb.AddParameter("@Content", model.Content);
+            helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
+            return helperOleDb.Insert(sql) > 0;
         }
 
         public bool Delete(string id)
         {
             string sql = @"Delete from Announcement where Announcement_Id=@Announcement_Id";
-            this.helperOleDb.AddParameter("@Announcement_Id", id);
-            return this.helperOleDb.Delete(sql) > 0;
+            helperOleDb.AddParameter("@Announcement_Id", id);
+            return helperOleDb.Delete(sql) > 0;
         }
 
         public List<Announcement> GetALL()
@@ -39,11 +39,11 @@ namespace SkyPathWS.Repositories
             string sql = "Select * from Announcement";
 
             List<Announcement> announcements = new List<Announcement>();
-            using (IDataReader reader = this.helperOleDb.Select(sql))
+            using (IDataReader reader = helperOleDb.Select(sql))
             {
                 while (reader.Read())
                 {
-                    announcements.Add(this.modelCreators.AnnouncementCreator.CreateModel(reader));
+                    announcements.Add(modelCreators.AnnouncementCreator.CreateModel(reader));
                 }
             }
             return announcements;
@@ -52,11 +52,11 @@ namespace SkyPathWS.Repositories
         public Announcement GetById(string id)
         {
             string sql = "Select * from Announcement where Announcement_Id=@Announcement_Id";
-            this.helperOleDb.AddParameter("@Announcement_Id", id);
-            using (IDataReader reader = this.helperOleDb.Select(sql))
+            helperOleDb.AddParameter("@Announcement_Id", id);
+            using (IDataReader reader = helperOleDb.Select(sql))
             {
                 reader.Read();
-                return this.modelCreators.AnnouncementCreator.CreateModel(reader);
+                return modelCreators.AnnouncementCreator.CreateModel(reader);
             }
         }
 
@@ -65,11 +65,11 @@ namespace SkyPathWS.Repositories
             string sql = @"Update Announcement set 
                             Admin_Id=@Admin_Id, Title=@Title, Content=@Content,
                             Announcement_Date=@Announcement_Date";
-            this.helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
-            this.helperOleDb.AddParameter("@Title", model.Title);
-            this.helperOleDb.AddParameter("@Content", model.Content);
-            this.helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
-            return this.helperOleDb.Insert(sql) > 0;
+            helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
+            helperOleDb.AddParameter("@Title", model.Title);
+            helperOleDb.AddParameter("@Content", model.Content);
+            helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
+            return helperOleDb.Insert(sql) > 0;
         }
     }
 }

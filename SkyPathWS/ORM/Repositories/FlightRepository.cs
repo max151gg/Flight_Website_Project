@@ -4,7 +4,7 @@ using SkyPath_Models.Models;
 using System.Data;
 using System.Reflection;
 
-namespace SkyPathWS.Repositories
+namespace SkyPathWS.ORM.Repositories
 {
     public class FlightRepository : Repository, IRepository<Flight>
     {

@@ -1,6 +1,6 @@
 ﻿using ModelSkyPath.Models;
 using SkyPath_Models.Models;
-using SkyPathWS;
+using SkyPathWS.ORM;
 using System.Data;
 using System.Net.Http.Headers;
 using System.Text.Json;

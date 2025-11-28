@@ -2,7 +2,7 @@
 using SkyPath_Models.Models;
 using System.Data;
 
-namespace SkyPathWS.Repositories
+namespace SkyPathWS.ORM.Repositories
 {
     public class Arrival_CityRepository : Repository, IRepository<Arrival_City>
     {
@@ -19,25 +19,25 @@ namespace SkyPathWS.Repositories
                             (
                                 @City_Name
                             )";
-            this.helperOleDb.AddParameter("@City_Name", model.City_Name);
-            return this.helperOleDb.Insert(sql) > 0;
+            helperOleDb.AddParameter("@City_Name", model.City_Name);
+            return helperOleDb.Insert(sql) > 0;
         }
         public bool Delete(string id)
         {
             string sql = @"Delete from Arrival_City where Arrival_Id=@Arrival_Id";
-            this.helperOleDb.AddParameter("@Arrival_Id", id);
-            return this.helperOleDb.Delete(sql) > 0;
+            helperOleDb.AddParameter("@Arrival_Id", id);
+            return helperOleDb.Delete(sql) > 0;
         }
         public List<Arrival_City> GetALL()
         {
             string sql = "Select * from Arrival_City";
 
             List<Arrival_City> arrival_Cities = new List<Arrival_City>();
-            using (IDataReader reader = this.helperOleDb.Select(sql))
+            using (IDataReader reader = helperOleDb.Select(sql))
             {
                 while (reader.Read())
                 {
-                    arrival_Cities.Add(this.modelCreators.Arrival_CityCreator.CreateModel(reader));
+                    arrival_Cities.Add(modelCreators.Arrival_CityCreator.CreateModel(reader));
                 }
             }
             return arrival_Cities;
@@ -45,19 +45,19 @@ namespace SkyPathWS.Repositories
         public Arrival_City GetById(string id)
         {
             string sql = "Select * from Arrival_City where Arrival_Id=@Arrival_Id";
-            this.helperOleDb.AddParameter("@Arrival_Id", id);
-            using (IDataReader reader = this.helperOleDb.Select(sql))
+            helperOleDb.AddParameter("@Arrival_Id", id);
+            using (IDataReader reader = helperOleDb.Select(sql))
             {
                 reader.Read();
-                return this.modelCreators.Arrival_CityCreator.CreateModel(reader);
+                return modelCreators.Arrival_CityCreator.CreateModel(reader);
             }
         }
         public bool Update(Arrival_City model)
         {
             string sql = @"Update Arrival_City set 
                             City_Name=@City_Name";
-            this.helperOleDb.AddParameter("@City_Name", model.City_Name);
-            return this.helperOleDb.Insert(sql) > 0;
+            helperOleDb.AddParameter("@City_Name", model.City_Name);
+            return helperOleDb.Insert(sql) > 0;
         }
     }
 }
