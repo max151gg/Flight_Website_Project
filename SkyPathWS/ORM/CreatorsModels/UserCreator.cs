@@ -28,7 +28,8 @@ namespace SkyPathWS.ORM.CreatorsModels
                 Password = Convert.ToString(dataReader["Password"]),
                 User_Telephone = Convert.ToString(dataReader["User_Telephone"]),
                 User_Adress = Convert.ToString(dataReader["User_Adress"]),
-                Role_Id = Convert.ToString(dataReader["Role_Id"])
+                Role_Id = Convert.ToString(dataReader["Role_Id"]),
+                UserSalt = Convert.ToString(dataReader["UserSalt"])
             };
             return user;
         }

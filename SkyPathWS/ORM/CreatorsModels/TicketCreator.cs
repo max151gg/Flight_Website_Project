@@ -13,7 +13,8 @@ namespace SkyPathWS.ORM.CreatorsModels
                 User_Id = Convert.ToString(dataReader["User_Id"]),
                 Flight_Id = Convert.ToString(dataReader["Flight_Id"]),
                 Purchase_Date = Convert.ToString(dataReader["Purchase_Date"]),
-                Status = Convert.ToBoolean(dataReader["Status"])
+                Status = Convert.ToBoolean(dataReader["Status"]),
+                Type = Convert.ToString(dataReader["Type"])
             };
             return ticket;
         }

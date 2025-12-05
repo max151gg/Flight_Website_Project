@@ -1,6 +1,8 @@
 ﻿using SkyPath_Models;
 using SkyPath_Models.Models;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SkyPathWS.ORM.Repositories
 {
@@ -25,23 +27,45 @@ namespace SkyPathWS.ORM.Repositories
             string sql = $@"Insert into [User]
                             (
                             UserName, Email, [Password],
-                            User_Telephone, User_Adress, User_FullName, Role_Id
+                            User_Telephone, User_Adress, User_FullName, Role_Id, UserSalt
                             )
                             values
                             (
                                 @UserName, @Email, @Password, @User_Telephone, @User_Adress,
-                                @User_FullName, @Role_Id
+                                @User_FullName, @Role_Id, @UserSalt
                             )";
                             helperOleDb.AddParameter("@UserName", model.UserName);
                             helperOleDb.AddParameter("@Email", model.Email);
-                            helperOleDb.AddParameter("@Password", model.Password);
+                            string salt = GenerateSalt(GetRandomNumber());
+                            helperOleDb.AddParameter("@Password", GetHash(model.Password, salt));
                             helperOleDb.AddParameter("@User_Telephone", model.User_Telephone);
                             helperOleDb.AddParameter("@User_Adress", model.User_Adress);
                             helperOleDb.AddParameter("@User_FullName", model.User_FullName);
                             helperOleDb.AddParameter("@Role_Id", model.Role_Id);
+                            helperOleDb.AddParameter("@UserSalt", salt);
                             return helperOleDb.Insert(sql) > 0;
         }
-
+        private string GetHash(string password, string salt)
+        {
+            string combine = password + salt;
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(combine);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
+        private int GetRandomNumber()
+        {
+            Random random = new Random();
+            return random.Next(8, 16);
+        }
+        private string GenerateSalt(int length)
+        {
+            byte[] bytes = new byte[length];
+            RandomNumberGenerator.Fill(bytes);
+            return Convert.ToBase64String(bytes);
+        }
         public bool Delete(string id)
         {
             string sql = @"Delete from User where User_Id=@User_Id";
@@ -91,16 +115,24 @@ namespace SkyPathWS.ORM.Repositories
             return helperOleDb.Update(sql) > 0;
         }
 
-        public string Login(string username, string password) 
+        public string Login(string userName, string password) 
         {
-            string sql = @"select User_Id from Users
-                           where UserName=@UserName AND Password=@Password";
-            helperOleDb.AddParameter("@UserName", username);
-            helperOleDb.AddParameter("@Password", password);
+            string sql = @"Select UserSalt, User_Id, Password from [User]
+                   where [UserName]=@UserName";
+            helperOleDb.AddParameter("@UserName", userName);
             using (IDataReader user = helperOleDb.Select(sql))
             {
                 if (user.Read() == true)
-                    return user["User_Id"].ToString();
+                {
+                    string salt = user["UserSalt"].ToString();
+                    string hash = user["Password"].ToString();
+                    string passwordHash = GetHash(password, salt);
+                    if (hash == passwordHash)
+                    {
+                        return user["User_Id"].ToString();
+                    }
+                    return null;
+                }
                 return null;
             }
         }

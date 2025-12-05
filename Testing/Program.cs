@@ -3,6 +3,7 @@ using SkyPath_Models.Models;
 using SkyPathWS.ORM;
 using System.Data;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Testing;
 namespace Testing
@@ -13,7 +14,39 @@ namespace Testing
         {
             //CheckInsert();
             //TestAnnouncement();
-            CheckCreator();
+            //CheckCreator();
+            //Console.WriteLine(GenerateSalt(16));
+            for (int i = 1; i <= 5; i++)
+            {
+                Console.WriteLine("inert password to hash:");
+                string password = Console.ReadLine();
+                string salt = GenerateSalt(GetRandomNumber());
+                string hash = GetHash(password, salt);
+                Console.WriteLine($"salt: {salt}");
+                Console.WriteLine($"Hash: {hash}");
+            }
+
+        }
+        static int GetRandomNumber()
+        {
+            Random random = new Random();
+            return random.Next(8, 16);
+        }
+        static string GenerateSalt(int length)
+        {
+            byte[] bytes = new byte[length];
+            RandomNumberGenerator.Fill(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+        static string GetHash(string password, string salt)
+        {
+            string combine = password + salt;
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(combine);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+            }
         }
         static void CheckCreator()
         {

@@ -98,17 +98,28 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
-        //ToDo
-        //i added controller for guest, need to add more "filters" like above, the "filters" are connected to Repositories, for example if i want to do:"
-        //else if (page != 0 && departure_id != null && arrival_id != null)
-        //        {
-        //            int flightsPerPage = 10;
-        //browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-        //            browseViewModel.flights.Skip(flightsPerPage* (page - 1)).Take(flightsPerPage).ToList();
-        //
-        //I need to have the "GetFlightsByDepartureAndArrival" on the FlightRepository page
-        //
-        //need to check hte filters on swagger which turns on when you run the site, need to create more filters like on usecase
+        [HttpPost]
+        public string Login(string userName, string password)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                string id = this.repositoryUOW.UserRepository.Login(userName, password);
+                if (id != null)
+                    return id;
+                else
+                    return "No User";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
     }
 }
 
