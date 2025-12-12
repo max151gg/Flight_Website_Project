@@ -1,6 +1,8 @@
 ﻿using ModelSkyPath.Models;
 using SkyPath_Models.Models;
+using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM;
+using SkyPathWSClient;
 using System.Data;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -16,16 +18,31 @@ namespace Testing
             //TestAnnouncement();
             //CheckCreator();
             //Console.WriteLine(GenerateSalt(16));
-            for (int i = 1; i <= 5; i++)
-            {
-                Console.WriteLine("inert password to hash:");
-                string password = Console.ReadLine();
-                string salt = GenerateSalt(GetRandomNumber());
-                string hash = GetHash(password, salt);
-                Console.WriteLine($"salt: {salt}");
-                Console.WriteLine($"Hash: {hash}");
-            }
+            //for (int i = 1; i <= 5; i++)
+            //{
+            //    Console.WriteLine("inert password to hash:");
+            //    string password = Console.ReadLine();
+            //    string salt = GenerateSalt(GetRandomNumber());
+            //    string hash = GetHash(password, salt);
+            //    Console.WriteLine($"salt: {salt}");
+            //    Console.WriteLine($"Hash: {hash}");
+            //}
 
+            Console.ReadLine();
+            TestSkyPathClient();
+            Console.ReadLine();
+        }
+        static void TestSkyPathClient()
+        {
+            ApiClient<TicketViewModel> apiClient = new ApiClient<TicketViewModel>();
+            apiClient.Scheme = "http";
+            apiClient.Host = "localhost";
+            apiClient.Port = 5125;
+            apiClient.Path = "api/User/GetTicketByUserId";
+            apiClient.SetQueryParameter("user_id", "1");
+            TicketViewModel ticketVm = apiClient.GetAsync().Result;
+            foreach(Ticket t in ticketVm.tickets)
+              Console.WriteLine($"{t.Ticket_Id} - {t.Flight_Id} - {t.Purchase_Date}");
         }
         static int GetRandomNumber()
         {

@@ -16,6 +16,7 @@ namespace SkyPath_Models.Models
         string purchase_Date;
         bool status;
         string type;
+        public Ticket() { }
 
         public string Ticket_Id
         {
