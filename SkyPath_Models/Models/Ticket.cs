@@ -15,6 +15,8 @@ namespace SkyPath_Models.Models
         string flight_Id;
         string purchase_Date;
         bool status;
+        string type;
+        public Ticket() { }
 
         public string Ticket_Id
         {
@@ -42,6 +44,11 @@ namespace SkyPath_Models.Models
         {
             get { return status; }
             set { status = value; ValidateProperty(value, "Status"); }
+        }
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
         }
     }
 }

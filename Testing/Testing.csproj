@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SkyPathWSClient\SkyPathWSClient.csproj" />
     <ProjectReference Include="..\SkyPathWS\SkyPathWS.csproj" />
     <ProjectReference Include="..\SkyPath_Models\SkyPath_Models.csproj" />
   </ItemGroup>

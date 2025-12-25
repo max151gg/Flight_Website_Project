@@ -14,16 +14,17 @@ namespace SkyPathWS.ORM.Repositories
             string sql = $@"Insert into Ticket
                             (
                             User_Id, Flight_Id, Purchase_Date,
-                            Status
+                            Status, Type
                             )
                             values
                             (
-                                @User_Id, @Flight_Id, @Purchase_Date, @Status
+                                @User_Id, @Flight_Id, @Purchase_Date, @Status, @Type
                             )";
             helperOleDb.AddParameter("@User_Id", model.User_Id);
             helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
             helperOleDb.AddParameter("@Purchase_Date", model.Purchase_Date);
             helperOleDb.AddParameter("@Status", model.Status);
+            helperOleDb.AddParameter("@Type", model.Type);
             return helperOleDb.Insert(sql) > 0;
         }
 
@@ -78,11 +79,12 @@ namespace SkyPathWS.ORM.Repositories
         {
             string sql = @"Update Ticket set 
                             User_Id=@User_Id, Flight_Id=@Flight_Id, Purchase_Date=@Purchase_Date,
-                            Status=@Status";
+                            Status=@Status, Type=@Type";
             helperOleDb.AddParameter("@User_Id", model.User_Id);
             helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
             helperOleDb.AddParameter("@Purchase_Date", model.Purchase_Date);
             helperOleDb.AddParameter("@Status", model.Status);
+            helperOleDb.AddParameter("@Type", model.Type);
             return helperOleDb.Insert(sql) > 0;
         }
     }

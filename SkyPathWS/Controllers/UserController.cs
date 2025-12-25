@@ -99,7 +99,7 @@ namespace SkyPathWS.Controllers
             }
         }
         [HttpGet]
-        public TicketViewModel GetTicketByUserId(string user_id = null)
+        public TicketViewModel GetTicketByUserId(string user_id)
         {
             TicketViewModel ticketViewModel = new TicketViewModel();
             try

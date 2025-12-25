@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 
 namespace SkyPathWS.ORM
 {
@@ -61,6 +62,7 @@ namespace SkyPathWS.ORM
         public void OpenTransaction()
         {
             dbTransaction = oleDbConnetction.BeginTransaction();
+            this.dbCommand.Transaction = dbTransaction;
         }
 
         public void RollBack()

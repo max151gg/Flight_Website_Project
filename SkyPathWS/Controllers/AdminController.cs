@@ -225,5 +225,23 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+        [HttpPost]
+        public bool CreateTicket(Ticket ticket)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                return this.repositoryUOW.TicketRepository.Create(ticket);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
     }
 }

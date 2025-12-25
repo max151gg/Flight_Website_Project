@@ -18,6 +18,7 @@ namespace SkyPath_Models.Models
         string user_Adress;
         string user_FullName;
         string role_Id;
+        public string UserSalt {  get; set; }
 
         public string User_Id
         {
