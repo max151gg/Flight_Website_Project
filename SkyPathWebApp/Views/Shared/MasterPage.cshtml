@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "MasterPage";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/CSS/masterpage.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyPath – smooth and easy flight planning.</title>
+</head>
+<body>
+    <header>
+        <div class="logo">SkyPath</div>
+        <nav>
+            <a href="http://localhost:5076/Guest/HomePage">Home</a>
+            <a href="http://localhost:5076/Guest/Browse">Browse</a>
+            <a href="Announcement.html">Announcements</a>
+            <a href="AboutUs.html">About us</a>
+        </nav>
+        <div class="auth-buttons">
+            <a class="btn btn-signup" href="#signup-section">Sign Up</a>
+            <a class="btn btn-login" href="login_home.html#login-section">Log In</a>
+        </div>
+    </header>
+    
+    <main>
+        @RenderBody()   <!-- THIS IS REQUIRED -->
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <p style="font-size: 14px; color: #666;">Follow us</p>
+            </div>
+            <div class="social-links">
+                <a href="#">f</a>
+                <a href="#">𝕏</a>
+                <a href="#">📷</a>
+                <a href="#">▶</a>
+            </div>
+            <div>
+                <p style="font-size: 12px; color: #999;">contact us: email@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-links">
+            <a href="AboutUs.html">Features</a>
+            <a href="AboutUs.html">About</a>
+            <a href="AboutUs.html">Testimonials</a>
+            <a href="AboutUs.html">Contact</a>
+            <a href="AboutUs.html">Download</a>
+        </div>
+        <div class="copyright">
+            123 Mansion St, Ramla, CA 94103, Israel<br>
+            © 2025 Your Company. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>
+

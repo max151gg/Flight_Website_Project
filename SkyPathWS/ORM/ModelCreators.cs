@@ -11,6 +11,7 @@ namespace SkyPathWS.ORM
         Arrival_CityCreator arrival_CityCreator;
         Departure_CityCreator departure_CityCreator;
         TicketCreator ticketCreator;
+        CityCreator cityCreator;
 
         public UserCreator UserCreator 
         {
@@ -87,6 +88,17 @@ namespace SkyPathWS.ORM
                     ticketCreator = new TicketCreator();
                 }
                 return ticketCreator;
+            }
+        }
+        public CityCreator CityCreator
+        {
+            get
+            {
+                if (cityCreator == null)
+                {
+                    cityCreator = new CityCreator();
+                }
+                return cityCreator;
             }
         }
 

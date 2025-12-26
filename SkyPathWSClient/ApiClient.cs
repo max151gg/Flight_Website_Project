@@ -40,6 +40,8 @@ namespace SkyPathWSClient
                 this.uriBuilder.Path = value;
             }
         }
+
+
         public void SetQueryParameter(string key, string value)
         {
             if (this.uriBuilder.Query == string.Empty)
@@ -70,7 +72,35 @@ namespace SkyPathWSClient
             }
         }
 
-        public async Task<bool> PostAsync(T model, List<FileStream> files)
+
+
+        public async Task<bool> PostAsync(T model, Stream file)
+        {
+            using (HttpRequestMessage httpRequest = new HttpRequestMessage())
+            {
+                httpRequest.Method = HttpMethod.Post;
+                httpRequest.RequestUri = this.uriBuilder.Uri;
+                MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
+                string json = JsonSerializer.Serialize<T>(model);
+
+                StringContent modelContent = new StringContent(json);
+                multipartFormDataContent.Add(modelContent, "model");
+
+                StreamContent streamContent = new StreamContent(file); // Streamcontent because of the file stream
+                multipartFormDataContent.Add(streamContent, "file", "file");
+
+                httpRequest.Content = multipartFormDataContent;
+                using (HttpResponseMessage httpResponse = await this.httpClient.SendAsync(httpRequest))
+                {
+                    return httpResponse.IsSuccessStatusCode;
+                }
+
+            }
+
+        }
+
+
+        public async Task<bool> PostAsync(T model, List<Stream> files)
         {
             using (HttpRequestMessage httpRequest = new HttpRequestMessage())
             {
@@ -80,10 +110,10 @@ namespace SkyPathWSClient
                 string jsonModel = JsonSerializer.Serialize<T>(model);
                 StringContent ModelContent = new StringContent(jsonModel);
                 multipartFormData.Add(ModelContent, "model");
-                foreach(FileStream fileStream in files)
+                foreach(Stream Stream in files)
                 {
-                    StreamContent streamContent = new StreamContent(fileStream);
-                    multipartFormData.Add(streamContent, "file", fileStream.Name);
+                    StreamContent streamContent = new StreamContent(Stream);
+                    multipartFormData.Add(streamContent, "file", "file");
                 }
                 httpRequest.Content = multipartFormData;
                 using (HttpResponseMessage responseMessage = await this.httpClient.SendAsync(httpRequest))

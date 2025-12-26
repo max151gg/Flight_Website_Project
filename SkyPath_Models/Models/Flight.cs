@@ -19,6 +19,7 @@ namespace SkyPath_Models.Models
         string arrival_Time;
         double price;
         short seats_Available;
+        City 
 
         public string Flight_Id
         {

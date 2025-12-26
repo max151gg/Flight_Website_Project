@@ -150,5 +150,14 @@ namespace SkyPathWS.ORM.Repositories
             List<Flight> flights = this.GetALL();
             return flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
         }
+        public int GetFlightCount()
+        {
+            string sql = @"Select Count(Flight_Id) as FlightCount from Flights";
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                reader.Read();
+                return Convert.ToInt32(reader["FlightCount"]);
+            }
+        }
     }
 }

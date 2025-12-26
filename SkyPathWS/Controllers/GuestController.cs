@@ -68,7 +68,9 @@ namespace SkyPathWS.Controllers
                     browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
                     browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
                 }
-                this.repositoryUOW.HelperOleDb.CloseConnection();
+                //int books = this.repositoryUOW.FlightRepository.
+                //browseViewModel.pageCount = f
+                //if (flights)
                 return browseViewModel;
             }
             catch (Exception ex)
@@ -120,6 +122,7 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
     }
 }
 

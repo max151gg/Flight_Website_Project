@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewData["Title"] = "HomePage";
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+<link rel="stylesheet" href="~/CSS/HomeCSS.css" />
+<div class="content">
+    <div class="hero">
+        <h1>The best site to set up<br>your vacation</h1>
+        <p>Statement for your product's tagline. This text should communicate your unique selling proposition to the reader.</p>
+        <a class="btn-cta" href="Browse.html">Find You Flight Now</a>
+    </div>
+<div class="main-container">
+    <!-- Search Section -->
+    <div class="flights-section">
+        <p class="section-title">discounted flights</p>
+        <div class="flight-cards">
+            <div class="flight-card">
+                <img src="../images/Paris.jpg" alt="Flight to Paris" class="flight-card-icon">
+                <div class="flight-card-title">Paris - $299</div>
+            </div>
+            <div class="flight-card">
+                <img src="flight2.jpg" alt="Flight to Tokyo" class="flight-card-icon">
+                <div class="flight-card-title">Tokyo - $599</div>
+            </div>
+            <div class="flight-card">
+                <img src="flight3.jpg" alt="Flight to New York" class="flight-card-icon">
+                <img src="flight3.jpg" alt="Flight to New York" class="flight-card-icon">
+                <div class="flight-card-title">New York - $199</div>
+            </div>
+            <div class="flight-card">
+                <img src="flight4.jpg" alt="Flight to London" class="flight-card-icon">
+                <img src="flight4.jpg" alt="Flight to London" class="flight-card-icon">
+                <div class="flight-card-title">London - $399</div>
+            </div>
+            <div class="flight-card">
+                <img src="flight5.jpg" alt="Flight to Dubai" class="flight-card-icon">
+                <img src="flight5.jpg" alt="Flight to Dubai" class="flight-card-icon">
+                <div class="flight-card-title">Dubai - $449</div>
+            </div>
+            <div class="flight-card">
+                <img src="flight6.jpg" alt="Flight to Sydney" class="flight-card-icon">
+                <img src="flight6.jpg" alt="Flight to Sydney" class="flight-card-icon">
+                <div class="flight-card-title">Sydney - $799</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Layout -->
+    <div class="content-layout">
+        <!-- Sidebar -->
+        <div class="signup-section" id="signup-section">
+            <h2>Sign Up</h2>
+            <p class="signup-subtitle">Signup now. Its free and takes less than 3 minutes</p>
+            <form>
+                <div class="form-group">
+                    <input type="text" placeholder="First Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Last Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms">
+                    <label for="terms">Notify me about recent discounts</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="agree" required>
+                    <label for="agree">Agree with terms of service</label>
+                </div>
+                <div class="checkbox-group">
+                    <label for="account">have an account already? <a href="login_home.html#login-section">Log In</a></label>
+                </div>
+                <button type="submit" class="btn-submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+</div>

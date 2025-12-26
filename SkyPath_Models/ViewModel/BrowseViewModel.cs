@@ -12,5 +12,9 @@ namespace SkyPath_Models.ViewModel
         public List<Flight> flights { get; set; }
         public List<Arrival_City> arrival_Cities { get; set; }
         public List<Departure_City> departure_Cities { get; set; }
+        public int page { get; set; }
+        public int pagePerPage { get; set; }
+        public int pageCount { get; set; }
+
     }
 }
