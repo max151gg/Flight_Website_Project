@@ -19,7 +19,8 @@ namespace SkyPath_Models.Models
         string arrival_Time;
         double price;
         short seats_Available;
-        City 
+        string departure_Date;
+        string arrival_Date;
 
         public string Flight_Id
         {
@@ -73,6 +74,18 @@ namespace SkyPath_Models.Models
         {
             get { return seats_Available; }
             set { seats_Available = value; ValidateProperty(value, "Seats_Available"); }
+        }
+        [Required(ErrorMessage = "Departure Date is required")]
+        public string Departure_Date
+        {
+            get { return departure_Date; }
+            set { departure_Date = value; ValidateProperty(value, "Departure_Date"); }
+        }
+        [Required(ErrorMessage = "Arrival Date is required")]
+        public string Arrival_Date
+        {
+            get { return arrival_Date; }
+            set { arrival_Date = value; ValidateProperty(value, "Arrival_Date"); }
         }
     }
 }

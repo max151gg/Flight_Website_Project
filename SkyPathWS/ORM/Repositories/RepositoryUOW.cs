@@ -9,6 +9,7 @@
         FlightRepository flightRepository;
         TicketRepository ticketRepository;
         UserRepository userRepository;
+        CityRepository cityRepository;
 
         DbHelperOleDb helperOleDb;
         ModelCreators modelCreators;
@@ -20,6 +21,16 @@
         }
 
         public DbHelperOleDb HelperOleDb => helperOleDb;
+
+        public CityRepository CityRepository
+        {
+            get
+            {
+                if (cityRepository == null)
+                    cityRepository = new CityRepository(helperOleDb, modelCreators);
+                return cityRepository;
+            }
+        }
 
         public AnnouncementRepository AnnouncementRepository
         {

@@ -15,6 +15,9 @@ namespace SkyPath_Models.ViewModel
         public int page { get; set; }
         public int pagePerPage { get; set; }
         public int pageCount { get; set; }
+        public int TotalCount { get; set; }
+        public int CurrentPage { get; set; }
+
 
     }
 }

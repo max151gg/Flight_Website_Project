@@ -16,7 +16,9 @@ namespace SkyPathWS.ORM.CreatorsModels
                 Departure_Time = Convert.ToString(dataReader["Departure_Time"]),
                 Arrival_Time = Convert.ToString(dataReader["Arrival_Time"]),
                 Price = Convert.ToDouble(dataReader["Price"]),
-                Seats_Available = Convert.ToInt16(dataReader["Seats_Available"])
+                Seats_Available = Convert.ToInt16(dataReader["Seats_Available"]),
+                Departure_Date = Convert.ToString(dataReader["Departure_Date"]),
+                Arrival_Date = Convert.ToString(dataReader["Arrival_Date"])
             };
             return flight;
         }

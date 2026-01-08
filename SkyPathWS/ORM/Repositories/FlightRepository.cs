@@ -17,13 +17,13 @@ namespace SkyPathWS.ORM.Repositories
                             (
                             Flight_Number, Airline, Departure_Id,
                             Arrival_Id, Departure_Time, Arrival_Time,
-                            Price, Seats_Available
+                            Price, Seats_Available, Departure_Date, Arrival_Date
                             )
                             values
                             (
                                 @Flight_Number, @Airline, @Departure_Id,
                                 @Arrival_Id, @Departure_Time, @Arrival_Time,
-                                @Price, @Seats_Available
+                                @Price, @Seats_Available, @Departure_Date, @Arrival_Date
                             )";
             this.helperOleDb.AddParameter("@Flight_Number", model.Flight_Number);
             this.helperOleDb.AddParameter("@Airline", model.Airline);
@@ -33,6 +33,8 @@ namespace SkyPathWS.ORM.Repositories
             this.helperOleDb.AddParameter("@Arrival_Time", model.Arrival_Time);
             this.helperOleDb.AddParameter("@Price", model.Price);
             this.helperOleDb.AddParameter("@Seats_Available", model.Seats_Available);
+            this.helperOleDb.AddParameter("@Departure_Date", model.Departure_Date);
+            this.helperOleDb.AddParameter("@Arrival_Date", model.Arrival_Date);
             return this.helperOleDb.Insert(sql) > 0;
         }
 
@@ -83,6 +85,8 @@ namespace SkyPathWS.ORM.Repositories
             this.helperOleDb.AddParameter("@Arrival_Time", model.Arrival_Time);
             this.helperOleDb.AddParameter("@Price", model.Price);
             this.helperOleDb.AddParameter("@Seats_Available", model.Seats_Available);
+            this.helperOleDb.AddParameter("@Departure_Date", model.Departure_Date);
+            this.helperOleDb.AddParameter("@Arrival_Date", model.Arrival_Date);
             return this.helperOleDb.Insert(sql) > 0;
         }
         //מעתיקים GET ALL FUNCTION ומשנים את משפטי SQL לפי הUSE CASE כגון(FILTER BY DATE, BY PRICE...)
@@ -144,6 +148,23 @@ namespace SkyPathWS.ORM.Repositories
             }
             return flights;
         }
+
+        public List<Flight> GetFlightsByDepartureDateAndArrivalDate(string departure_Date, string arrival_Date)
+        {
+            string sql = @"Select * from Flight where Departure_Date=@Departure_Date AND Arrival_Date=@Arrival_Date";
+            this.helperOleDb.AddParameter("@Departure_Date", departure_Date);
+            this.helperOleDb.AddParameter("@Arrival_Date", arrival_Date);
+            List<Flight> flights = new List<Flight>();
+            using (IDataReader reader = this.helperOleDb.Select(sql))
+            {
+                while (reader.Read())
+                {
+                    flights.Add(this.modelCreators.FlightCreator.CreateModel(reader));
+                }
+            }
+            return flights;
+        }
+
         public List<Flight> GetFlightsByPage(int page)
         {
             int flightsPerPage = 10;

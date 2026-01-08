@@ -3,50 +3,42 @@
 @model BrowseViewModel
 
 @{
+    var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
+
+    string NameOrUnknown(string id) =>
+        (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
+            ? cityDict[id]
+            : "Unknown";
+}
+
+
+@{
     ViewData["Title"] = "Browse";
     Layout = "~/Views/Shared/MasterPage.cshtml";
 }
 <link rel="stylesheet" href="~/CSS/BrowseCSS.css" />
-<header>
-    <nav>
-        <a href="http://localhost:5076/Guest/Browse" class="active">Browse</a>
-    </nav>
-</header>
 <div class="main-container">
     <!-- Search Section -->
     <div class="search-section">
-        <div class="search-type">
-            <label>
-                <input type="radio" name="trip" value="round" checked>
-                round trip
-            </label>
-            <label>
-                <input type="radio" name="trip" value="one">
-                one way
-            </label>
-            <label>
-                <input type="radio" name="trip" value="multi">
-                multi-city
-            </label>
-        </div>
+        
 
         <div class="search-filters">
             <div class="filter-group">
                 <select>
-                    @* <option>departure</option>
-                    @foreach(Departure_City departure_City in Model.departure_Cities)
+                    <option>departure</option>
+                    @foreach (var city in cityDict)
                     {
-                        <option>@departure_City.City_Name</option>
-                    } *@
+                        <option>@city.Value (@city.Key)</option>
+                    }
                 </select>
             </div>
             <div class="filter-group">
                 <select>
                     <option>destination</option>
-                    <option>London (LHR)</option>
-                    <option>Paris (CDG)</option>
-                    <option>Tokyo (NRT)</option>
-                    <option>Dubai (DXB)</option>
+                    @foreach (var city in cityDict)
+                    {
+                        <option>@city.Value (@city.Key)</option>
+                    }
                 </select>
             </div>
             <div class="filter-group">
@@ -56,20 +48,6 @@
                 <input type="date" placeholder="arrival time">
             </div>
             <div class="filter-group">
-                <select>
-                    <option>1 passenger</option>
-                    <option>2 passengers</option>
-                    <option>3 passengers</option>
-                    <option>4+ passengers</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <select>
-                    <option>Economy</option>
-                    <option>Premium Economy</option>
-                    <option>Business</option>
-                    <option>First Class</option>
-                </select>
             </div>
         </div>
 
@@ -100,16 +78,17 @@
             </div>
         </div>
 
+        @{
+            int showing = Model?.flights?.Count ?? 0;
+            int total = Model?.TotalCount ?? 0;
+        }
+
         <!-- Results -->
         <div class="results-section">
             <div class="results-header">
-                <span class="results-count">Showing 12 of 247 flights</span>
-                <div class="view-options">
-                    <button class="view-btn active">Grid</button>
-                    <button class="view-btn">List</button>
-                </div>
+                <span class="results-count">Showing @showing of @total flights</span>
             </div>
-
+            
             <!-- Flight Card -->
             <div class="flights-grid">
                 @foreach(Flight flight in Model.flights)
@@ -119,11 +98,13 @@
                             <div class="img-placeholder"><img src="" alt="Flight Image"></div>
                         </div>
                         <div class="flight-details">
-                            <div class="flight-route">@flight.Departure_Id → @flight.Departure_Id</div>
+                            <div class="flight-route">
+                                @NameOrUnknown(flight.Departure_Id) → @NameOrUnknown(flight.Arrival_Id)
+                            </div>
                             <div class="flight-info">
                                 <span class="info-item">@flight.Airline</span>
-                                <span class="info-item">Departure: @flight.Departure_Time</span>
-                                <span class="info-item">Arrival: @flight.Arrival_Time</span>
+                                <span class="info-item">Departure Date: @flight.Departure_Date</span>
+                                <span class="info-item">At: @flight.Departure_Time</span>
                                 <span class="info-item">@flight.Flight_Number</span>
                             </div>
                             <div class="flight-price">
@@ -137,19 +118,14 @@
                     </div>
                 }
                 
-
+            </div>
             <!-- Pagination -->
             <div class="pagination">
-                    @for (int i = 1; i <= Model.pageCount; i++)
-                    {
-                        <button class="page-btn">@i</button>
-                    }
-                    <button class="page-btn">←</button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
+                <button class="page-btn">←</button>
+                @for (int i = 1; i <= Model.pageCount; i++)
+                {
+                    <button class="page-btn">@i</button>
+                }
                 <button class="page-btn">→</button>
             </div>
         </div>

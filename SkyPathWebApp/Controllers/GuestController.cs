@@ -10,11 +10,82 @@ namespace SkyPathWebApp.Controllers
     public class GuestController : Controller
     {
         [HttpGet]
-        public IActionResult HomePage()
+        public async Task<IActionResult> HomePage()
         {
-            return View();
+            // 1) Call WS endpoint that returns ALL flights (no pagination)
+            ApiClient<List<Flight>> flightsClient = new ApiClient<List<Flight>>();
+            flightsClient.Scheme = "http";
+            flightsClient.Host = "localhost";
+            flightsClient.Port = 5125;
+            flightsClient.Path = "api/Guest/GetAllFlights";
+
+            List<Flight> flights = await flightsClient.GetAsync() ?? new List<Flight>();
+
+            // 2) Create BrowseViewModel LOCALLY (THIS is what I meant)
+            BrowseViewModel browseViewModel = new BrowseViewModel
+            {
+                flights = flights
+            };
+
+            // 3) Get cities (same as Browse page)
+            ApiClient<List<City>> cityClient = new ApiClient<List<City>>();
+            cityClient.Scheme = "http";
+            cityClient.Host = "localhost";
+            cityClient.Port = 5125;
+            cityClient.Path = "api/City/GetAll";
+
+            List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+
+            ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
+
+            // 4) Return model to Home view
+            return View(browseViewModel);
+        }
+        [HttpGet]
+        public async Task<IActionResult> LoginHome()
+        {
+            // 1) Call WS endpoint that returns ALL flights (no pagination)
+            ApiClient<List<Flight>> flightsClient = new ApiClient<List<Flight>>();
+            flightsClient.Scheme = "http";
+            flightsClient.Host = "localhost";
+            flightsClient.Port = 5125;
+            flightsClient.Path = "api/Guest/GetAllFlights";
+
+            List<Flight> flights = await flightsClient.GetAsync() ?? new List<Flight>();
+
+            // 2) Create BrowseViewModel LOCALLY (THIS is what I meant)
+            BrowseViewModel browseViewModel = new BrowseViewModel
+            {
+                flights = flights
+            };
+
+            // 3) Get cities (same as Browse page)
+            ApiClient<List<City>> cityClient = new ApiClient<List<City>>();
+            cityClient.Scheme = "http";
+            cityClient.Host = "localhost";
+            cityClient.Port = 5125;
+            cityClient.Path = "api/City/GetAll";
+
+            List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+
+            ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
+
+            // 4) Return model to Home view
+            return View(browseViewModel);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> Announcement()
+        {
+            ApiClient<AnnouncementViewModel> client = new ApiClient<AnnouncementViewModel>();
+            client.Scheme = "http";
+            client.Host = "localhost";
+            client.Port = 5125;
+            client.Path = "api/Guest/Announcement";
+            AnnouncementViewModel announcementViewModel = await client.GetAsync();
+            return View(announcementViewModel);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Browse(string flight_id = null, int page = 0, string departure_id = null, string arrival_id = null)
@@ -33,6 +104,21 @@ namespace SkyPathWebApp.Controllers
             if (page != 0)
                 client.SetQueryParameter("page", page.ToString());
             BrowseViewModel browseViewModel = await client.GetAsync();
+
+            ApiClient<List<City>> cityClient = new ApiClient<List<City>>();
+            cityClient.Scheme = "http";
+            cityClient.Host = "localhost";
+            cityClient.Port = 5125;
+            cityClient.Path = "api/City/GetAll";
+
+            List<City> cities = await cityClient.GetAsync();
+
+            var cityDict = (cities ?? new List<City>())
+                .ToDictionary(c => c.CityId, c => c.CityName);
+
+            ViewBag.CityDict = cityDict;
+
+
             return View(browseViewModel);
         }
         [HttpGet]
@@ -51,6 +137,12 @@ namespace SkyPathWebApp.Controllers
 
         [HttpPost]
         public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult AboutUs()
         {
             return View();
         }

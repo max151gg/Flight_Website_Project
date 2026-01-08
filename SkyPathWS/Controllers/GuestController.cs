@@ -4,6 +4,9 @@ using ModelSkyPath.Models;
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
+using System.Globalization;
+using System.Linq;
+
 
 namespace SkyPathWS.Controllers
 {
@@ -16,6 +19,36 @@ namespace SkyPathWS.Controllers
         {
             this.repositoryUOW = new RepositoryUOW();
         }
+
+        [HttpGet]
+        public AnnouncementViewModel Announcement()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            AnnouncementViewModel announcementViewModel = new AnnouncementViewModel();
+            try
+            {
+                announcementViewModel.announcements = this.repositoryUOW.AnnouncementRepository.GetALL();
+
+                // NEW: sort newest -> oldest by dd-MM-yyyy
+                announcementViewModel.announcements = announcementViewModel.announcements
+                    .OrderByDescending(a => DateTime.ParseExact(
+                        a.Announcement_Date,   // <-- change property name if different
+                        "dd-MM-yyyy",
+                        CultureInfo.InvariantCulture))
+                    .ToList();
+
+                return announcementViewModel;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
         [HttpGet]
         public BrowseViewModel GetFlightCatalog(string flight_id = null, int page = 0, string departure_id = null, string arrival_id = null)
         {
@@ -24,56 +57,66 @@ namespace SkyPathWS.Controllers
             try
             {
 
-                if (page == 0 && departure_id == null && arrival_id == null)
+                int flightsPerPage = 12;
+
+                // 1) Get the FULL filtered list (for total count)
+                List<Flight> filtered;
+
+                if (departure_id != null && arrival_id != null)
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetALL();
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
                 }
-                else if (page == 0 && departure_id != null && arrival_id == null)
+                else if (departure_id != null)
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
                 }
-                else if (page == 0 && departure_id == null && arrival_id != null)
+                else if (arrival_id != null)
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
                 }
-                else if (page != 0 && departure_id == null && arrival_id == null)
+                else
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByPage(page);
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetALL();
                 }
-                else if (page != 0 && departure_id != null && arrival_id == null)
-                {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
-                }
-                else if (page != 0 && departure_id == null && arrival_id != null)
-                {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
-                }
-                else if (page == 0 && departure_id != null && arrival_id != null)
-                {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
-                }
-                else if (page != 0 && departure_id != null && arrival_id != null)
-                {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
-                }
-                //int books = this.repositoryUOW.FlightRepository.
-                //browseViewModel.pageCount = f
-                //if (flights)
-                return browseViewModel;
+
+                // 2) Build the view model
+                BrowseViewModel vm = new BrowseViewModel();
+                vm.TotalCount = filtered.Count;
+
+                // 3) Normalize page (your current default is 0; we convert it to 1)
+                if (page <= 0) page = 1;
+                vm.CurrentPage = page;
+
+                // 4) Slice the list for the current page
+                vm.flights = filtered
+                    .Skip(flightsPerPage * (page - 1))
+                    .Take(flightsPerPage)
+                    .ToList();
+
+                // 5) Optional: total pages (handy for UI)
+                vm.pageCount = (int)Math.Ceiling(vm.TotalCount / (double)flightsPerPage);
+
+                return vm;
+
             }
             catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        [HttpGet]
+        public List<Flight> GetAllFlights()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                return this.repositoryUOW.FlightRepository.GetALL();
+            }
+            catch
             {
                 return null;
             }

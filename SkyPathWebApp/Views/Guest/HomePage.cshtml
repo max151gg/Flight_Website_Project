@@ -1,50 +1,51 @@
-﻿
+﻿@using SkyPath_Models.Models
+@using SkyPath_Models.ViewModel
+@model BrowseViewModel
 @{
     ViewData["Title"] = "HomePage";
     Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+@{
+    var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
+
+    string NameOrUnknown(string id) =>
+        (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
+            ? cityDict[id]
+            : "Unknown";
 }
 <link rel="stylesheet" href="~/CSS/HomeCSS.css" />
 <div class="content">
     <div class="hero">
         <h1>The best site to set up<br>your vacation</h1>
         <p>Statement for your product's tagline. This text should communicate your unique selling proposition to the reader.</p>
-        <a class="btn-cta" href="Browse.html">Find You Flight Now</a>
+        <a class="btn-cta" href="http://localhost:5076/Guest/Browse">Find Your Flight Now</a>
     </div>
 <div class="main-container">
     <!-- Search Section -->
-    <div class="flights-section">
-        <p class="section-title">discounted flights</p>
-        <div class="flight-cards">
-            <div class="flight-card">
-                <img src="../images/Paris.jpg" alt="Flight to Paris" class="flight-card-icon">
-                <div class="flight-card-title">Paris - $299</div>
-            </div>
-            <div class="flight-card">
-                <img src="flight2.jpg" alt="Flight to Tokyo" class="flight-card-icon">
-                <div class="flight-card-title">Tokyo - $599</div>
-            </div>
-            <div class="flight-card">
-                <img src="flight3.jpg" alt="Flight to New York" class="flight-card-icon">
-                <img src="flight3.jpg" alt="Flight to New York" class="flight-card-icon">
-                <div class="flight-card-title">New York - $199</div>
-            </div>
-            <div class="flight-card">
-                <img src="flight4.jpg" alt="Flight to London" class="flight-card-icon">
-                <img src="flight4.jpg" alt="Flight to London" class="flight-card-icon">
-                <div class="flight-card-title">London - $399</div>
-            </div>
-            <div class="flight-card">
-                <img src="flight5.jpg" alt="Flight to Dubai" class="flight-card-icon">
-                <img src="flight5.jpg" alt="Flight to Dubai" class="flight-card-icon">
-                <div class="flight-card-title">Dubai - $449</div>
-            </div>
-            <div class="flight-card">
-                <img src="flight6.jpg" alt="Flight to Sydney" class="flight-card-icon">
-                <img src="flight6.jpg" alt="Flight to Sydney" class="flight-card-icon">
-                <div class="flight-card-title">Sydney - $799</div>
-            </div>
+        @{
+            var discountedFlights = (Model?.flights ?? new List<Flight>())
+            .Where(f => f != null)   // your threshold
+            .OrderBy(f => f.Price)                    // optional: cheapest first
+            .Take(5)
+            .ToList();
+        }
+
+        <div class="flights-section">
+            <p class="section-title">Cheapest Flights Available Right Now</p>
+                <div class="flight-cards">
+                    <div class="flight-cards">
+                    @foreach (var flight in discountedFlights)
+                    {
+                        <div class="flight-card">
+                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon">
+                            <div class="flight-card-title">
+                                @NameOrUnknown(flight.Arrival_Id) - @flight.Price$
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
         </div>
-    </div>
 
     <!-- Content Layout -->
     <div class="content-layout">
@@ -74,7 +75,7 @@
                     <label for="agree">Agree with terms of service</label>
                 </div>
                 <div class="checkbox-group">
-                    <label for="account">have an account already? <a href="login_home.html#login-section">Log In</a></label>
+                        <label for="account">have an account already? <a href="http://localhost:5076/Guest/LoginHome#login-section">Log In</a></label>
                 </div>
                 <button type="submit" class="btn-submit">Sign Up</button>
             </form>
