@@ -10,17 +10,17 @@ namespace SkyPath_Models.Models
 {
     public class Flight : Model
     {
-        string flight_Id;
-        string flight_Number;
-        string airline;
-        string departure_Id;
-        string arrival_Id;
-        string departure_Time;
-        string arrival_Time;
-        double price;
-        short seats_Available;
-        string departure_Date;
-        string arrival_Date;
+        public string flight_Id;
+        public string flight_Number;
+        public string airline;
+        public string departure_Id;
+        public  string arrival_Id;
+        public string departure_Time;
+        public string arrival_Time;
+        public double price;
+        public short seats_Available;
+        public string departure_Date;
+        public string arrival_Date;
 
         public string Flight_Id
         {

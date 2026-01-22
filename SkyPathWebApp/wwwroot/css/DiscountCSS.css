@@ -1,0 +1,236 @@
+﻿.main-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 30px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 40px;
+}
+
+/* Discounts Grid */
+.discounts-wrapper {
+    max-height: 700px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+    .discounts-wrapper::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .discounts-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .discounts-wrapper::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+    }
+
+        .discounts-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+.discounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* Discount Card */
+.discount-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+    .discount-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+.discount-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.95);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.discount-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 25px 30px 25px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.discount-percentage {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.discount-type {
+    font-size: 14px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.discount-body {
+    padding: 25px;
+}
+
+.discount-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.discount-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.discount-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.detail-label {
+    color: #999;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.expiry-warning {
+    color: #f5576c;
+}
+
+.discount-code {
+    background: #f0f0f0;
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.code-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.code-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 2px;
+}
+
+.copy-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #333;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .copy-btn:hover {
+        background: #555;
+    }
+
+.use-discount-btn {
+    width: 100%;
+    padding: 12px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .use-discount-btn:hover {
+        background: #555;
+    }
+
+/* Different color themes */
+.discount-card:nth-child(3n+1) .discount-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.discount-card:nth-child(3n+2) .discount-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.discount-card:nth-child(3n+3) .discount-header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.discount-card:nth-child(3n+4) .discount-header {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.discount-card:nth-child(3n+5) .discount-header {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.discount-card:nth-child(3n+6) .discount-header {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}

@@ -32,39 +32,57 @@
 
         <div class="flights-section">
             <p class="section-title">Cheapest Flights Available Right Now</p>
-                <div class="flight-cards">
-                    <div class="flight-cards">
-                    @foreach (var flight in discountedFlights)
-                    {
+
+            <div class="flight-cards">
+                @foreach (var flight in discountedFlights)
+                {
+                    <a asp-controller="Guest"
+                       asp-action="FlightDetails"
+                       asp-route-id="@flight.Flight_Id"
+                       class="flight-card-link">
+
                         <div class="flight-card">
-                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon">
+                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon" />
+
                             <div class="flight-card-title">
-                                @NameOrUnknown(flight.Arrival_Id) - @flight.Price$
+                                @NameOrUnknown(flight.Departure_Id)
+                                →
+                                @NameOrUnknown(flight.Arrival_Id)
+                                - @flight.Price$
                             </div>
                         </div>
-                    }
-                    </div>
-                </div>
+
+                    </a>
+                }
+            </div>
         </div>
+
 
     <!-- Content Layout -->
     <div class="content-layout">
         <!-- Sidebar -->
         <div class="signup-section" id="signup-section">
             <h2>Sign Up</h2>
-            <p class="signup-subtitle">Signup now. Its free and takes less than 3 minutes</p>
-            <form>
+            <p class="signup-subtitle">Signup now. Its free and takes less than a minute</p>
+                
+                <form asp-controller="Guest" asp-action="Register" method="post">
                 <div class="form-group">
-                    <input type="text" placeholder="First Name" required>
+                    <input asp-for="User.User_FullName" type="text" placeholder="First Name" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Last Name" required>
+                    <input asp-for="User.UserName" type="text" placeholder="UserName" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" placeholder="Email address" required>
+                    <input asp-for="User.Email" type="email" placeholder="Email address" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" required>
+                    <input asp-for="User.Password" type="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <input asp-for="User.User_Telephone" type="text" placeholder="Phone Number" required>
+                </div>
+                <div class="form-group">
+                    <input asp-for="User.User_Adress" type="text" placeholder="Adress" required>
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="terms">

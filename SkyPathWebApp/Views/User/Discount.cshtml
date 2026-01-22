@@ -1,0 +1,72 @@
+﻿@using SkyPath_Models.Models
+@using SkyPath_Models.ViewModel
+@model DiscountViewModel
+@{
+    ViewData["Title"] = "Discount";
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+<link rel="stylesheet" href="~/CSS/DiscountCSS.css" />
+<div class="main-container">
+    <h1>My Discounts</h1>
+    <p class="subtitle">Exclusive offers and savings available to you</p>
+
+    
+        @if (Model?.discounts == null || !Model.discounts.Any())
+        {
+            <div class="discount-card">
+                <div class="discount-body">
+                    <p>No discounts found.</p>
+                </div>
+            </div>
+        }
+    
+        else
+        {
+        <div class="discounts-wrapper">
+            <div class="discounts-grid">
+            @foreach (var discount in Model.discounts)
+            {
+                
+                    <!-- Discount 1 -->
+                    <div class="discount-card">
+                        <div class="discount-badge">Active</div>
+                        <div class="discount-header">
+                            <div class="discount-percentage">@discount.Percentage% OFF</div>
+                            <div class="discount-type">Flight Discount</div>
+                        </div>
+                        <div class="discount-body">
+                            <div class="discount-title">Domestic Flight Special</div>
+                            <div class="discount-description">
+                                @discount.Description
+                            </div>
+                            <div class="discount-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Valid From:</span>
+                                    <span class="detail-value">@discount.Valid_From</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Valid To:</span>
+                                    <span class="detail-value">@discount.Valid_To</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">For User:</span>
+                                    <span class="detail-value">@ViewBag.PassengerFullName</span>
+                                </div>
+                            </div>
+                            <div class="discount-code">
+                                <div class="code-label">Discount Code</div>
+                                <div class="code-value">FLIGHT25</div>
+                                <button class="copy-btn" onclick="copyCode('FLIGHT25')">Copy</button>
+                            </div>
+                            <button class="use-discount-btn" onclick="useDiscount('Domestic Flight Special')">Use Now</button>
+                        </div>
+                    </div>
+                
+            }
+            </div>
+        </div>
+        }
+        
+    </div>
+</div>
+

@@ -126,8 +126,16 @@ namespace SkyPathWS.Controllers
             }
         }
         [HttpPost]
-        public bool Register(User user)
+        public bool Register()
         {
+
+            string json = HttpContext.Request.Form["model"];
+            User user = System.Text.Json.JsonSerializer.Deserialize<User>(json);
+            IFormFile file = null;
+            if(HttpContext.Request.Form.Files.Count > 0)
+            {
+                file = HttpContext.Request.Form.Files[0];
+            }
             try
             {
                 this.repositoryUOW.HelperOleDb.OpenConnection();

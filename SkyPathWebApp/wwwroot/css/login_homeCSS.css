@@ -72,6 +72,12 @@
     margin-bottom: 40px;
 }
 
+.flight-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .flight-card {
     background: #f8f9fa;
     border-radius: 12px;
@@ -92,8 +98,10 @@
     }
 
 .flight-card-icon {
-    font-size: 40px;
+    width: 48px;
+    height: 48px;
     margin-bottom: 10px;
+    object-fit: contain;
 }
 
 .flight-card-title {

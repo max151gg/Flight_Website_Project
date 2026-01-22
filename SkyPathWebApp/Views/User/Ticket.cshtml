@@ -1,0 +1,119 @@
+﻿@using SkyPath_Models.Models
+@using SkyPath_Models.ViewModel
+@model TicketViewModel
+
+@{
+    ViewData["Title"] = "Ticket";
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+
+    var cityDict = ViewBag.CityDict as Dictionary<string, string>;
+
+    string NameOrUnknown(string id) =>
+        (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
+            ? cityDict[id]
+            : "Unknown";
+}
+
+<link rel="stylesheet" href="~/CSS/TicketsCSS.css" />
+
+<div class="main-container">
+    <h1>My Tickets</h1>
+    <p class="subtitle">View and manage your flight bookings</p>
+
+    <div class="tickets-wrapper">
+        @if (Model?.tickets == null || !Model.tickets.Any())
+        {
+            <div class="ticket-card">
+                <div class="ticket-body">
+                    <p>No tickets found.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var ticket in Model.tickets)
+            {
+                var flight = Model?.flights?.FirstOrDefault(f => f.Flight_Id == ticket.flight_Id);
+                // NOTE: Change f.Flight_Id to your actual Flight property name (maybe flight_Id)
+
+                <div class="ticket-card">
+                    <div class="ticket-header">
+                        <div class="flight-number">
+                            Flight @(flight?.Flight_Number ?? ticket.flight_Id)
+                            @* Change Flight_Number to your real flight number field *@
+                        </div>
+                        <div class="ticket-status">
+                            @(ticket.status ? "Confirmed" : "Cancelled")
+                        </div>
+                    </div>
+
+                    <div class="ticket-body">
+                        <div class="flight-route">
+                            <div class="airport">
+                                <div class="airport-code">@NameOrUnknown(flight?.Departure_Id)</div>
+                                
+                            </div>
+
+                            <div class="flight-path">
+                                <div class="flight-line">
+                                    <span class="flight-icon">✈</span>
+                                </div>
+                                <div class="flight-duration">
+                                    
+                                    @* Change Duration to your real field or remove *@
+                                </div>
+                            </div>
+
+                            <div class="airport">
+                                <div class="airport-code">@NameOrUnknown(flight?.Arrival_Id)</div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="ticket-details">
+                            <div class="detail-item">
+                                <div class="detail-label">PURCHASE DATE</div>
+                                <div class="detail-value">@ticket.purchase_Date</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DEPARTURE DATE </div>
+                                <div class="detail-value">@flight.Departure_Date</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">DEPARTURE TIME</div>
+                                <div class="detail-value">@flight.Departure_Time</div>
+                            </div>
+                        </div>
+
+                        <div class="passenger-info">
+                            <div class="passenger-section">
+                                <div class="info-label">PASSANGER</div>
+                                <div class="info-value">@ViewBag.PassengerFullName</div>
+                            </div>
+                            <div class="passenger-section">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">@(ticket.status ? "Active" : "Inactive")</div>
+                            </div>
+                            <div class="passenger-section">
+                                <div class="info-label">CLASS</div>
+                                <div class="info-value">@ticket.type</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="barcode-section">
+                        <div class="barcode">
+                            <div class="barcode-lines">
+                                @for (int i = 0; i < 12; i++)
+                                {
+                                    <div class="barcode-line"></div>
+                                }
+                            </div>
+                            <div class="booking-ref">@ticket.ticket_Id</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

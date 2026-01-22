@@ -18,6 +18,6 @@ namespace SkyPath_Models.ViewModel
         public int TotalCount { get; set; }
         public int CurrentPage { get; set; }
 
-
+        public User User { get; set; }
     }
 }

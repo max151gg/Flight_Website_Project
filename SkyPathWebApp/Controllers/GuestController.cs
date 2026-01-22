@@ -135,11 +135,58 @@ namespace SkyPathWebApp.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult Register()
+        [HttpGet]
+        public async Task<IActionResult> ViewRegisterForm(User user)
         {
+            //SignUpViewModel signUpViewModel = new SignUpViewModel();
+            //signUpViewModel.user = null;
+            //ApiClient<List<User>> client = new ApiClient<List<User>>();
+            //client.Scheme = "http";
+            //client.Host = "localhost";
+            //client.Port = 5125;
+            //client.Path = "api/Guest/";
+            //signUpViewModel.cities = await client.GetAsync();
+            //return View(signUpViewModel);
             return View();
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Register(User user)
+        //{
+        //    if (ModelState.IsValid == false)
+        //    {
+        //        ApiClient<User> client1 = new ApiClient<User>();
+        //        client1.Scheme = "http";
+        //        client1.Host = "localhost";
+        //        client1.Port = 5125;
+        //        client1.Path = "api/Guest/Register";
+        //        User user1 = await client1.GetAsync();
+        //        return View("HomePage", user1);
+        //    }
+        //    ApiClient<User> client = new ApiClient<User>();
+        //    client.Scheme = "http";
+        //    client.Host = "localhost";
+        //    client.Port = 5125;
+        //    client.Path = "api/Guest/Register";
+        //    bool ok = await client.PostAsync(user, (Stream)null);
+        //    if (ok)
+        //    {
+        //        HttpContext.Session.SetString("user_Id", user.User_Id);
+        //        return RedirectToAction("GetAnnouncement", "User");
+        //    }
+        //    ApiClient<User> client1 = new ApiClient<User>();
+        //    client1.Scheme = "http";
+        //    client1.Host = "localhost";
+        //    client1.Port = 5125;
+        //    client1.Path = "api/Guest/Register";
+        //    User user1 = await client1.GetAsync();
+        //    ViewBag["Error"] = true;
+        //    return View("HomePage", user1);
+            
+            
+            
+        //}
+        
 
         [HttpGet]
         public IActionResult AboutUs()

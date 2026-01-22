@@ -10,12 +10,12 @@ namespace SkyPath_Models.Models
 {
     public class Ticket : Model
     {
-        string ticket_Id;
-        string user_Id;
-        string flight_Id;
-        string purchase_Date;
-        bool status;
-        string type;
+        public string ticket_Id;
+        public string user_Id;
+        public string flight_Id;
+        public string purchase_Date;
+        public bool status;
+        public string type;
         public Ticket() { }
 
         public string Ticket_Id

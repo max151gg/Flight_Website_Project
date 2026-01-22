@@ -1,0 +1,252 @@
+﻿/* Main Content */
+.main-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 30px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 40px;
+}
+
+/* Tickets Container */
+.tickets-wrapper {
+    max-height: 650px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+    .tickets-wrapper::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+    }
+
+        .tickets-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+/* Ticket Card */
+.ticket-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+.ticket-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flight-number {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.ticket-status {
+    background: rgba(255,255,255,0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ticket-body {
+    padding: 30px 25px;
+}
+
+/* Flight Route */
+.flight-route {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.airport {
+    flex: 1;
+    text-align: center;
+}
+
+.airport-code {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.airport-name {
+    font-size: 13px;
+    color: #999;
+}
+
+.flight-path {
+    flex: 1.5;
+    position: relative;
+    text-align: center;
+    margin: 0 20px;
+}
+
+.flight-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #ddd 0%, #ddd 45%, transparent 45%, transparent 55%, #ddd 55%, #ddd 100%);
+    position: relative;
+}
+
+.flight-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+}
+
+.flight-duration {
+    font-size: 12px;
+    color: #999;
+    margin-top: 8px;
+}
+
+/* Ticket Details */
+.ticket-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 25px 0;
+    border-top: 1px dashed #e0e0e0;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.detail-item {
+    text-align: center;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Passenger Info */
+.passenger-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px 0 20px 0;
+}
+
+.passenger-section {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Barcode */
+.barcode-section {
+    background: #f9f9f9;
+    padding: 20px 25px;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+}
+
+.barcode {
+    display: inline-block;
+    padding: 15px 30px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.barcode-lines {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.barcode-line {
+    width: 3px;
+    background: #333;
+    height: 100%;
+}
+
+    .barcode-line:nth-child(2n) {
+        width: 2px;
+    }
+
+    .barcode-line:nth-child(3n) {
+        width: 4px;
+    }
+
+.booking-ref {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+/* Different color themes for tickets */
+.ticket-card:nth-child(2) .ticket-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.ticket-card:nth-child(3) .ticket-header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.ticket-card:nth-child(4) .ticket-header {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}

@@ -105,10 +105,23 @@ namespace SkyPathWS.Controllers
             try
             {
                 this.repositoryUOW.HelperOleDb.OpenConnection();
+
                 ticketViewModel.tickets = this.repositoryUOW.TicketRepository.GetByUserId(user_id);
+
+                // Add: load flights for those tickets
+                var flightIds = ticketViewModel.tickets
+                    .Select(t => t.flight_Id)
+                    .Distinct()
+                    .ToList();
+
+                ticketViewModel.flights = this.repositoryUOW.FlightRepository
+                    .GetALL()
+                    .Where(f => flightIds.Contains(f.flight_Id))
+                    .ToList();
+
                 return ticketViewModel;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -117,6 +130,7 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
         [HttpGet]
         public DiscountViewModel GetDiscountByUserId(string user_id = null)
         {
@@ -130,6 +144,24 @@ namespace SkyPathWS.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+        [HttpGet]
+        public User GetById(string user_id)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                return this.repositoryUOW.UserRepository.GetById(user_id); // implement if missing
+            }
+            catch
+            {
                 return null;
             }
             finally

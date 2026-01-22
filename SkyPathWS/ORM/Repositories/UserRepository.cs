@@ -90,7 +90,7 @@ namespace SkyPathWS.ORM.Repositories
 
         public User GetById(string id)
         {
-            string sql = "Select * from User where User_Id=@User_Id";
+            string sql = "Select * from [User] where User_Id=@User_Id";
             helperOleDb.AddParameter("@User_Id", id);
             using(IDataReader reader = helperOleDb.Select(sql))
             {

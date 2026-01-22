@@ -2,7 +2,7 @@
 @using SkyPath_Models.ViewModel
 @model BrowseViewModel
 @{
-    ViewData["Title"] = "LoginHome";
+    ViewData["Title"] = "HomePage";
     Layout = "~/Views/Shared/MasterPage.cshtml";
 }
 @{
@@ -32,18 +32,28 @@
 
         <div class="flights-section">
             <p class="section-title">Cheapest Flights Available Right Now</p>
+
             <div class="flight-cards">
-                <div class="flight-cards">
-                    @foreach (var flight in discountedFlights)
-                    {
+                @foreach (var flight in discountedFlights)
+                {
+                    <a asp-controller="Guest"
+                       asp-action="FlightDetails"
+                       asp-route-id="@flight.Flight_Id"
+                       class="flight-card-link">
+
                         <div class="flight-card">
-                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon">
+                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon" />
+
                             <div class="flight-card-title">
-                                @NameOrUnknown(flight.Arrival_Id) - @flight.Price$
+                                @NameOrUnknown(flight.Departure_Id)
+                                →
+                                @NameOrUnknown(flight.Arrival_Id)
+                                - @flight.Price$
                             </div>
                         </div>
-                    }
-                </div>
+
+                    </a>
+                }
             </div>
         </div>
 
