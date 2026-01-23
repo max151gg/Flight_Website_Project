@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SkyPathWSClient;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using SkyPath_Models;
-using SkyPath_Models.ViewModel;
-using System.Runtime.InteropServices;
 using SkyPath_Models.Models;
+using SkyPath_Models.ViewModel;
+using SkyPathWSClient;
+using System.Runtime.InteropServices;
 
 namespace SkyPathWebApp.Controllers
 {
@@ -78,49 +79,99 @@ namespace SkyPathWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Announcement()
         {
-            ApiClient<AnnouncementViewModel> client = new ApiClient<AnnouncementViewModel>();
-            client.Scheme = "http";
-            client.Host = "localhost";
-            client.Port = 5125;
-            client.Path = "api/Guest/Announcement";
+            string userId = "0"; // replace with session/claims later
+
+
+            var client = new ApiClient<AnnouncementViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Guest/GetAnnouncementByUserId"
+            };
+            client.SetQueryParameter("user_id", userId);
+
             AnnouncementViewModel announcementViewModel = await client.GetAsync();
+
             return View(announcementViewModel);
+
         }
 
         [HttpGet]
-        public async Task<IActionResult> Browse(string flight_id = null, int page = 0, string departure_id = null, string arrival_id = null)
+        public async Task<IActionResult> Browse(
+            string flight_id = null,
+            int page = 1,
+            string departure_id = null,
+            string arrival_id = null,
+            string departure_date = null,
+            string departure_date_to = null,
+            string sort = null,
+            string openFlightId = null)
+
+
         {
-            ApiClient<BrowseViewModel> client = new ApiClient<BrowseViewModel>();
-            client.Scheme = "http";
-            client.Host = "localhost";
-            client.Port = 5125;
-            client.Path = "api/Guest/GetFlightCatalog";
-            if (flight_id != null)
+            var client = new ApiClient<BrowseViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Guest/GetFlightCatalog"
+            };
+
+            if (!string.IsNullOrEmpty(flight_id))
                 client.SetQueryParameter("flight_id", flight_id);
-            if (departure_id != null)
+
+            if (!string.IsNullOrEmpty(departure_id))
                 client.SetQueryParameter("departure_id", departure_id);
-            if (arrival_id != null)
+
+            if (!string.IsNullOrEmpty(arrival_id))
                 client.SetQueryParameter("arrival_id", arrival_id);
-            if (page != 0)
-                client.SetQueryParameter("page", page.ToString());
+
+            if (!string.IsNullOrEmpty(departure_date))
+                client.SetQueryParameter("departure_date", departure_date);
+
+            if (!string.IsNullOrEmpty(departure_date_to))
+                client.SetQueryParameter("departure_date_to", departure_date_to);
+
+            if (!string.IsNullOrEmpty(sort))
+                client.SetQueryParameter("sort", sort);
+
+
+
+            // Always send a normalized page
+            if (page < 1) page = 1;
+            client.SetQueryParameter("page", page.ToString());
+
+            // Forward openFlightId so WS can compute correct page
+            if (!string.IsNullOrEmpty(openFlightId))
+                client.SetQueryParameter("openFlightId", openFlightId);
+
             BrowseViewModel browseViewModel = await client.GetAsync();
 
-            ApiClient<List<City>> cityClient = new ApiClient<List<City>>();
-            cityClient.Scheme = "http";
-            cityClient.Host = "localhost";
-            cityClient.Port = 5125;
-            cityClient.Path = "api/City/GetAll";
+            // Cities (for NameOrUnknown)
+            var cityClient = new ApiClient<List<City>>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/City/GetAll"
+            };
 
-            List<City> cities = await cityClient.GetAsync();
+            List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+            ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
 
-            var cityDict = (cities ?? new List<City>())
-                .ToDictionary(c => c.CityId, c => c.CityName);
-
-            ViewBag.CityDict = cityDict;
+            // Keep these so the view can preserve filters in pagination links
+            ViewBag.DepartureId = departure_id;
+            ViewBag.ArrivalId = arrival_id;
+            ViewBag.OpenFlightId = openFlightId;
+            ViewBag.DepartureDate = departure_date;
+            ViewBag.DepartureDateTo = departure_date_to;
+            ViewBag.Sort = sort;
 
 
             return View(browseViewModel);
         }
+
         [HttpGet]
         public async Task<IActionResult> FlightDetails(string flight_id)
         {
@@ -182,11 +233,69 @@ namespace SkyPathWebApp.Controllers
         //    User user1 = await client1.GetAsync();
         //    ViewBag["Error"] = true;
         //    return View("HomePage", user1);
-            
-            
-            
         //}
-        
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginviewmodel)
+        {
+            ApiClient<LoginViewModel> client = new ApiClient<LoginViewModel>();
+            client.Scheme = "http";
+            client.Host = "localhost";
+            client.Port = 5125;
+            client.Path = "api/Guest/Login";
+
+
+            User user = await client.PostAsyncReturn<LoginViewModel, User>(loginviewmodel);
+
+            
+            if (user != null)
+            {
+                string user_id = user.User_Id;
+                HttpContext.Session.SetString("user_Id", user_id);
+                return RedirectToAction("HomePage", "User");
+            }
+
+            return RedirectToAction("LoginHome");
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> SignUp(Registered reg)
+        //{
+        //    ApiClient<Registered> client = new ApiClient<Registered>();
+        //    client.Scheme = "http";
+        //    client.Host = "localhost";
+        //    client.Port = 5049;
+        //    client.Path = "api/Guest/SignUp";
+
+        //    reg.Role = "User";
+        //    reg.RegisteredID = "6";
+        //    reg.RegisteredSalt = " ";
+        //    reg.ImagePath = "None";
+        //    ApiResultModel<Registered> success = client.PostAsyncRet<Registered, Registered>(reg).Result;
+
+        //    //888888888888888888888888888888888888
+
+        //    //888888888888888888888888888888888888
+        //    //ApiResultModel<string> success = client.PostAsync(reg).Result;
+        //    await Console.Out.WriteLineAsync("here****************************************");
+        //    await Console.Out.WriteLineAsync(success.Success + "HEREHREREHREHEHREHRHEEH");
+
+        //    Console.WriteLine($@"{success.Data.RegisteredID}");
+        //    if (success.Success && success.Data != null)
+        //    {
+
+        //        HttpContext.Session.SetString("RegisteredID", success.Data.RegisteredID);
+        //        return RedirectToAction("RegisteredHomePage", "Registered");
+        //    }
+
+        //    return RedirectToAction("ViewSignUpPage");
+        //    //if (!success)
+        //    //    return View("Failed to sign up.");
+        //    //return View("User has been signed up.");
+
+        //}
+
 
         [HttpGet]
         public IActionResult AboutUs()
@@ -195,23 +304,23 @@ namespace SkyPathWebApp.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult> Login(string UserName, string Password)
-        {
-            ApiClient<User> client = new ApiClient<User>();
-            client.Scheme = "http";
-            client.Host = "localhost";
-            client.Port = 5125;
-            client.Path = "api/Guest/Login";
-            client.SetQueryParameter("userName", UserName);
-            client.SetQueryParameter("password", Password);
-            User user = await client.GetAsync();
-            if(user == null)
-            {
-                ViewBag.ErrorMessage = "Invalid username or password.";
-                return View("HomePage");
-            }
-            return View(user);
-        }
+        //[HttpPost]
+        //public async Task<ActionResult> Login(string Email, string Password)
+        //{
+        //    ApiClient<User> client = new ApiClient<User>();
+        //    client.Scheme = "http";
+        //    client.Host = "localhost";
+        //    client.Port = 5125;
+        //    client.Path = "api/Guest/Login";
+        //    client.SetQueryParameter("userName", UserName);
+        //    client.SetQueryParameter("password", Password);
+        //    User user = await client.GetAsync();
+        //    if(user == null)
+        //    {
+        //        ViewBag.ErrorMessage = "Invalid email or password.";
+        //        return View("HomePage");
+        //    }
+        //    return View(user);
+        //}
     }
 }

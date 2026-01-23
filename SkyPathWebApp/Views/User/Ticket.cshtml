@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = "Ticket";
-    Layout = "~/Views/Shared/MasterPage.cshtml";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
 
     var cityDict = ViewBag.CityDict as Dictionary<string, string>;
 
@@ -51,6 +51,7 @@
                         <div class="flight-route">
                             <div class="airport">
                                 <div class="airport-code">@NameOrUnknown(flight?.Departure_Id)</div>
+                                <div class="detail-value">@flight.Departure_Time</div>
                                 
                             </div>
 
@@ -59,22 +60,20 @@
                                     <span class="flight-icon">✈</span>
                                 </div>
                                 <div class="flight-duration">
+                                    <span>@flight.DurationDisplay</span>
                                     
-                                    @* Change Duration to your real field or remove *@
                                 </div>
                             </div>
 
                             <div class="airport">
                                 <div class="airport-code">@NameOrUnknown(flight?.Arrival_Id)</div>
+                                <div class="detail-value">@flight.Arrival_Time</div>
                                 
                             </div>
                         </div>
 
                         <div class="ticket-details">
-                            <div class="detail-item">
-                                <div class="detail-label">PURCHASE DATE</div>
-                                <div class="detail-value">@ticket.purchase_Date</div>
-                            </div>
+                            
                             <div class="detail-item">
                                 <div class="detail-label">DEPARTURE DATE </div>
                                 <div class="detail-value">@flight.Departure_Date</div>
@@ -82,6 +81,14 @@
                             <div class="detail-item">
                                 <div class="detail-label">DEPARTURE TIME</div>
                                 <div class="detail-value">@flight.Departure_Time</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ARRIVAL TIME</div>
+                                <div class="detail-value">@flight.Arrival_Time</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">AIRLINE</div>
+                                <div class="detail-value">@flight.Airline</div>
                             </div>
                         </div>
 
@@ -97,6 +104,10 @@
                             <div class="passenger-section">
                                 <div class="info-label">CLASS</div>
                                 <div class="info-value">@ticket.type</div>
+                            </div>
+                            <div class="passenger-section">
+                                <div class="info-label">PURCHASE DATE</div>
+                                <div class="info-value">@ticket.purchase_Date</div>
                             </div>
                         </div>
                     </div>

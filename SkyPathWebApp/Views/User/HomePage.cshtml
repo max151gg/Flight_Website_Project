@@ -3,7 +3,7 @@
 @model BrowseViewModel
 @{
     ViewData["Title"] = "HomePage";
-    Layout = "~/Views/Shared/MasterPage.cshtml";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
 }
 @{
     var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
@@ -13,15 +13,15 @@
             ? cityDict[id]
             : "Unknown";
 }
-<link rel="stylesheet" href="~/CSS/login_homeCSS.css" />
+<link rel="stylesheet" href="~/CSS/HomeCSS.css" />
 <div class="content">
     <div class="hero">
         <h1>The best site to set up<br>your vacation</h1>
         <p>Statement for your product's tagline. This text should communicate your unique selling proposition to the reader.</p>
-        <a class="btn-cta" href="http://localhost:5076/Guest/Browse">Find Your Flight Now</a>
+        <a class="btn-cta" href="http://localhost:5076/User/Browse">Find Your Flight Now</a>
     </div>
-    <div class="main-container">
-        <!-- Search Section -->
+<div class="main-container">
+    <!-- Search Section -->
         @{
             var discountedFlights = (Model?.flights ?? new List<Flight>())
             .Where(f => f != null)   // your threshold
@@ -36,7 +36,7 @@
             <div class="flight-cards">
                 @foreach (var flight in discountedFlights)
                 {
-                    <a asp-controller="Guest"
+                    <a asp-controller="User"
                        asp-action="Browse"
                        asp-route-openFlightId="@flight.Flight_Id"
                        class="flight-card-link">
@@ -63,23 +63,9 @@
             </div>
         </div>
 
-        <!-- Content Layout -->
-        <div class="content-layout">
-            <!-- Sidebar -->
-            <div class="signup-section" id="login-section">
-                <h2>Log In</h2>
-                <form asp-controller="Guest" asp-action="Login" method="post">
-                    <div class="form-group">
-                        <input asp-for="LoginViewModel.Email" type="text" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input asp-for="LoginViewModel.Password" type="text" placeholder="Password" required>
-                    </div>
-                    <div class="checkbox-group">
-                        <label for="account">Don't have an account? <a href="http://localhost:5076/Guest/HomePage#signup-section">Sign Up</a></label>
-                    </div>
-                    <button type="submit" class="btn-submit">Log In</button>
-                </form>
-            </div>
-        </div>
+
+    <!-- Content Layout -->
+    <div class="content-layout">
+        
     </div>
+</div>

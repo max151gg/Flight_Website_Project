@@ -115,11 +115,11 @@ namespace SkyPathWS.ORM.Repositories
             return helperOleDb.Update(sql) > 0;
         }
 
-        public string Login(string userName, string password) 
+        public string Login(string Email, string password) 
         {
             string sql = @"Select UserSalt, User_Id, Password from [User]
-                   where [UserName]=@UserName";
-            helperOleDb.AddParameter("@UserName", userName);
+                   where [Email]=@Email";
+            helperOleDb.AddParameter("@Email", Email);
             using (IDataReader user = helperOleDb.Select(sql))
             {
                 if (user.Read() == true)

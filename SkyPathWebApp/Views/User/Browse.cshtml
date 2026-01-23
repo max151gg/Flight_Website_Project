@@ -13,7 +13,7 @@
 
 @{
     ViewData["Title"] = "Browse";
-    Layout = "~/Views/Shared/MasterPage.cshtml";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
 }
 <link rel="stylesheet" href="~/CSS/BrowseCSS.css" />
 <div class="main-container">
@@ -27,7 +27,7 @@
     }
 
     <div class="search-section">
-        <form method="get" asp-controller="Guest" asp-action="Browse">
+        <form method="get" asp-controller="User" asp-action="Browse">
             <div class="search-filters">
                 <div class="filter-group">
                     <select name="departure_id">
@@ -71,7 +71,7 @@
                 <!-- optional: clear -->
                 <a class="search-btn"
                    style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;"
-                   asp-controller="Guest" asp-action="Browse">
+                   asp-controller="User" asp-action="Browse">
                     Clear
                 </a>
             </div>
@@ -79,8 +79,8 @@
     </div>
 
 
-        
-    
+
+
 
     <!-- Content Layout -->
     <div class="content-layout">
@@ -93,7 +93,7 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">sort by</div>
 
-                <form method="get" asp-controller="Guest" asp-action="Browse">
+                <form method="get" asp-controller="User" asp-action="Browse">
                     <!-- Preserve current filters when sorting -->
                     <input type="hidden" name="departure_id" value="@selectedDeparture" />
                     <input type="hidden" name="arrival_id" value="@selectedArrival" />
@@ -143,24 +143,24 @@
                          data-arrival-id="@flight.Arrival_Id"
                          data-seats-available="@flight.Seats_Available"
                          onclick="openFlightModal(
-            '@flight.Flight_Id',
-            '@flight.Flight_Number',
-            '@NameOrUnknown(flight.Departure_Id)',
-            '@NameOrUnknown(flight.Arrival_Id)',
-            '@flight.Airline',
-            '@flight.Departure_Date',
-            '@flight.Departure_Time',
-            '@flight.Arrival_Date',
-            '@flight.Arrival_Time',
-            '@(flight.DurationDisplay ?? "—")',
-            '@flight.Price',
-            '@flight.Arrival_Id',
-            '@flight.Seats_Available'
-         )">
+                '@flight.Flight_Id',
+                '@flight.Flight_Number',
+                '@NameOrUnknown(flight.Departure_Id)',
+                '@NameOrUnknown(flight.Arrival_Id)',
+                '@flight.Airline',
+                '@flight.Departure_Date',
+                '@flight.Departure_Time',
+                '@flight.Arrival_Date',
+                '@flight.Arrival_Time',
+                '@(flight.DurationDisplay ?? "—")',
+                '@flight.Price',
+                '@flight.Arrival_Id',
+                '@flight.Seats_Available'
+             )">
 
 
                         <div class="flight-image">
-                            <!-- First destination image (placeholder path pattern; you will add files later) -->
+                            <!-- First destination image (placeholder path pattern; will add files later) -->
                             <img src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
                                  onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
                                  alt="Destination image" />
@@ -185,20 +185,20 @@
                                 <!-- Book button: opens modal, does not book, does not alert -->
                                 <button class="book-btn"
                                         onclick="event.stopPropagation(); openFlightModal(
-                                '@flight.Flight_Id',
-                                '@flight.Flight_Number',
-                                '@NameOrUnknown(flight.Departure_Id)',
-                                '@NameOrUnknown(flight.Arrival_Id)',
-                                '@flight.Airline',
-                                '@flight.Departure_Date',
-                                '@flight.Departure_Time',
-                                '@flight.Arrival_Date',
-                                '@flight.Arrival_Time',
-                                '@(flight.DurationDisplay ?? "—")',
-                                '@flight.Price',
-                                '@flight.Arrival_Id',
-                                '@flight.Seats_Available'
-                            )">
+                                    '@flight.Flight_Id',
+                                    '@flight.Flight_Number',
+                                    '@NameOrUnknown(flight.Departure_Id)',
+                                    '@NameOrUnknown(flight.Arrival_Id)',
+                                    '@flight.Airline',
+                                    '@flight.Departure_Date',
+                                    '@flight.Departure_Time',
+                                    '@flight.Arrival_Date',
+                                    '@flight.Arrival_Time',
+                                    '@(flight.DurationDisplay ?? "—")',
+                                    '@flight.Price',
+                                    '@flight.Arrival_Id',
+                                    '@flight.Seats_Available'
+                                )">
                                     Book Now
                                 </button>
                             </div>
@@ -225,7 +225,7 @@
             <div class="pagination">
                 <!-- Prev -->
                 <a class="page-btn @(current <= 1 ? "disabled" : "")"
-                   asp-controller="Guest"
+                   asp-controller="User"
                    asp-action="Browse"
                    asp-route-page="@(current - 1)"
                    asp-route-departure_id="@departureId"
@@ -239,7 +239,7 @@
                 @for (int i = 1; i <= pages; i++)
                 {
                     <a class="page-btn @(i == current ? "active" : "")"
-                       asp-controller="Guest"
+                       asp-controller="User"
                        asp-action="Browse"
                        asp-route-page="@i"
                        asp-route-departure_id="@departureId"
@@ -253,7 +253,7 @@
 
                 <!-- Next -->
                 <a class="page-btn @(current >= pages ? "disabled" : "")"
-                   asp-controller="Guest"
+                   asp-controller="User"
                    asp-action="Browse"
                    asp-route-page="@(current + 1)"
                    asp-route-departure_id="@departureId"
@@ -349,15 +349,15 @@
                     </div>
                 </div>
 
-                <!-- Booking Section (guest -> signup redirect) -->
+                <!-- Booking Section -->
                 <div class="modal-booking">
                     <div class="total-price">
                         <span>Continue to booking:</span>
                         <span class="total-amount" id="modalTotalPrice">—$</span>
                     </div>
 
-                    <a class="modal-book-btn" id="modalBookLink" href="http://localhost:5076/Guest/HomePage#signup-section">
-                        Book Now (Sign up required)
+                    <a class="modal-book-btn" id="modalBookLink" href="http://localhost:5076/User/">
+                        Book Now
                     </a>
                 </div>
             </div>
@@ -367,128 +367,128 @@
 
 
 <script>
-    function openFlightModal(
-        flightId,
-        flightNumber,
-        departureName,
-        arrivalName,
-        airline,
-        departureDate,
-        departureTime,
-        arrivalDate,
-        arrivalTime,
-        duration,
-        price,
-        arrivalId,
-        seats
-    ) {
-        const modal = document.getElementById('flightModal');
-        modal.style.display = 'block';
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+        function openFlightModal(
+            flightId,
+            flightNumber,
+            departureName,
+            arrivalName,
+            airline,
+            departureDate,
+            departureTime,
+            arrivalDate,
+            arrivalTime,
+            duration,
+            price,
+            arrivalId,
+            seats
+        ) {
+            const modal = document.getElementById('flightModal');
+            modal.style.display = 'block';
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
 
-        // Populate text fields
-        document.getElementById('modalFlightNumber').textContent = flightNumber || '—';
-        document.getElementById('modalAirline').textContent = airline || '—';
-        document.getElementById('modalDepartureDate').textContent = departureDate || '—';
-        document.getElementById('modalDepartureTime').textContent = departureTime || '—';
-        document.getElementById('modalArrivalDate').textContent = arrivalDate || '—';
-        document.getElementById('modalArrivalTime').textContent = arrivalTime || '—';
-        document.getElementById('modalDuration').textContent = duration || '—';
-        document.getElementById('modalSeats').textContent = (seats !== undefined && seats !== null && seats !== '') ? seats : '—';
+            // Populate text fields
+            document.getElementById('modalFlightNumber').textContent = flightNumber || '—';
+            document.getElementById('modalAirline').textContent = airline || '—';
+            document.getElementById('modalDepartureDate').textContent = departureDate || '—';
+            document.getElementById('modalDepartureTime').textContent = departureTime || '—';
+            document.getElementById('modalArrivalDate').textContent = arrivalDate || '—';
+            document.getElementById('modalArrivalTime').textContent = arrivalTime || '—';
+            document.getElementById('modalDuration').textContent = duration || '—';
+            document.getElementById('modalSeats').textContent = (seats !== undefined && seats !== null && seats !== '') ? seats : '—';
 
 
-        document.getElementById('modalDepartureName').textContent = departureName || '—';
-        document.getElementById('modalArrivalName').textContent = arrivalName || '—';
+            document.getElementById('modalDepartureName').textContent = departureName || '—';
+            document.getElementById('modalArrivalName').textContent = arrivalName || '—';
 
-        const p = parseFloat(price);
-        const shownPrice = Number.isFinite(p) ? p : 0;
-        document.getElementById('modalPrice').textContent = shownPrice;
-        document.getElementById('modalTotalPrice').textContent = shownPrice + '$';
+            const p = parseFloat(price);
+            const shownPrice = Number.isFinite(p) ? p : 0;
+            document.getElementById('modalPrice').textContent = shownPrice;
+            document.getElementById('modalTotalPrice').textContent = shownPrice + '$';
 
-        // Booking: redirect guest to signup with flightId
-        document.getElementById('modalBookLink').href = `http://localhost:5076/Guest/HomePage#signup-section`;
+            // Booking: redirect User to signup with flightId
+            document.getElementById('modalBookLink').href = `http://localhost:5076/User/`;
 
-        // Destination images (placeholders you will add later):
-        // /images/destinations/{arrivalId}_1.jpg ... _4.jpg
-        setDestinationImages(arrivalId);
-    }
+            // Destination images (placeholders you will add later):
+            // /images/destinations/{arrivalId}_1.jpg ... _4.jpg
+            setDestinationImages(arrivalId);
+        }
 
-    function setDestinationImages(arrivalId) {
-        const base = `/images/destinations/${arrivalId}`;
-        const fallback = (i) => `/images/destinations/placeholder_${i}.jpg`;
+        function setDestinationImages(arrivalId) {
+            const base = `/images/destinations/${arrivalId}`;
+            const fallback = (i) => `/images/destinations/placeholder_${i}.jpg`;
 
-        const main = document.getElementById('mainGalleryImage');
-        const thumbs = document.querySelectorAll('.gallery-thumbnails img');
+            const main = document.getElementById('mainGalleryImage');
+            const thumbs = document.querySelectorAll('.gallery-thumbnails img');
 
-        // Build the 4 URLs; if they 404, the onerror handler will fallback.
-        const urls = [1,2,3,4].map(i => `${base}_${i}.jpg`);
+            // Build the 4 URLs; if they 404, the onerror handler will fallback.
+            const urls = [1,2,3,4].map(i => `${base}_${i}.jpg`);
 
-        // Set main
-        main.src = urls[0];
-        main.onerror = function() { this.onerror = null; this.src = fallback(1); };
+            // Set main
+            main.src = urls[0];
+            main.onerror = function() { this.onerror = null; this.src = fallback(1); };
 
-        // Set thumbs
-        thumbs.forEach((img, idx) => {
-            const i = idx + 1;
-            img.src = urls[idx] || fallback(i);
-            img.onerror = function() { this.onerror = null; this.src = fallback(i); };
+            // Set thumbs
+            thumbs.forEach((img, idx) => {
+                const i = idx + 1;
+                img.src = urls[idx] || fallback(i);
+                img.onerror = function() { this.onerror = null; this.src = fallback(i); };
+            });
+        }
+
+        function closeFlightModal() {
+            const modal = document.getElementById('flightModal');
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('flightModal');
+            if (event.target === modal) {
+                closeFlightModal();
+            }
+        }
+
+        function changeMainImage(src) {
+            document.getElementById('mainGalleryImage').src = src;
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeFlightModal();
+            }
         });
-    }
 
-    function closeFlightModal() {
-        const modal = document.getElementById('flightModal');
-        modal.style.display = 'none';
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = 'auto';
-    }
+            (function autoOpenFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const openFlightId = params.get('openFlightId');
+            if (!openFlightId) return;
 
-    window.onclick = function (event) {
-        const modal = document.getElementById('flightModal');
-        if (event.target === modal) {
-            closeFlightModal();
-        }
-    }
+            const card = document.getElementById('flight-' + openFlightId);
+            if (!card) return;
 
-    function changeMainImage(src) {
-        document.getElementById('mainGalleryImage').src = src;
-    }
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            closeFlightModal();
-        }
-    });
-
-        (function autoOpenFromQuery() {
-        const params = new URLSearchParams(window.location.search);
-        const openFlightId = params.get('openFlightId');
-        if (!openFlightId) return;
-
-        const card = document.getElementById('flight-' + openFlightId);
-        if (!card) return;
-
-        openFlightModal(
-            card.dataset.flightId,
-            card.dataset.flightNumber,
-            card.dataset.departureName,
-            card.dataset.arrivalName,
-            card.dataset.airline,
-            card.dataset.departureDate,
-            card.dataset.departureTime,
-            card.dataset.arrivalDate,
-            card.dataset.arrivalTime,
-            card.dataset.duration,
-            card.dataset.price,
-            card.dataset.arrivalId,
-            card.dataset.seatsAvailable
-);
+            openFlightModal(
+                card.dataset.flightId,
+                card.dataset.flightNumber,
+                card.dataset.departureName,
+                card.dataset.arrivalName,
+                card.dataset.airline,
+                card.dataset.departureDate,
+                card.dataset.departureTime,
+                card.dataset.arrivalDate,
+                card.dataset.arrivalTime,
+                card.dataset.duration,
+                card.dataset.price,
+                card.dataset.arrivalId,
+                card.dataset.seatsAvailable
+    );
 
 
-        // 🔴 THIS IS THE IMPORTANT LINE
-        const url = new URL(window.location.href);
-        url.searchParams.delete('openFlightId');
-        window.history.replaceState({}, '', url.toString());
-    })();
+            // 🔴 THIS IS THE IMPORTANT LINE
+            const url = new URL(window.location.href);
+            url.searchParams.delete('openFlightId');
+            window.history.replaceState({}, '', url.toString());
+        })();
 
 </script>

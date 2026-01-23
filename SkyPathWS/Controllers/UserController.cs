@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
+using System.Globalization;
 
 namespace SkyPathWS.Controllers
 {
@@ -15,62 +16,199 @@ namespace SkyPathWS.Controllers
         {
             this.repositoryUOW = new RepositoryUOW();
         }
-        [HttpGet]
-        public BrowseViewModel GetFlightCatalog(string flight_id = null, int page = 0, string departure_id = null, string arrival_id = null)
+
+        private static List<Flight> ApplySort(List<Flight> flights, string sort)
         {
-            BrowseViewModel browseViewModel = new BrowseViewModel();
+            if (flights == null) return new List<Flight>();
+            sort = (sort ?? "").Trim().ToLowerInvariant();
+
+            return sort switch
+            {
+                "price_asc" => flights.OrderBy(f => TryParseDecimal(f.Price)).ToList(),
+                "price_desc" => flights.OrderByDescending(f => TryParseDecimal(f.Price)).ToList(),
+                "duration_asc" => flights.OrderBy(f => TryParseDurationMinutes(f.DurationDisplay)).ToList(),
+                "dep_time_asc" => flights.OrderBy(f => TryParseDepartureDateTime(f.Departure_Date, f.Departure_Time)).ToList(),
+                _ => flights // default: keep repository order (or sort by newest/soonest if you want)
+            };
+        }
+
+        private static decimal TryParseDecimal(object price)
+        {
+            if (price == null) return decimal.MaxValue;
+            if (price is decimal d) return d;
+
+            return decimal.TryParse(price.ToString(), out var result)
+                ? result
+                : decimal.MaxValue;
+        }
+
+        // If DurationDisplay looks like "3h 20m" or "200" etc.
+        private static int TryParseDurationMinutes(string durationDisplay)
+        {
+            if (string.IsNullOrWhiteSpace(durationDisplay)) return int.MaxValue;
+
+            // Try plain minutes
+            if (int.TryParse(durationDisplay.Trim(), out int mins)) return mins;
+
+            // Try "Xh Ym"
+            int total = 0;
+            var s = durationDisplay.ToLowerInvariant();
+
+            // very forgiving parsing
+            var hIndex = s.IndexOf('h');
+            if (hIndex > 0 && int.TryParse(s.Substring(0, hIndex).Trim(), out int h))
+                total += h * 60;
+
+            var mIndex = s.IndexOf('m');
+            if (mIndex > 0)
+            {
+                // take substring between 'h' and 'm' if exists, otherwise from start to 'm'
+                var start = hIndex >= 0 ? hIndex + 1 : 0;
+                var part = s.Substring(start, mIndex - start).Trim();
+                if (int.TryParse(part, out int m))
+                    total += m;
+            }
+
+            return total > 0 ? total : int.MaxValue;
+        }
+
+        private static DateTime TryParseDepartureDateTime(string date, string time)
+        {
+            // Your DB date format: "dd-MM-yyyy"
+            // Your time might be "HH:mm" (example: "23:40")
+            if (string.IsNullOrWhiteSpace(date)) return DateTime.MaxValue;
+
+            var dtString = string.IsNullOrWhiteSpace(time) ? date : $"{date} {time}";
+            var formats = string.IsNullOrWhiteSpace(time)
+                ? new[] { "dd-MM-yyyy" }
+                : new[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy H:mm" };
+
+            return DateTime.TryParseExact(dtString, formats,
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
+                ? dt
+                : DateTime.MaxValue;
+        }
+
+        [HttpGet]
+        public BrowseViewModel GetFlightCatalog(
+            string flight_id = null,
+            int page = 1,
+            string departure_id = null,
+            string arrival_id = null,
+            string departure_date = null,     // From (yyyy-MM-dd)
+            string departure_date_to = null,  // To   (yyyy-MM-dd)
+            string sort = null,
+            string openFlightId = null)
+
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+
             try
             {
-                this.repositoryUOW.HelperOleDb.OpenConnection();
+                DateTime? ParseBrowserDate(string s)
+                {
+                    if (string.IsNullOrWhiteSpace(s)) return null;
+                    // browser sends yyyy-MM-dd
+                    if (DateTime.TryParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+                        return d.Date;
+                    return null;
+                }
 
-                if (page == 0 && departure_id == null && arrival_id == null)
+                DateTime? ParseDbDate(string s)
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetALL();
-                    return browseViewModel;
+                    if (string.IsNullOrWhiteSpace(s)) return null;
+                    // DB stores dd-MM-yyyy
+                    if (DateTime.TryParseExact(s, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+                        return d.Date;
+                    return null;
                 }
-                else if (page == 0 && departure_id != null && arrival_id == null)
+
+                const int flightsPerPage = 12;
+
+                // 1) Build filtered list
+                List<Flight> filtered;
+
+                if (!string.IsNullOrEmpty(departure_id) && !string.IsNullOrEmpty(arrival_id))
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
-                    return browseViewModel;
+                    // NOTE: your repository call order looks suspicious (arrival_id, departure_id).
+                    // Keep as-is to avoid breaking your existing logic, but verify the repository signature.
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
                 }
-                else if (page == 0 && departure_id == null && arrival_id != null)
+                else if (!string.IsNullOrEmpty(departure_id))
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
                 }
-                else if (page != 0 && departure_id == null && arrival_id == null)
+                else if (!string.IsNullOrEmpty(arrival_id))
                 {
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByPage(page);
-                    return browseViewModel;
+                    filtered = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
                 }
-                else if (page != 0 && departure_id != null && arrival_id == null)
+                else
                 {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDeparture(departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
+                    filtered = this.repositoryUOW.FlightRepository.GetALL();
                 }
-                else if (page != 0 && departure_id == null && arrival_id != null)
+                filtered = ApplySort(filtered, sort);
+
+                // Optional single-flight filter (if you actually use it)
+                if (!string.IsNullOrEmpty(flight_id))
+                    filtered = filtered.Where(f => f.Flight_Id == flight_id).ToList();
+
+                // 2) If openFlightId is present, force page to the one containing that flight
+                if (!string.IsNullOrEmpty(openFlightId))
                 {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByArrival(arrival_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
+                    int index = filtered.FindIndex(f => f.Flight_Id == openFlightId);
+                    if (index >= 0)
+                    {
+                        page = (index / flightsPerPage) + 1; // 1-based page
+                    }
+                    else
+                    {
+                        // If the flight isn't in filtered results, fallback to page 1
+                        page = 1;
+                    }
                 }
-                else if (page == 0 && departure_id != null && arrival_id != null)
+                var from = ParseBrowserDate(departure_date);
+                var to = ParseBrowserDate(departure_date_to);
+
+                // If user accidentally swaps them, normalize
+                if (from.HasValue && to.HasValue && from.Value > to.Value)
                 {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
+                    var tmp = from;
+                    from = to;
+                    to = tmp;
                 }
-                else if (page != 0 && departure_id != null && arrival_id != null)
+
+                if (from.HasValue || to.HasValue)
                 {
-                    int flightsPerPage = 10;
-                    browseViewModel.flights = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
-                    browseViewModel.flights.Skip(flightsPerPage * (page - 1)).Take(flightsPerPage).ToList();
+                    filtered = filtered.Where(f =>
+                    {
+                        var dep = ParseDbDate(f.Departure_Date);
+                        if (!dep.HasValue) return false;
+
+                        if (from.HasValue && dep.Value < from.Value) return false;
+                        if (to.HasValue && dep.Value > to.Value) return false;
+
+                        return true;
+                    }).ToList();
                 }
-                this.repositoryUOW.HelperOleDb.CloseConnection();
-                return browseViewModel;
+
+                // 3) Normalize page
+                if (page < 1) page = 1;
+
+                // 4) Build VM
+                var vm = new BrowseViewModel
+                {
+                    TotalCount = filtered.Count,
+                    CurrentPage = page,
+                    pageCount = (int)Math.Ceiling(filtered.Count / (double)flightsPerPage),
+                    flights = filtered
+                        .Skip(flightsPerPage * (page - 1))
+                        .Take(flightsPerPage)
+                        .ToList()
+                };
+
+                return vm;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -132,7 +270,7 @@ namespace SkyPathWS.Controllers
         }
 
         [HttpGet]
-        public DiscountViewModel GetDiscountByUserId(string user_id = null)
+        public DiscountViewModel GetDiscountByUserId(string user_id)
         {
             DiscountViewModel discountViewModel = new DiscountViewModel();
             try
@@ -144,6 +282,61 @@ namespace SkyPathWS.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+        [HttpGet]
+        public AnnouncementViewModel GetAnnouncementByUserId(string user_id)
+        {
+            AnnouncementViewModel announcementViewModel = new AnnouncementViewModel();
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                announcementViewModel.announcements = this.repositoryUOW.AnnouncementRepository.GetByUserId(user_id);
+                announcementViewModel.publicAnnouncements = this.repositoryUOW.AnnouncementRepository.GetByUserId("0");
+
+                // NEW: sort newest -> oldest by dd-MM-yyyy
+                announcementViewModel.announcements = announcementViewModel.announcements
+                    .OrderByDescending(a => DateTime.ParseExact(
+                        a.Announcement_Date,   // <-- change property name if different
+                        "dd-MM-yyyy",
+                        CultureInfo.InvariantCulture))
+                    .ToList();
+
+                announcementViewModel.publicAnnouncements = announcementViewModel.publicAnnouncements
+                    .OrderByDescending(a => DateTime.ParseExact(
+                        a.Announcement_Date,   // <-- change property name if different
+                        "dd-MM-yyyy",
+                        CultureInfo.InvariantCulture))
+                    .ToList();
+
+
+                return announcementViewModel;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        [HttpGet]
+        public List<Flight> GetAllFlights()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                return this.repositoryUOW.FlightRepository.GetALL();
+            }
+            catch
+            {
                 return null;
             }
             finally

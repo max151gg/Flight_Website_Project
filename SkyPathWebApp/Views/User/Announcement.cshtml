@@ -1,0 +1,141 @@
+﻿@using ModelSkyPath.Models
+@using SkyPath_Models.Models
+@using SkyPath_Models.ViewModel
+@model AnnouncementViewModel
+@{
+    ViewData["Title"] = "Announcement";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
+
+    int publicCount = Model?.publicAnnouncements?.Count ?? 0;
+    int personalCount = Model?.announcements?.Count ?? 0;
+}
+
+<link rel="stylesheet" href="~/CSS/Announcement_UserCSS.css" />
+<div class="main-container">
+    <div class="page-header">
+        <h1>Announcements & Notifications</h1>
+        <p class="subtitle">Stay updated with company news and your personal notifications</p>
+    </div>
+
+    <div class="announcements-layout">
+        <!-- General Announcements Column -->
+        <div class="announcements-column">
+            <div class="column-header">
+                <h2>Company Announcements</h2>
+                <span class="notification-badge">@publicCount Updates</span>
+
+            </div>
+            <div class="announcements-wrapper">
+
+                <!-- Announcement 1 -->
+                @foreach (Announcement announcement in Model.publicAnnouncements)
+                {
+                    <div class="announcement-item">
+                        <div class="announcement-header" onclick="toggleItem(this)">
+                            <div class="announcement-title">@announcement.Title</div>
+                            <div class="announcement-date">@announcement.Announcement_Date</div>
+                            <div class="expand-icon">▼</div>
+                        </div>
+                        <div class="announcement-content">
+                            <div class="announcement-text">
+                                @announcement.Content
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+
+            </div>
+        </div>
+
+        <!-- Personal Notifications Column -->
+        <div class="announcements-column personal-column">
+            <div class="column-header">
+                <h2>My Notifications</h2>
+                <span class="notification-badge">@personalCount Updates</span>
+
+            </div>
+            <div class="announcements-wrapper">
+                @foreach (Announcement announcement in Model.announcements)
+                {
+
+                    <div class="announcement-item">
+                        <div class="announcement-header" onclick="toggleItem(this)">
+                            <div class="announcement-title">@announcement.Title</div>
+                            <div class="announcement-date">@announcement.Announcement_Date</div>
+                            <div class="expand-icon">▼</div>
+                        </div>
+                        <div class="announcement-content">
+                            <div class="announcement-text">
+                                @announcement.Content
+                            </div>
+                        </div>
+                    </div>
+                    
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle accordion item (closes others in the same column)
+    function toggleItem(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.expand-icon');
+        const wrapper = header.closest('.announcements-wrapper');
+
+        if (!content || !wrapper) return;
+
+        // Close all other items in THIS column
+        wrapper.querySelectorAll('.announcement-content.expanded').forEach(openContent => {
+            if (openContent !== content) {
+                openContent.classList.remove('expanded');
+
+                const openHeader = openContent.previousElementSibling;
+                const openIcon = openHeader ? openHeader.querySelector('.expand-icon') : null;
+                if (openIcon) openIcon.classList.remove('expanded');
+            }
+        });
+
+        // Toggle current
+        content.classList.toggle('expanded');
+        if (icon) icon.classList.toggle('expanded');
+    }
+
+    // Recalculate and refresh the "X Updates" badge for a specific column
+    function updateBadgeForColumn(columnEl) {
+        if (!columnEl) return;
+
+        const badge = columnEl.querySelector('.notification-badge');
+        if (!badge) return;
+
+        const count = columnEl.querySelectorAll('.announcement-item').length;
+        badge.textContent = `${count} Updates`;
+    }
+
+    // Recalculate badges for both columns (call after any DOM changes)
+    function updateAllBadges() {
+        document.querySelectorAll('.announcements-column').forEach(col => updateBadgeForColumn(col));
+    }
+
+    // Optional: remove an announcement item (only used if you add a dismiss button later)
+    // Usage in HTML (optional):
+    // <button type="button" onclick="event.stopPropagation(); dismissItem(this)">Dismiss</button>
+    function dismissItem(button) {
+        const item = button.closest('.announcement-item');
+        if (!item) return;
+
+        const column = item.closest('.announcements-column');
+        item.remove();
+
+        // Close state is naturally removed because the element is removed
+        updateBadgeForColumn(column);
+    }
+
+    // Ensure badges are accurate on load (in case server and DOM differ)
+    document.addEventListener('DOMContentLoaded', updateAllBadges);
+</script>
+
+

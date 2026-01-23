@@ -37,12 +37,18 @@
                 @foreach (var flight in discountedFlights)
                 {
                     <a asp-controller="Guest"
-                       asp-action="FlightDetails"
-                       asp-route-id="@flight.Flight_Id"
+                       asp-action="Browse"
+                       asp-route-openFlightId="@flight.Flight_Id"
                        class="flight-card-link">
 
+
+
                         <div class="flight-card">
-                            <img src="flight1.jpg" alt="Flight" class="flight-card-icon" />
+                            <img class="flight-card-icon"
+                                 src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
+                                 onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
+                                 alt="Destination image" />
+
 
                             <div class="flight-card-title">
                                 @NameOrUnknown(flight.Departure_Id)
@@ -67,7 +73,7 @@
                 
                 <form asp-controller="Guest" asp-action="Register" method="post">
                 <div class="form-group">
-                    <input asp-for="User.User_FullName" type="text" placeholder="First Name" required>
+                    <input asp-for="User.User_FullName" type="text" placeholder="Full Name" required>
                 </div>
                 <div class="form-group">
                     <input asp-for="User.UserName" type="text" placeholder="UserName" required>

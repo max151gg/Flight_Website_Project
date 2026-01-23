@@ -17,20 +17,20 @@ namespace Testing
             //CheckInsert();
             //TestAnnouncement();
             //CheckCreator();
-            //Console.WriteLine(GenerateSalt(16));
-            //for (int i = 1; i <= 5; i++)
-            //{
-            //    Console.WriteLine("inert password to hash:");
-            //    string password = Console.ReadLine();
-            //    string salt = GenerateSalt(GetRandomNumber());
-            //    string hash = GetHash(password, salt);
-            //    Console.WriteLine($"salt: {salt}");
-            //    Console.WriteLine($"Hash: {hash}");
-            //}
+            Console.WriteLine(GenerateSalt(16));
+            for (int i = 1; i <= 5; i++)
+            {
+                Console.WriteLine("inert password to hash:");
+                string password = Console.ReadLine();
+                string salt = GenerateSalt(GetRandomNumber());
+                string hash = GetHash(password, salt);
+                Console.WriteLine($"salt: {salt}");
+                Console.WriteLine($"Hash: {hash}");
+            }
 
-            Console.ReadLine();
-            TestSkyPathClient();
-            Console.ReadLine();
+            //Console.ReadLine();
+            //TestSkyPathClient();
+            //Console.ReadLine();
         }
         static void TestSkyPathClient()
         {

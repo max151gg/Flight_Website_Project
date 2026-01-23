@@ -15,8 +15,10 @@ namespace ModelSkyPath.Models
         string title;
         string content;
         string announcement_Date;
+        string user_Id;
 
 
+        
         public string Announcement_Id
         {
             get { return announcement_Id; }
@@ -46,6 +48,11 @@ namespace ModelSkyPath.Models
         {
             get { return announcement_Date; }
             set { announcement_Date = value; ValidateProperty(value, "Announcement_Id"); }
+        }
+        public string User_Id
+        {
+            get { return user_Id; }
+            set { user_Id = value; }
         }
     }
 }

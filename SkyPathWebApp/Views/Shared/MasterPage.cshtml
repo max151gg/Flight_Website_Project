@@ -1,4 +1,7 @@
-﻿
+﻿@{
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
 @{
     ViewData["Title"] = "MasterPage";
 }
@@ -15,10 +18,10 @@
     <header>
         <div class="logo">SkyPath</div>
         <nav>
-            <a href="http://localhost:5076/Guest/HomePage">Home</a>
-            <a href="http://localhost:5076/Guest/Browse">Browse</a>
-            <a href="http://localhost:5076/Guest/Announcement">Announcements</a>
-            <a href="http://localhost:5076/Guest/AboutUs">About us</a>
+            <a href="http://localhost:5076/Guest/HomePage" class="nav-link @(currentController == "Guest" && currentAction == "HomePage" ? "active" : "")">Home</a>
+            <a href="http://localhost:5076/Guest/Browse" class="nav-link @(currentController == "Guest" && currentAction == "Browse" ? "active" : "")">Browse</a>
+            <a href="http://localhost:5076/Guest/Announcement" class="nav-link @(currentController == "Guest" && currentAction == "Announcement" ? "active" : "")">Announcements</a>
+            <a href="http://localhost:5076/Guest/AboutUs" class="nav-link @(currentController == "Guest" && currentAction == "AboutUs" ? "active" : "")">About us</a>
         </nav>
         <div class="auth-buttons">
             <a class="btn btn-signup" href="http://localhost:5076/Guest/HomePage#signup-section">Sign Up</a>
@@ -46,11 +49,11 @@
             </div>
         </div>
         <div class="footer-links">
-            <a href="AboutUs.html">Features</a>
-            <a href="AboutUs.html">About</a>
-            <a href="AboutUs.html">Testimonials</a>
-            <a href="AboutUs.html">Contact</a>
-            <a href="AboutUs.html">Download</a>
+            <a href="http://localhost:5076/Guest/AboutUs">Features</a>
+            <a href="http://localhost:5076/Guest/AboutUs">About</a>
+            <a href="http://localhost:5076/Guest/AboutUs">Testimonials</a>
+            <a href="http://localhost:5076/Guest/AboutUs">Contact</a>
+            <a href="http://localhost:5076/Guest/AboutUs">Download</a>
         </div>
         <div class="copyright">
             123 Mansion St, Ramla, CA 94103, Israel<br>

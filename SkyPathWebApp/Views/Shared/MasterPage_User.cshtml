@@ -1,0 +1,65 @@
+﻿@{
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+@{
+    ViewData["Title"] = "MasterPage_User";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/CSS/masterpage_userCSS.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyPath – smooth and easy flight planning.</title>
+</head>
+<body>
+    <header>
+        <div class="logo">SkyPath</div>
+        <nav>
+            <a href="http://localhost:5076/User/HomePage" class="nav-link @(currentController == "User" && currentAction == "HomePage" ? "active" : "")">Home</a>
+            <a href="http://localhost:5076/User/Browse" class="nav-link @(currentController == "User" && currentAction == "Browse" ? "active" : "")">Browse</a>
+            <a href="http://localhost:5076/User/Announcement" class="nav-link @(currentController == "User" && currentAction == "Announcement" ? "active" : "")">Announcements</a>
+            <a href="http://localhost:5076/User/AboutUs" class="nav-link @(currentController == "User" && currentAction == "AboutUs" ? "active" : "")">About us</a>
+            <a href="http://localhost:5076/User/Discount" class="nav-link @(currentController == "User" && currentAction == "Discount" ? "active" : "")">Discounts</a>
+            <a href="http://localhost:5076/User/Ticket" class="nav-link @(currentController == "User" && currentAction == "Ticket" ? "active" : "")">Tickets</a>
+        </nav>
+        <div class="auth-buttons">
+            
+        </div>
+    </header>
+
+    <main>
+        @RenderBody()   <!-- THIS IS REQUIRED -->
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <p style="font-size: 14px; color: #666;">Follow us</p>
+            </div>
+            <div class="social-links">
+                <a href="#">f</a>
+                <a href="#">𝕏</a>
+                <a href="#">📷</a>
+                <a href="#">▶</a>
+            </div>
+            <div>
+                <p style="font-size: 12px; color: #999;">contact us: email@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-links">
+            <a href="http://localhost:5076/User/AboutUs">Features</a>
+            <a href="http://localhost:5076/User/AboutUs">About</a>
+            <a href="http://localhost:5076/User/AboutUs">Testimonials</a>
+            <a href="http://localhost:5076/User/AboutUs">Contact</a>
+            <a href="http://localhost:5076/User/AboutUs">Download</a>
+        </div>
+        <div class="copyright">
+            123 Mansion St, Ramla, CA 94103, Israel<br>
+            © 2025 SkyPath. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SkyPath_Models;
+using System.Globalization;
+
 
 namespace SkyPath_Models.Models
 {
@@ -86,6 +88,105 @@ namespace SkyPath_Models.Models
         {
             get { return arrival_Date; }
             set { arrival_Date = value; ValidateProperty(value, "Arrival_Date"); }
+        }
+
+
+        public DateTime? DepartureDateTime
+        {
+            get
+            {
+                return TryBuildDateTime(Departure_Date, Departure_Time, out var dt)
+                    ? dt
+                    : (DateTime?)null;
+            }
+        }
+
+        public DateTime? ArrivalDateTime
+        {
+            get
+            {
+                return TryBuildDateTime(Arrival_Date, Arrival_Time, out var dt)
+                    ? dt
+                    : (DateTime?)null;
+            }
+        }
+
+        public TimeSpan? Duration
+        {
+            get
+            {
+                if (DepartureDateTime is null || ArrivalDateTime is null)
+                    return null;
+
+                var dep = DepartureDateTime.Value;
+                var arr = ArrivalDateTime.Value;
+
+                // Safety net: if arrival is earlier than departure, assume arrival is next day.
+                // (Shouldn't happen if dates are correct, but it prevents negative durations from bad data.)
+                if (arr < dep)
+                    arr = arr.AddDays(1);
+
+                return arr - dep;
+            }
+        }
+
+        public string DurationDisplay
+        {
+            get
+            {
+                if (Duration is null) return "—";
+
+                var ts = Duration.Value;
+                int hours = (int)ts.TotalHours;
+                int minutes = ts.Minutes;
+
+                if (hours <= 0) return $"{minutes}m";
+                return $"{hours}h {minutes:00}m";
+            }
+        }
+
+        private static bool TryBuildDateTime(string dateText, string timeText, out DateTime dateTime)
+        {
+            dateTime = default;
+
+            if (!TryParseDate(dateText, out var date)) return false;
+            if (!TryParseTime(timeText, out var time)) return false;
+
+            dateTime = date.Date.Add(time);
+            return true;
+        }
+
+        private static bool TryParseDate(string input, out DateTime date)
+        {
+            date = default;
+            if (string.IsNullOrWhiteSpace(input)) return false;
+
+            // example: "08-01-2026"
+            // Treat as dd-MM-yyyy.
+            string[] formats = { "dd-MM-yyyy", "d-M-yyyy" };
+
+            return DateTime.TryParseExact(
+                input.Trim(),
+                formats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out date
+            );
+        }
+
+        private static bool TryParseTime(string input, out TimeSpan time)
+        {
+            time = default;
+            if (string.IsNullOrWhiteSpace(input)) return false;
+
+            string[] formats = { @"hh\:mm", @"h\:mm" };
+
+            return TimeSpan.TryParseExact(
+                input.Trim(),
+                formats,
+                CultureInfo.InvariantCulture,
+                out time
+            );
         }
     }
 }

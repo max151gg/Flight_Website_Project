@@ -135,3 +135,66 @@
     font-size: 14px;
     color: #666;
 }
+
+/* Subtitle under page title (Registered version) */
+.page-subtitle {
+    text-align: center;
+    font-size: 15px;
+    color: #666;
+    max-width: 760px;
+    margin: -45px auto 60px;
+    line-height: 1.6;
+}
+
+/* Lists inside policy sections */
+.policy-list {
+    margin: 15px auto 0;
+    padding-left: 18px;
+    max-width: 900px;
+}
+
+    .policy-list li {
+        margin: 8px 0;
+    }
+
+/* Small “feature bullets” grid (Registered-only sections) */
+.feature-bullets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 25px auto 10px;
+    max-width: 900px;
+}
+
+.feature-item {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.feature-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.feature-text {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+    .feature-bullets {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 850px) {
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -11,5 +11,6 @@ namespace SkyPath_Models.ViewModel
     public class AnnouncementViewModel
     {
         public List<Announcement> announcements { get; set; }
+        public List <Announcement> publicAnnouncements { get; set; }
     }
 }
