@@ -10,6 +10,5 @@ namespace SkyPath_Models.ViewModel
     public class SignUpViewModel
     {
         public User user { get; set; }
-        public List<City> cities { get; set; }
     }
 }

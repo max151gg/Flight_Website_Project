@@ -27,12 +27,12 @@ namespace SkyPathWS.ORM.Repositories
             string sql = $@"Insert into [User]
                             (
                             UserName, Email, [Password],
-                            User_Telephone, User_Adress, User_FullName, Role_Id, UserSalt
+                            User_Telephone, User_Adress, User_FullName, Role_Id, UserSalt, User_Image
                             )
                             values
                             (
                                 @UserName, @Email, @Password, @User_Telephone, @User_Adress,
-                                @User_FullName, @Role_Id, @UserSalt
+                                @User_FullName, @Role_Id, @UserSalt, @User_Image
                             )";
                             helperOleDb.AddParameter("@UserName", model.UserName);
                             helperOleDb.AddParameter("@Email", model.Email);
@@ -43,7 +43,8 @@ namespace SkyPathWS.ORM.Repositories
                             helperOleDb.AddParameter("@User_FullName", model.User_FullName);
                             helperOleDb.AddParameter("@Role_Id", model.Role_Id);
                             helperOleDb.AddParameter("@UserSalt", salt);
-                            return helperOleDb.Insert(sql) > 0;
+                            helperOleDb.AddParameter("@User_Image", model.User_Image);
+            return helperOleDb.Insert(sql) > 0;
         }
         private string GetHash(string password, string salt)
         {
@@ -104,17 +105,22 @@ namespace SkyPathWS.ORM.Repositories
             string sql = @"Update User set 
                             UserName=@UserName, Email=@Email, Password=@Password,
                             User_Telephone=@User_Telephone, User_Adress=@User_Adress,
-                            User_FullName=@User_FullName, Role_Id=@Role_Id";
+                            User_FullName=@User_FullName, Role_Id=@Role_Id, UserSalt=@UserSalt, User_Image=@User_Image";
             helperOleDb.AddParameter("@UserName", model.UserName);
             helperOleDb.AddParameter("@Email", model.Email);
-            helperOleDb.AddParameter("@Password", model.Password);
+            string salt = GenerateSalt(GetRandomNumber());
+            helperOleDb.AddParameter("@Password", GetHash(model.Password, salt));
             helperOleDb.AddParameter("@User_Telephone", model.User_Telephone);
             helperOleDb.AddParameter("@User_Adress", model.User_Adress);
             helperOleDb.AddParameter("@User_FullName", model.User_FullName);
             helperOleDb.AddParameter("@Role_Id", model.Role_Id);
+            helperOleDb.AddParameter("@UserSalt", salt);
+            helperOleDb.AddParameter("@User_Image", model.User_Image);
             return helperOleDb.Update(sql) > 0;
         }
 
+
+        
         public string Login(string Email, string password) 
         {
             string sql = @"Select UserSalt, User_Id, Password from [User]
@@ -136,5 +142,18 @@ namespace SkyPathWS.ORM.Repositories
                 return null;
             }
         }
+        public bool UpdateUserImage(string userId, string imagePath)
+        {
+            string sql = @"UPDATE [User] 
+                   SET User_Image=@User_Image 
+                   WHERE User_Id=@User_Id";
+
+            helperOleDb.AddParameter("@User_Image", imagePath);
+            helperOleDb.AddParameter("@User_Id", userId);
+
+            return helperOleDb.Update(sql) > 0;
+        }
+
+
     }
 }

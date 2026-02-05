@@ -1,0 +1,143 @@
+﻿@using SkyPath_Models.Models
+@model User
+
+@{
+    ViewData["Title"] = "Account";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
+}
+<link rel="stylesheet" href="~/CSS/AccountCSS.css" />
+@{
+
+    string userfullname = Context.Session.GetString("user_FullName") ?? "My Account";
+}
+@{
+    bool isAdmin = (Model?.Role_Id == "0"); // 0 = Admin, 1 = User
+    string roleText = isAdmin ? "Admin" : "User";
+}
+@{
+    string userId = Context.Session.GetString("user_Id");
+    string v = Context.Session.GetString("user_Image_V") ?? "0";
+    string imgUrl = $"http://localhost:5125/api/User/GetProfileImage?user_id={Uri.EscapeDataString(userId)}&v={v}";
+}
+@{
+    string userImagePath = Context.Session.GetString("user_Image") ?? "";
+    bool hasImage = !string.IsNullOrWhiteSpace(userImagePath);
+
+    string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        if (parts.Length == 2) return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+        return (parts[0][0].ToString() + parts[1][0].ToString() + parts[2][0].ToString()).ToUpper();
+    }
+
+    string initials = GetInitials(Model?.User_FullName);
+}
+
+
+<div class="main-container">
+    <div class="page-header">
+        <h1>Account Settings</h1>
+        <p class="subtitle">Manage your profile and account preferences</p>
+    </div>
+
+    <div class="account-layout">
+        <!-- Sidebar -->
+        <div class="account-sidebar">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <form asp-controller="User" asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data" id="imgForm">
+                    <div class="profile-image-wrapper" onclick="document.getElementById('imageUpload').click()">
+                        @if (hasImage)
+                        {
+                            <img src="@imgUrl" class="profile-image" id="profileImage" />
+                        }
+                        else
+                        {
+                            <div class="profile-initials">@initials</div>
+                        }
+
+                        
+
+                        <div class="avatar-hover-hint">Click to change</div>
+
+                        <input type="file"
+                               id="imageUpload"
+                               name="profileImage"
+                               class="profile-image-input"
+                               accept="image/*"
+                               onchange="document.getElementById('imgForm').submit();" />
+                    </div>
+                </form>
+                <div class="profile-name" id="displayName">@Model.User_FullName</div>
+                <span class="profile-role @(isAdmin ? "profile-role admin" : "profile-role")" id="displayRole">
+                    @roleText
+                </span>
+            </div>
+
+            <!-- Menu -->
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showSection('profile')">
+                    <span class="menu-icon">👤</span>
+                    <span>Profile Information</span>
+                </div>
+                <div class="menu-item" onclick="showSection('security')">
+                    <span class="menu-icon">🔒</span>
+                    <span>Security</span>
+                </div>
+                <div class="menu-item" onclick="showSection('preferences')">
+                    <span class="menu-icon">⚙️</span>
+                    <span>Preferences</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="account-content">
+            <!-- Profile Section -->
+            <div class="content-section active" id="profileSection">
+                <div class="section-title">Profile Information</div>
+
+                <div class="edit-toggle">
+                    <button class="toggle-btn" id="editBtn" onclick="toggleEditMode()">Edit Profile</button>
+                </div>
+
+                <!-- View Mode -->
+                <div id="viewMode">
+                    <div class="info-display">
+                        <div class="info-item">
+                            <div class="info-label">Username</div>
+                            <div class="info-value" id="viewUsername">@Model.UserName</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value" id="viewFullname">@Model.User_FullName</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value" id="viewEmail">@Model.Email</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value" id="viewPhone">@Model.User_Telephone</div>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Address</div>
+                            <div class="info-value" id="viewAddress">@Model.User_Adress</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                
+            </div>
+
+            <!-- Security Section -->
+           
+
+            <!-- Preferences Section -->
+            
+        </div>
+    </div>
+</div>

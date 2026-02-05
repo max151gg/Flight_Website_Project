@@ -4,6 +4,8 @@ using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
 using System.Globalization;
+using System.Net.Http.Headers;
+
 
 namespace SkyPathWS.Controllers
 {
@@ -362,5 +364,126 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+        [HttpGet]
+        public IActionResult GetProfileImage([FromQuery] string user_id, [FromServices] IWebHostEnvironment env)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user_id))
+                    return BadRequest("Missing user_id");
+
+                repositoryUOW.HelperOleDb.OpenConnection();
+                var user = repositoryUOW.UserRepository.GetById(user_id);
+
+                // If the user has no image -> return 404 (client will show initials)
+                if (user == null || string.IsNullOrWhiteSpace(user.User_Image))
+                    return NotFound();
+
+                string relPath = user.User_Image;
+
+                // Safety: only allow files from this folder
+                if (!relPath.StartsWith("/images/profiles/", StringComparison.OrdinalIgnoreCase))
+                    return StatusCode(500, "Invalid image path");
+
+                string absolutePath = Path.Combine(
+                    env.WebRootPath,
+                    relPath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+                );
+
+                if (!System.IO.File.Exists(absolutePath))
+                    return NotFound();
+
+                var ext = Path.GetExtension(absolutePath).ToLowerInvariant();
+                var contentType = ext switch
+                {
+                    ".jpg" or ".jpeg" => "image/jpeg",
+                    ".png" => "image/png",
+                    _ => "application/octet-stream"
+                };
+
+                var stream = System.IO.File.OpenRead(absolutePath);
+                return File(stream, contentType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, "Error loading image");
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+
+
+
+        [HttpPost]
+        public ActionResult<string> UpdateProfileImage([FromQuery] string user_id, [FromServices] IWebHostEnvironment env)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user_id))
+                    return BadRequest("Missing user_id");
+
+                if (Request.Form.Files.Count == 0)
+                    return BadRequest("Missing file");
+
+                var file = Request.Form.Files[0];
+                if (file.Length == 0)
+                    return BadRequest("Empty file");
+
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                var allowed = new[] { ".jpg", ".jpeg", ".png" };
+                if (!allowed.Contains(ext))
+                    return BadRequest("Only jpg/jpeg/png allowed");
+
+                // folder
+                string folder = Path.Combine(env.WebRootPath, "images", "profiles");
+                Directory.CreateDirectory(folder);
+
+                // delete old variants
+                string baseName = $"profile_{user_id}";
+                string[] variants = { ".png", ".jpg", ".jpeg" };
+                foreach (var v in variants)
+                {
+                    string p = Path.Combine(folder, baseName + v);
+                    if (System.IO.File.Exists(p))
+                        System.IO.File.Delete(p);
+                }
+
+                // save new file
+                string fileName = $"{baseName}{ext}";
+                string fullPath = Path.Combine(folder, fileName);
+
+                using (var fs = new FileStream(fullPath, FileMode.Create))
+                    file.CopyTo(fs);
+
+                // new DB path
+                string newPath = $"/images/profiles/{fileName}";
+
+                repositoryUOW.HelperOleDb.OpenConnection();
+                bool ok = repositoryUOW.UserRepository.UpdateUserImage(user_id, newPath);
+                if (!ok) return StatusCode(500, "DB update failed");
+
+                return Ok(newPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, ex.Message);
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        
+
+
+
+
+        }
+
     }
 }

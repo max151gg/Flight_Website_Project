@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using SkyPath_Models;
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWSClient;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using System.Net.Http.Headers;
 
 namespace SkyPathWebApp.Controllers
 {
@@ -251,13 +255,129 @@ namespace SkyPathWebApp.Controllers
             
             if (user != null)
             {
+                string user_FullName = user.User_FullName;
                 string user_id = user.User_Id;
+                string user_Image = user.User_Image;
                 HttpContext.Session.SetString("user_Id", user_id);
+                HttpContext.Session.SetString("user_Image", user.User_Image ?? "");
+                HttpContext.Session.SetString("user_FullName", user_FullName);
                 return RedirectToAction("HomePage", "User");
             }
 
             return RedirectToAction("LoginHome");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(User user)
+        {
+            if (user == null)
+                return RedirectToAction("HomePage");
+
+            if (string.IsNullOrWhiteSpace(user.Role_Id))
+                user.Role_Id = "1";
+
+            // Important: do NOT set User_Image at all (leave null/empty)
+            user.User_Image = null;
+
+            using var http = new HttpClient();
+            using var form = new MultipartFormDataContent();
+
+            // WS expects Request.Form["model"]
+            string json = JsonSerializer.Serialize(user);
+            form.Add(new StringContent(json, Encoding.UTF8), "model");
+
+            // No file attached here.
+
+            var resp = await http.PostAsync("http://localhost:5125/api/Guest/Register", form);
+            if (!resp.IsSuccessStatusCode)
+                return RedirectToAction("HomePage");
+
+            var txt = await resp.Content.ReadAsStringAsync();
+            bool ok = txt.Contains("true", StringComparison.OrdinalIgnoreCase);
+
+            if (!ok)
+                return RedirectToAction("HomePage");
+
+            // Auto-login after register (same as you already do)
+            var loginClient = new ApiClient<LoginViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Guest/Login"
+            };
+
+            var loginVm = new LoginViewModel { Email = user.Email, Password = user.Password };
+            User loggedInUser = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
+
+            if (loggedInUser != null)
+            {
+                HttpContext.Session.SetString("user_Id", loggedInUser.User_Id);
+                HttpContext.Session.SetString("user_FullName", loggedInUser.User_FullName ?? "My Account");
+
+                // Store whatever the DB has (likely null/empty)
+                HttpContext.Session.SetString("user_Image", loggedInUser.User_Image ?? "");
+
+                return RedirectToAction("HomePage", "User");
+            }
+
+            return RedirectToAction("LoginHome");
+        }
+
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> Register(SignUpViewModel vm, IFormFile? profileImage)
+        //{
+        //    if (vm?.user == null)
+        //        return RedirectToAction("HomePage");
+
+        //    // If you have ModelState validations in the view:
+        //    if (!ModelState.IsValid)
+        //    {
+        //        // back to the register page / homepage section
+        //        return RedirectToAction("HomePage");
+        //    }
+
+        //    // Set defaults (important)
+        //    vm.user.Role_Id = "1"; // or whatever "User" role is in your DB
+        //    if (string.IsNullOrWhiteSpace(vm.user.User_Image))
+        //        vm.user.User_Image = "/images/profiles/default.png"; // will be overwritten by WS if file uploaded
+
+        //    // Build multipart/form-data:
+        //    using var form = new MultipartFormDataContent();
+
+        //    // Your WS expects Form["model"] to be JSON:
+        //    string json = JsonSerializer.Serialize(vm.user);
+        //    form.Add(new StringContent(json), "model");
+
+        //    // Optional file (only attach if user selected one)
+        //    if (profileImage != null && profileImage.Length > 0)
+        //    {
+        //        using var stream = profileImage.OpenReadStream();
+        //        var fileContent = new StreamContent(stream);
+        //        fileContent.Headers.ContentType =
+        //            new System.Net.Http.Headers.MediaTypeHeaderValue(profileImage.ContentType);
+
+        //        // "files" works with your WS because it reads Request.Form.Files[0]
+        //        form.Add(fileContent, "files", profileImage.FileName);
+        //    }
+
+        //    // Call WS endpoint
+        //    using var http = new HttpClient();
+        //    var url = "http://localhost:5125/api/Guest/Register";
+
+        //    var response = await http.PostAsync(url, form);
+        //    bool ok = response.IsSuccessStatusCode && (await response.Content.ReadAsStringAsync()).Contains("true");
+
+        //    if (!ok)
+        //        return RedirectToAction("HomePage");
+
+        //    // Optional: auto-login after register (if you want)
+        //    // You currently can't because WS Register returns bool only.
+        //    // So just redirect to login page:
+        //    return RedirectToAction("LoginHome");
+        //}
 
         //[HttpPost]
         //public async Task<IActionResult> SignUp(Registered reg)

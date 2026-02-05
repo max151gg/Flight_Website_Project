@@ -17,7 +17,7 @@
 <div class="content">
     <div class="hero">
         <h1>The best site to set up<br>your vacation</h1>
-        <p>Statement for your product's tagline. This text should communicate your unique selling proposition to the reader.</p>
+        <p>Compare flights, discover the best prices, and plan your journey with confidence.</p>
         <a class="btn-cta" href="http://localhost:5076/Guest/Browse">Find Your Flight Now</a>
     </div>
 <div class="main-container">
@@ -65,44 +65,81 @@
 
 
     <!-- Content Layout -->
-    <div class="content-layout">
-        <!-- Sidebar -->
-        <div class="signup-section" id="signup-section">
-            <h2>Sign Up</h2>
-            <p class="signup-subtitle">Signup now. Its free and takes less than a minute</p>
-                
-                <form asp-controller="Guest" asp-action="Register" method="post">
-                <div class="form-group">
-                    <input asp-for="User.User_FullName" type="text" placeholder="Full Name" required>
-                </div>
-                <div class="form-group">
-                    <input asp-for="User.UserName" type="text" placeholder="UserName" required>
-                </div>
-                <div class="form-group">
-                    <input asp-for="User.Email" type="email" placeholder="Email address" required>
-                </div>
-                <div class="form-group">
-                    <input asp-for="User.Password" type="password" placeholder="Password" required>
-                </div>
-                <div class="form-group">
-                    <input asp-for="User.User_Telephone" type="text" placeholder="Phone Number" required>
-                </div>
-                <div class="form-group">
-                    <input asp-for="User.User_Adress" type="text" placeholder="Adress" required>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="terms">
-                    <label for="terms">Notify me about recent discounts</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="agree" required>
-                    <label for="agree">Agree with terms of service</label>
-                </div>
-                <div class="checkbox-group">
-                        <label for="account">have an account already? <a href="http://localhost:5076/Guest/LoginHome#login-section">Log In</a></label>
-                </div>
-                <button type="submit" class="btn-submit">Sign Up</button>
-            </form>
+        <div class="content-layout">
+            <!-- Sidebar -->
+            <div class="signup-section" id="signup-section">
+                <h2>Sign Up</h2>
+                <p class="signup-subtitle">Signup now. Its free and takes less than a minute</p>
+
+                <form asp-controller="Guest"
+                      asp-action="Register"
+                      method="post">
+
+                    <div class="form-group">
+                        <input asp-for="user.User_FullName"
+                               type="text"
+                               placeholder="Full Name"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="user.UserName"
+                               type="text"
+                               placeholder="UserName"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="user.Email"
+                               type="email"
+                               placeholder="Email address"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="user.Password"
+                               type="password"
+                               placeholder="Password"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="user.User_Telephone"
+                               type="text"
+                               placeholder="Phone Number"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input asp-for="user.User_Adress"
+                               type="text"
+                               placeholder="Adress"
+                               required>
+                    </div>
+
+                    
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms">
+                        <label for="terms">Notify me about recent discounts</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agree" required>
+                        <label for="agree">Agree with terms of service</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label>
+                            have an account already?
+                            <a href="http://localhost:5076/Guest/LoginHome#login-section">Log In</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Sign Up</button>
+                </form>
+            </div>
         </div>
+
     </div>
 </div>

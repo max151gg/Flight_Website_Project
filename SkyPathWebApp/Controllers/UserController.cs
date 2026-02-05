@@ -2,6 +2,8 @@
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWSClient;
+using System.Net.Http.Headers;
+
 
 namespace SkyPathWebApp.Controllers
 {
@@ -220,6 +222,103 @@ namespace SkyPathWebApp.Controllers
         public IActionResult AboutUs()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Account()
+        {
+            string userId = HttpContext.Session.GetString("user_Id");
+            var client = new ApiClient<User>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/User/GetById"
+            };
+            client.SetQueryParameter("user_id", userId);
+
+            User user = await client.GetAsync();
+            if (user == null)
+                return RedirectToAction("LoginHome", "Guest");
+
+            // refresh session values so header stays correct
+            HttpContext.Session.SetString("user_FullName", user.User_FullName ?? "My Account");
+            HttpContext.Session.SetString("user_Image", user.User_Image ?? "");
+
+
+            return View(user);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetProfileImage(string user_id)
+        {
+            if (string.IsNullOrWhiteSpace(user_id))
+                return BadRequest();
+
+            using var http = new HttpClient();
+            var url = $"http://localhost:5125/api/User/GetProfileImage?user_id={Uri.EscapeDataString(user_id)}";
+
+            var resp = await http.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+                return NotFound();
+
+            var bytes = await resp.Content.ReadAsByteArrayAsync();
+            var contentType = resp.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+
+            return File(bytes, contentType);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfileImage(IFormFile profileImage)
+        {
+            Console.WriteLine(">>> UpdateProfileImage HIT");
+            string userId = HttpContext.Session.GetString("user_Id");
+            if (string.IsNullOrWhiteSpace(userId))
+                return RedirectToAction("LoginHome", "Guest");
+
+            if (profileImage == null || profileImage.Length == 0)
+                return RedirectToAction("Account");
+
+            using var http = new HttpClient();
+            using var form = new MultipartFormDataContent();
+
+            var streamContent = new StreamContent(profileImage.OpenReadStream());
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(profileImage.ContentType);
+
+            // WS reads Request.Form.Files[0] so any name is fine; "file" is clean
+            form.Add(streamContent, "file", profileImage.FileName);
+
+            var wsUrl = $"http://localhost:5125/api/User/UpdateProfileImage?user_id={Uri.EscapeDataString(userId)}";
+            var resp = await http.PostAsync(wsUrl, form);
+
+
+            var body = await resp.Content.ReadAsStringAsync();
+
+            Console.WriteLine("WS STATUS: " + (int)resp.StatusCode);
+            Console.WriteLine("WS BODY: " + body);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                TempData["UploadError"] = $"WS error {(int)resp.StatusCode}: {body}";
+                return RedirectToAction("Account");
+            }
+
+            // body already contains the returned path
+            string newPath = body.Trim('"', ' ', '\n', '\r');
+            HttpContext.Session.SetString("user_Image", newPath);
+
+
+            // Update session
+            HttpContext.Session.SetString("user_Image", newPath);
+
+            // OPTIONAL but recommended: cache-buster version for fixed filenames
+            HttpContext.Session.SetString("user_Image_V", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+
+            return RedirectToAction("Account");
+
         }
     }
 }

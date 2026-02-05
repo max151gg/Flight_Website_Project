@@ -5,6 +5,36 @@
 @{
     ViewData["Title"] = "MasterPage_User";
 }
+@using Microsoft.AspNetCore.Http
+
+@{
+    
+    string wsBase = "http://localhost:5125";
+    string userfullname = Context.Session.GetString("user_FullName") ?? "My Account";
+}
+
+@{
+    string userId = Context.Session.GetString("user_Id") ?? "";
+    string userImagePath = Context.Session.GetString("user_Image") ?? ""; // "" means no image
+    string v = Context.Session.GetString("user_Image_V") ?? "0";
+
+    string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        if (parts.Length == 2) return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+        return (parts[0][0].ToString() + parts[1][0].ToString() + parts[2][0].ToString()).ToUpper();
+    }
+
+    string initials = GetInitials(userfullname);
+    bool hasImage = !string.IsNullOrWhiteSpace(userImagePath);
+
+    string imgUrl = $"http://localhost:5125/api/User/GetProfileImage?user_id={Uri.EscapeDataString(userId)}&v={v}";
+}
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +56,23 @@
             <a href="http://localhost:5076/User/Ticket" class="nav-link @(currentController == "User" && currentAction == "Ticket" ? "active" : "")">Tickets</a>
         </nav>
         <div class="auth-buttons">
-            
+            <a href="http://localhost:5076/User/Account" class="account-pill">
+                <span class="account-name">
+                    @userfullname
+                </span>
+
+                @if (hasImage)
+                {
+                    <img src="@imgUrl" class="account-avatar" alt="Account" />
+                }
+                else
+                {
+                    <span class="account-initials">@initials</span>
+                }
+
+
+
+            </a>
         </div>
     </header>
 

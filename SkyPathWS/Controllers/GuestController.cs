@@ -6,6 +6,8 @@ using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace SkyPathWS.Controllers
@@ -265,21 +267,22 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+
         [HttpPost]
         public bool Register()
         {
-
             string json = HttpContext.Request.Form["model"];
             User user = System.Text.Json.JsonSerializer.Deserialize<User>(json);
-            IFormFile file = null;
-            if(HttpContext.Request.Form.Files.Count > 0)
-            {
-                file = HttpContext.Request.Form.Files[0];
-            }
+
             try
             {
-                this.repositoryUOW.HelperOleDb.OpenConnection();
-                return this.repositoryUOW.UserRepository.Create(user);
+                repositoryUOW.HelperOleDb.OpenConnection();
+
+                // No image at register-time:
+                user.User_Image = null; // or ""
+
+                return repositoryUOW.UserRepository.Create(user);
             }
             catch (Exception ex)
             {
@@ -288,9 +291,11 @@ namespace SkyPathWS.Controllers
             }
             finally
             {
-                this.repositoryUOW.HelperOleDb.CloseConnection();
+                repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+
 
         [HttpPost]
         public User Login([FromBody] LoginViewModel loginViewModel)
