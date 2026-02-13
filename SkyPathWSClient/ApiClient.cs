@@ -73,6 +73,23 @@ namespace SkyPathWSClient
         }
 
 
+        public async Task<bool> PostAsync(T model)
+        {
+            using (HttpRequestMessage httpRequest = new HttpRequestMessage())
+            {
+                httpRequest.Method = HttpMethod.Post;
+                httpRequest.RequestUri = this.uriBuilder.Uri;
+                string json = JsonSerializer.Serialize<T>(model);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                httpRequest.Content = content;
+                using (HttpResponseMessage httpResponse = await this.httpClient.SendAsync(httpRequest))
+                {
+                    return httpResponse.IsSuccessStatusCode;
+                }
+
+            }
+        }
+
 
         public async Task<bool> PostAsync(T model, Stream file)
         {

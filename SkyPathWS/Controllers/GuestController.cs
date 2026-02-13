@@ -270,17 +270,17 @@ namespace SkyPathWS.Controllers
 
 
         [HttpPost]
-        public bool Register()
+        public bool Register([FromBody]User user)
         {
-            string json = HttpContext.Request.Form["model"];
-            User user = System.Text.Json.JsonSerializer.Deserialize<User>(json);
+            //string json = HttpContext.Request.Form["model"];
+            //User user = System.Text.Json.JsonSerializer.Deserialize<User>(json);
 
             try
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
 
                 // No image at register-time:
-                user.User_Image = null; // or ""
+                user.User_Image = ""; // or ""
 
                 return repositoryUOW.UserRepository.Create(user);
             }

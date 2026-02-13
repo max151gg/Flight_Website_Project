@@ -73,7 +73,7 @@ namespace SkyPath_Models.Models
             set { role_Id = value; }
         }
 
-        [OnlyImage(ErrorMessage = "Image must be in jpg, jpeg or png format")]
+        //[OnlyImage(ErrorMessage = "Image must be in jpg, jpeg or png format")]
         public string User_Image
         {
             get { return user_Image; }

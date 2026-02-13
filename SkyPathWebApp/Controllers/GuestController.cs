@@ -277,23 +277,35 @@ namespace SkyPathWebApp.Controllers
                 user.Role_Id = "1";
 
             // Important: do NOT set User_Image at all (leave null/empty)
-            user.User_Image = null;
+            user.User_Image = "";
+            user.User_Id = "";
+            user.UserSalt = "";
 
-            using var http = new HttpClient();
-            using var form = new MultipartFormDataContent();
 
-            // WS expects Request.Form["model"]
-            string json = JsonSerializer.Serialize(user);
-            form.Add(new StringContent(json, Encoding.UTF8), "model");
 
-            // No file attached here.
+            //using var http = new HttpClient();
+            //using var form = new MultipartFormDataContent();
 
-            var resp = await http.PostAsync("http://localhost:5125/api/Guest/Register", form);
-            if (!resp.IsSuccessStatusCode)
-                return RedirectToAction("HomePage");
+            //// WS expects Request.Form["model"]
+            //string json = JsonSerializer.Serialize(user);
+            //form.Add(new StringContent(json, Encoding.UTF8), "model");
 
-            var txt = await resp.Content.ReadAsStringAsync();
-            bool ok = txt.Contains("true", StringComparison.OrdinalIgnoreCase);
+            //// No file attached here.
+
+            //var resp = await http.PostAsync("http://localhost:5125/api/Guest/Register", form);
+            //if (!resp.IsSuccessStatusCode)
+            //    return RedirectToAction("HomePage");
+
+            //var txt = await resp.Content.ReadAsStringAsync();
+            //bool ok = txt.Contains("true", StringComparison.OrdinalIgnoreCase);
+            ApiClient<User> client = new ApiClient<User>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Guest/Register"
+            };
+            bool ok = await client.PostAsync(user);
 
             if (!ok)
                 return RedirectToAction("HomePage");

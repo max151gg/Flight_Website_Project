@@ -399,6 +399,7 @@ namespace SkyPathWS.Controllers
                 {
                     ".jpg" or ".jpeg" => "image/jpeg",
                     ".png" => "image/png",
+                    ".gif" => "image/gif",
                     _ => "application/octet-stream"
                 };
 
@@ -435,9 +436,9 @@ namespace SkyPathWS.Controllers
                     return BadRequest("Empty file");
 
                 var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png" };
+                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif"};
                 if (!allowed.Contains(ext))
-                    return BadRequest("Only jpg/jpeg/png allowed");
+                    return BadRequest("Only jpg/jpeg/png/gif allowed");
 
                 // folder
                 string folder = Path.Combine(env.WebRootPath, "images", "profiles");
@@ -445,7 +446,7 @@ namespace SkyPathWS.Controllers
 
                 // delete old variants
                 string baseName = $"profile_{user_id}";
-                string[] variants = { ".png", ".jpg", ".jpeg" };
+                string[] variants = { ".png", ".jpg", ".jpeg", ".gif" };
                 foreach (var v in variants)
                 {
                     string p = Path.Combine(folder, baseName + v);

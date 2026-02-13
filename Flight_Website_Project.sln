@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyPathWSClient", "SkyPathW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyPathWebApp", "SkyPathWebApp\SkyPathWebApp.csproj", "{AD5F5E04-AC52-426C-9357-4807F578B2AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminApp", "AdminApp\AdminApp.csproj", "{7033DEE7-D4D9-4D22-AF14-F157FA16658F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AD5F5E04-AC52-426C-9357-4807F578B2AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD5F5E04-AC52-426C-9357-4807F578B2AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD5F5E04-AC52-426C-9357-4807F578B2AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7033DEE7-D4D9-4D22-AF14-F157FA16658F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7033DEE7-D4D9-4D22-AF14-F157FA16658F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7033DEE7-D4D9-4D22-AF14-F157FA16658F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7033DEE7-D4D9-4D22-AF14-F157FA16658F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
