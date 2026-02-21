@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AdminApp.UserControls;
+using AdminApp.Pages;
 
 namespace AdminApp
 {
@@ -17,60 +18,139 @@ namespace AdminApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        StartPage startPage;
-        LoginPage loginPage;
-        FlightPage flightPage;
-
-        // later you can add:
-        // FlightsPage flightsPage;
-        // TicketsPage ticketsPage;
+        private Button currentActiveButton = null;
 
         public MainWindow()
         {
             InitializeComponent();
-            ViewStartPage();
+
+            // Load login page initially
+            MainFrame.Navigate(new LoginPage());
+
+            // Hide sidebar initially (until logged in)
+            //HideSidebar();
         }
 
-        private void ViewStartPage()
+        // Navigate to different pages
+        private void NavigateToDashboard(object sender, RoutedEventArgs e)
         {
-            if (this.startPage == null)
-                this.startPage = new StartPage();
-
-            this.MainFrame.Content = this.startPage;
+            SetActiveButton(sender as Button);
+            // MainFrame.Navigate(new DashboardPage());
+            MessageBox.Show("Dashboard page - To be implemented");
         }
 
-        private void ViewLoginPage()
+        private void NavigateToFlights(object sender, RoutedEventArgs e)
         {
-            if (this.loginPage == null)
-                this.loginPage = new LoginPage();
-
-            this.MainFrame.Content = this.loginPage;
+            SetActiveButton(sender as Button);
+            MainFrame.Navigate(new FlightPage());
         }
-        private void ViewFlightPage()
+
+        private void NavigateToUsers(object sender, RoutedEventArgs e)
         {
-            if (this.flightPage == null)
-                this.flightPage = new FlightPage();
-
-            this.MainFrame.Content = this.flightPage;
+            SetActiveButton(sender as Button);
+            MainFrame.Navigate(new UsersHomePage());
         }
 
-        // Hyperlink handlers
-        private void Nav_Start_Click(object sender, RoutedEventArgs e) => ViewStartPage();
-        private void Nav_Login_Click(object sender, RoutedEventArgs e) => ViewLoginPage();
-
-        // placeholders until you create these UserControls
-        private void Nav_Flights_Click(object sender, RoutedEventArgs e) => ViewFlightPage();
-
-        private void Nav_Tickets_Click(object sender, RoutedEventArgs e)
+        private void NavigateToTickets(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("dsdsdsd");
+            SetActiveButton(sender as Button);
+            // MainFrame.Navigate(new TicketsPage());
+            MessageBox.Show("Tickets page - To be implemented");
         }
 
-        private void Nav_Exit_Click(object sender, RoutedEventArgs e)
+        private void NavigateToDiscounts(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            SetActiveButton(sender as Button);
+            // MainFrame.Navigate(new DiscountsPage());
+            MessageBox.Show("Discounts page - To be implemented");
         }
 
+        private void NavigateToAnnouncements(object sender, RoutedEventArgs e)
+        {
+            SetActiveButton(sender as Button);
+            MainFrame.Navigate(new AnnouncementPage());
+        }
 
+        private void NavigateToSettings(object sender, RoutedEventArgs e)
+        {
+            SetActiveButton(sender as Button);
+            // MainFrame.Navigate(new SettingsPage());
+            MessageBox.Show("Settings page - To be implemented");
+        }
+
+        private void NavigateToReports(object sender, RoutedEventArgs e)
+        {
+            SetActiveButton(sender as Button);
+            // MainFrame.Navigate(new ReportsPage());
+            MessageBox.Show("Reports page - To be implemented");
+        }
+
+        // Set active button style
+        private void SetActiveButton(Button button)
+        {
+            if (currentActiveButton != null)
+            {
+                currentActiveButton.Style = (Style)FindResource("SidebarButtonStyle");
+            }
+
+            button.Style = (Style)FindResource("ActiveSidebarButtonStyle");
+            currentActiveButton = button;
+        }
+
+        // Logout
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to logout?",
+                                        "Confirm Logout",
+                                        MessageBoxButton.YesNo,
+                                        MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                HideSidebar();
+                MainFrame.Navigate(new LoginPage());
+
+                // Reset active button
+                if (currentActiveButton != null)
+                {
+                    currentActiveButton.Style = (Style)FindResource("SidebarButtonStyle");
+                    currentActiveButton = null;
+                }
+            }
+        }
+
+        // Public method to show sidebar after successful login
+        public void ShowSidebar()
+        {
+            // Enable all sidebar buttons
+            btnDashboard.IsEnabled = true;
+            btnFlights.IsEnabled = true;
+            btnUsers.IsEnabled = true;
+            btnTickets.IsEnabled = true;
+            btnDiscounts.IsEnabled = true;
+            btnAnnouncements.IsEnabled = true;
+            btnSettings.IsEnabled = true;
+            btnReports.IsEnabled = true;
+        }
+
+        // Hide sidebar before login
+        public void HideSidebar()
+        {
+            // Disable all sidebar buttons
+            btnDashboard.IsEnabled = false;
+            btnFlights.IsEnabled = false;
+            btnUsers.IsEnabled = false;
+            btnTickets.IsEnabled = false;
+            btnDiscounts.IsEnabled = false;
+            btnAnnouncements.IsEnabled = false;
+            btnSettings.IsEnabled = false;
+            btnReports.IsEnabled = false;
+        }
+
+        // Update admin name in sidebar
+        public void SetAdminName(string name)
+        {
+            txtAdminName.Text = name;
+        }
     }
 }

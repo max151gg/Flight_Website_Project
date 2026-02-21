@@ -19,7 +19,18 @@
             helperOleDb = new DbHelperOleDb();
             modelCreators = new ModelCreators();
         }
-
+        public void BeginTransaction()
+        {
+            helperOleDb.OpenConnection();
+        }
+        public void commit()
+        {
+            this.helperOleDb.Commit();
+        }
+        public void Rollback()
+        {
+            this.helperOleDb.RollBack();
+        }
         public DbHelperOleDb HelperOleDb => helperOleDb;
 
         public CityRepository CityRepository

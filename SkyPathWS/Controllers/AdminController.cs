@@ -4,6 +4,9 @@ using ModelSkyPath.Models;
 using SkyPath_Models.Models;
 using SkyPath_Models.ViewModel;
 using SkyPathWS.ORM.Repositories;
+using System.Globalization;
+using System.Text.Json.Serialization;
+
 
 namespace SkyPathWS.Controllers
 {
@@ -243,5 +246,73 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+
+        [HttpPost]
+        public bool CreateFlight(Flight flight)
+        {
+            try
+            {
+                repositoryUOW.HelperOleDb.OpenConnection();
+                return repositoryUOW.FlightRepository.Create(flight);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+        //[HttpPost]
+        //public bool AddNewFlight(Flight flight)
+        //{
+        //    string json = Request.Form["model"].ToString();
+        //    FlightViewModel newflightviewmodel = JsonSerializableAttribute.Deserialize<FlightViewModel>(json);
+        //}
+
+
+        [HttpGet]
+        public List<Flight> GetAllFlights()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                return this.repositoryUOW.FlightRepository.GetALL();
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        [HttpGet]
+        public List<Announcement> GetAllAnnouncements()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                var list = this.repositoryUOW.AnnouncementRepository.GetALL() ?? new List<Announcement>();
+
+                // NEW: sort newest -> oldest (dd-MM-yyyy)
+                return list.OrderByDescending(a =>DateTime.TryParseExact(a.Announcement_Date, "dd-MM-yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)? dt : DateTime.MinValue).ToList();
+
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        
     }
 }

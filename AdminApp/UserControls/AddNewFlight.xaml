@@ -1,0 +1,398 @@
+﻿<Page x:Class="AdminApp.Pages.AddNewFlight"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#F5F5F5"
+      Title="Add Flight">
+
+    <Page.Resources>
+        <!-- Input Style -->
+        <Style x:Key="ModernInputStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="5,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#999999"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Height" Value="42"/>
+        </Style>
+
+        <!-- DatePicker Style -->
+        <Style x:Key="ModernDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Height" Value="42"/>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="InputLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Button Styles -->
+        <Style x:Key="CreateButtonStyle" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#667EEA" Offset="0"/>
+                        <GradientStop Color="#764BA2" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="30,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CancelButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="30,12"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F8F9FA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="White" 
+                Padding="30,25"
+                BorderThickness="0,0,0,1"
+                BorderBrush="#E0E0E0">
+            <StackPanel>
+                <TextBlock x:Name="txtPageTitle"
+                           Text="Add New Flight" 
+                           FontSize="28" 
+                           FontWeight="Bold"
+                           Foreground="#333333"/>
+                <TextBlock Text="Fill in the flight details below" 
+                           FontSize="14"
+                           Foreground="#999999"
+                           Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="30,30,30,20">
+            <Border Background="White"
+                    CornerRadius="12"
+                    Padding="35">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" 
+                                    Direction="270" 
+                                    ShadowDepth="2" 
+                                    BlurRadius="10" 
+                                    Opacity="0.08"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Section 1: Route Information -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,25">
+                        <TextBlock Text="Route Information" 
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#333333"
+                                   Margin="0,0,0,20"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Departure -->
+                            <StackPanel Grid.Column="0" Grid.Row="0">
+                                <TextBlock Text="DEPARTURE CITY" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <ComboBox x:Name="cmbDeparture"
+                                    Style="{StaticResource ModernComboBoxStyle}"
+                                    DisplayMemberPath="CityName"
+                                    SelectedValuePath="CityId"/>
+                            </StackPanel>
+
+                            <!-- Destination -->
+                            <StackPanel Grid.Column="2" Grid.Row="0">
+                                <TextBlock Text="ARRIVAL CITY" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <ComboBox x:Name="cmbArrival"
+                                    Style="{StaticResource ModernComboBoxStyle}"
+                                    DisplayMemberPath="CityName"
+                                    SelectedValuePath="CityId"/>
+                            </StackPanel>
+
+                            <!-- Airline -->
+                            <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,15,0,0">
+                                <TextBlock Text="AIRLINE" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtAirline"
+                                          Style="{StaticResource ModernInputStyle}"
+                                          Text="{Binding Flight, UpdateSourceTrigger=PropertyChanged}"/>
+                                
+                            </StackPanel>
+
+                            <!-- Flight Number -->
+                            <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,15,0,0">
+                                <TextBlock Text="FLIGHT NUMBER" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtFlightNumber"
+                                        Style="{StaticResource ModernInputStyle}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Section 2: Schedule -->
+                    <StackPanel Grid.Row="1" Margin="0,0,0,25">
+                        <TextBlock Text="Schedule" 
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#333333"
+                                   Margin="0,0,0,20"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Departure Date -->
+                            <StackPanel Grid.Column="0" Grid.Row="0">
+                                <TextBlock Text="DEPARTURE DATE" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <DatePicker x:Name="dpDepartureDate"
+                                           Style="{StaticResource ModernDatePickerStyle}"/>
+                            </StackPanel>
+
+                            <!-- Departure Time -->
+                            <StackPanel Grid.Column="2" Grid.Row="0">
+                                <TextBlock Text="DEPARTURE TIME" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtDepartureTime"
+                                        Style="{StaticResource ModernInputStyle}"
+                                        Text="00:00"/>
+                            </StackPanel>
+
+                            <!-- Arrival Date -->
+                            <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,15,0,0">
+                                <TextBlock Text="ARRIVAL DATE" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <DatePicker x:Name="dpArrivalDate"
+                                           Style="{StaticResource ModernDatePickerStyle}"/>
+                            </StackPanel>
+
+                            <!-- Arrival Time -->
+                            <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,15,0,0">
+                                <TextBlock Text="ARRIVAL TIME" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtArrivalTime"
+                                        Style="{StaticResource ModernInputStyle}"
+                                        Text="00:00"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Section 3: Pricing & Capacity -->
+                    <StackPanel Grid.Row="2" Margin="0,0,0,25">
+                        <TextBlock Text="Pricing and Capacity" 
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#333333"
+                                   Margin="0,0,0,20"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Price -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="PRICE (USD)" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtPrice"
+                                        Style="{StaticResource ModernInputStyle}"
+                                        Text="0.00"/>
+                            </StackPanel>
+
+                            <!-- Seats Available -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="TOTAL SEATS" 
+                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBox x:Name="txtSeats"
+                                        Style="{StaticResource ModernInputStyle}"
+                                        Text="180"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Section 4: Image -->
+                    <StackPanel Grid.Row="3">
+                        <TextBlock Text="Flight Image" 
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#333333"
+                                   Margin="0,0,0,20"/>
+
+                        <Border BorderBrush="#E0E0E0"
+                               BorderThickness="2"
+                               CornerRadius="8"
+                               Padding="20"
+                               Background="#FAFAFA"
+                               Height="100">
+                            <StackPanel Orientation="Horizontal"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                <TextBlock Text="📁" FontSize="24" Margin="0,0,10,0"/>
+                                <Button Content="Choose Image"
+                                       Background="#667EEA"
+                                       Foreground="White"
+                                       BorderThickness="0"
+                                       Padding="15,8"
+                                       Cursor="Hand"
+                                       Click="ChooseImage_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="6"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <TextBlock x:Name="txtImageName"
+                                          Text="No image selected"
+                                          FontSize="13"
+                                          Foreground="#999999"
+                                          VerticalAlignment="Center"
+                                          Margin="15,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" 
+                Background="White" 
+                Padding="30,20"
+                BorderThickness="0,1,0,0"
+                BorderBrush="#E0E0E0">
+            <StackPanel Orientation="Horizontal" 
+                       HorizontalAlignment="Center">
+                <Button x:Name="btnSubmit"
+                       Content="Create Flight"
+                       Style="{StaticResource CreateButtonStyle}"
+                       Click="SubmitFlight_Click"/>
+                <Button Content="Cancel"
+                       Style="{StaticResource CancelButtonStyle}"
+                       Margin="15,0,0,0"
+                       Click="Cancel_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

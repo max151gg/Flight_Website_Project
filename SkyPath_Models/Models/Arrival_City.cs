@@ -9,7 +9,7 @@ namespace SkyPath_Models.Models
 {
     public class Arrival_City : Model
     {
-        string arrival_Id;
+        public string arrival_Id;
         string city_Name;
 
         public string Arrival_Id

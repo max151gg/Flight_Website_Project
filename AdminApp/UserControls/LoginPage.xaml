@@ -1,18 +1,237 @@
-﻿<UserControl x:Class="AdminApp.UserControls.LoginPage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AdminApp.UserControls"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="950"
-             Canvas.Left="150">
-    <Canvas>
-        <TextBox x:Name="textBoxEmail" Canvas.Left="385" TextWrapping="Wrap" Text="TextBox" Canvas.Top="150" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Label x:Name="label" Content="Email" Canvas.Left="334" Canvas.Top="146" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBox x:Name="textBoxPassword" Canvas.Left="385" TextWrapping="Wrap" Text="TextBox" Canvas.Top="197" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label x:Name="label_Copy" Content="User Password" Canvas.Left="286" Canvas.Top="193" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Button x:Name="buttonLoin" Content="Login" Canvas.Left="397" Canvas.Top="241" HorizontalAlignment="Left" VerticalAlignment="Top" Width="78"/>
-        <Label x:Name="label1" Content="Login form" Canvas.Left="399" Canvas.Top="65" HorizontalAlignment="Left" VerticalAlignment="Top" Width="212" Height="37"/>
-    </Canvas>
-</UserControl>
+﻿<Page x:Class="AdminApp.UserControls.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#F5F5F5"
+      Title="Login">
+
+    <Page.Resources>
+        <!-- Input TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="5,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#999999"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- PasswordBox Style -->
+        <Style x:Key="ModernPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="5,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#999999"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Login Button Style -->
+        <Style x:Key="LoginButtonStyle" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#667EEA" Offset="0"/>
+                        <GradientStop Color="#764BA2" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="InputLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Checkbox Style -->
+        <Style x:Key="ModernCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <!-- Center Login Form -->
+        <Border Width="450" 
+                Height="550"
+                Background="White"
+                CornerRadius="16"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" 
+                                  Direction="270" 
+                                  ShadowDepth="5" 
+                                  BlurRadius="20" 
+                                  Opacity="0.15"/>
+            </Border.Effect>
+
+            <StackPanel Margin="50,40">
+                <!-- Logo/Icon -->
+                <Border Width="80" 
+                        Height="80" 
+                        Background="#333333"
+                        CornerRadius="40"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,25">
+                    <TextBlock Text="🔐" 
+                               FontSize="40"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Title -->
+                <TextBlock Text="Admin Login" 
+                           FontSize="28" 
+                           FontWeight="Bold"
+                           Foreground="#333333"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+
+                <!-- Subtitle -->
+                <TextBlock Text="Sign in to access the admin dashboard" 
+                           FontSize="14"
+                           Foreground="#999999"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,35"/>
+
+                <!-- Username/Email Input -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="USERNAME OR EMAIL" 
+                               Style="{StaticResource InputLabelStyle}"/>
+                    <TextBox x:Name="txtUsername"
+                             Style="{StaticResource ModernTextBoxStyle}"
+                             Height="45"/>
+                </StackPanel>
+
+                <!-- Password Input -->
+                <StackPanel Margin="0,0,0,15">
+                    <TextBlock Text="PASSWORD" 
+                               Style="{StaticResource InputLabelStyle}"/>
+                    <PasswordBox x:Name="txtPassword"
+                                 Style="{StaticResource ModernPasswordBoxStyle}"
+                                 Height="45"
+                                 KeyDown="TxtPassword_KeyDown"/>
+                </StackPanel>
+
+                <!-- Remember Me & Forgot Password -->
+                <Grid Margin="0,0,0,25">
+                    <CheckBox Content="Remember me"
+                              Style="{StaticResource ModernCheckBoxStyle}"
+                              x:Name="chkRememberMe"
+                              HorizontalAlignment="Left"/>
+                    <TextBlock Text="Forgot Password?" 
+                               FontSize="13"
+                               Foreground="#667EEA"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Cursor="Hand"
+                               MouseLeftButtonDown="ForgotPassword_Click">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="TextDecorations" Value="Underline"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Login Button -->
+                <Button Content="Sign In"
+                        Style="{StaticResource LoginButtonStyle}"
+                        Height="50"
+                        Click="LoginButton_Click"/>
+
+                <!-- Error Message -->
+                <TextBlock x:Name="txtErrorMessage"
+                           Foreground="#DC3545"
+                           FontSize="13"
+                           HorizontalAlignment="Center"
+                           Margin="0,15,0,0"
+                           TextWrapping="Wrap"
+                           Visibility="Collapsed"/>
+
+                <!-- Footer -->
+                <TextBlock Text="© 2025 Your Company. All rights reserved."
+                           FontSize="11"
+                           Foreground="#CCCCCC"
+                           HorizontalAlignment="Center"
+                           Margin="0,30,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Background Pattern (Optional) -->
+        
+    </Grid>
+</Page>

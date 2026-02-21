@@ -41,7 +41,7 @@ namespace SkyPathWS.ORM
         public int Delete(string sql)
         {
             dbCommand.CommandText = sql;
-            int records= dbCommand.ExecuteNonQuery();
+            int records = dbCommand.ExecuteNonQuery();
             dbCommand.Parameters.Clear();
             return records;
         }
@@ -49,7 +49,7 @@ namespace SkyPathWS.ORM
         public int Insert(string sql)
         {
             dbCommand.CommandText = sql;
-            int records= dbCommand.ExecuteNonQuery();
+            int records = dbCommand.ExecuteNonQuery();
             dbCommand.Parameters.Clear();
             return records;
         }
@@ -74,7 +74,7 @@ namespace SkyPathWS.ORM
         {
             dbCommand.CommandText = sql;
             Console.WriteLine(sql);
-            IDataReader reader= dbCommand.ExecuteReader();
+            IDataReader reader = dbCommand.ExecuteReader();
             dbCommand.Parameters.Clear();
             return reader;
         }
@@ -82,13 +82,20 @@ namespace SkyPathWS.ORM
         public int Update(string sql)
         {
             dbCommand.CommandText = sql;
-            int records= dbCommand.ExecuteNonQuery();
+            int records = dbCommand.ExecuteNonQuery();
             dbCommand.Parameters.Clear();
             return records;
         }
         public void AddParameter(string name, object value)
         {
             dbCommand.Parameters.Add(new OleDbParameter(name, value));
+        }
+        public string GetLastInsertedId()
+        {
+            string sql = "SELECT @@IDENTITY";
+            dbCommand.CommandText = sql;
+            object result = dbCommand.ExecuteScalar();
+            return result?.ToString();
         }
     }
 }

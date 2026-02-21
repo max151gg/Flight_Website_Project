@@ -50,6 +50,7 @@ namespace SkyPathWS.ORM.Repositories
             return announcements;
         }
 
+
         public Announcement GetById(string id)
         {
             string sql = "Select * from Announcement where Announcement_Id=@Announcement_Id";

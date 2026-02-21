@@ -9,116 +9,264 @@
         Width="1350"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="White">
+        Background="#F5F5F5">
+
 
     <Window.Resources>
-        <Style x:Key="NavHyperlinkStyle" TargetType="Hyperlink">
-            <Setter Property="TextDecorations" Value="{x:Null}"/>
+        <!-- Sidebar Button Style -->
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Margin="10,2">
+                            <ContentPresenter HorizontalAlignment="Left" 
+                                            VerticalAlignment="Center"
+                                            Margin="15,0,0,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8E8E8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Active Sidebar Button Style -->
+        <Style x:Key="ActiveSidebarButtonStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Logout Button Style -->
+        <Style x:Key="LogoutButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#DC3545"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
-
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="#00BFFF"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#C82333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
-
-
-        <Style x:Key="ExitButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Black"/>
-            <Setter Property="Foreground" Value="Red"/>
-            <Setter Property="BorderBrush" Value="Black"/>
-            <Setter Property="FontSize" Value="20"/>
-            <Setter Property="Cursor" Value="Hand"/>
-
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="Black"/>
-                    <Setter Property="Background" Value="Black"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-
     </Window.Resources>
 
-
     <Grid>
-        
-        
-        
+        <!-- Main Layout: Sidebar + Content -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- LEFT BAR -->
-        <Grid Grid.Column="0" Background="DimGray">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="120"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="90"/>
-            </Grid.RowDefinitions>
+        <!-- Sidebar -->
+        <Border Grid.Column="0" 
+                Background="White" 
+                BorderThickness="0,0,1,0" 
+                BorderBrush="#E0E0E0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <!-- Top header -->
-            <Border Grid.Row="0" Margin="10" BorderBrush="White" BorderThickness="2" CornerRadius="6">
-                <TextBlock Text="ADMIN"
-                           Foreground="White"
-                           FontSize="26"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-            </Border>
+                <!-- Logo/Header -->
+                <Border Grid.Row="0" 
+                        Background="#333333" 
+                        Padding="20,25">
+                    <StackPanel>
+                        <TextBlock Text="SkyPath" 
+                                   FontSize="20" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Admin Dashboard" 
+                                   FontSize="12" 
+                                   Foreground="#CCCCCC"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
 
-            <!-- Links -->
-            <StackPanel Grid.Row="1" Margin="10,10,10,10">
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Start_Click">Home</Hyperlink>
-                </TextBlock>
+                <!-- Navigation Menu -->
+                <ScrollViewer Grid.Row="1" 
+                             VerticalScrollBarVisibility="Auto"
+                             Margin="0,20,0,0">
+                    <StackPanel>
+                        <!-- Dashboard -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnDashboard"
+                                Click="NavigateToDashboard">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📊" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Login_Click">Login</Hyperlink>
-                </TextBlock>
+                        <!-- Separator -->
+                        <Border Height="1" 
+                                Background="#E0E0E0" 
+                                Margin="20,15"/>
 
-                <!-- Add more later, same pattern -->
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Flights_Click">Flights</Hyperlink>
-                </TextBlock>
+                        <!-- Section Title -->
+                        <TextBlock Text="MANAGEMENT" 
+                                   FontSize="11" 
+                                   FontWeight="Bold"
+                                   Foreground="#999999"
+                                   Margin="20,10,0,10"
+                                   Padding="5,0"/>
 
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Tickets_Click">Tickets</Hyperlink>
-                </TextBlock>
+                        <!-- Flights -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnFlights"
+                                Click="NavigateToFlights">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✈️" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Flights" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Tickets_Click">Discounts</Hyperlink>
-                </TextBlock>
+                        <!-- Users -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnUsers"
+                                Click="NavigateToUsers">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="👥" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Users" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Tickets_Click">Announcements</Hyperlink>
-                </TextBlock>
+                        <!-- Tickets -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnTickets"
+                                Click="NavigateToTickets">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🎫" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Tickets" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                <TextBlock Margin="12" FontSize="20">
-                    <Hyperlink Foreground="White" Style="{StaticResource NavHyperlinkStyle}" Click="Nav_Tickets_Click">Users</Hyperlink>
-                </TextBlock>
-            </StackPanel>
+                        <!-- Discounts -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnDiscounts"
+                                Click="NavigateToDiscounts">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💰" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Discounts" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-            <!-- Bottom exit -->
-            <StackPanel Grid.Row="2" Margin="10">
-                <Button Content="Exit"
-            Height="45"
-            FontSize="18"
-            Background="Red"
-            Foreground="White"
-                        Style="{StaticResource ExitButtonStyle}"
-            Click="Nav_Exit_Click"/>
-            </StackPanel>
-        </Grid>
+                        <!-- Announcements -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnAnnouncements"
+                                Click="NavigateToAnnouncements">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📢" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Announcements" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-        <!-- RIGHT CONTENT -->
-        <Frame x:Name="MainFrame"
-               Grid.Column="1"
-               NavigationUIVisibility="Hidden"
-               Background="White"/>
+                        <!-- Separator -->
+                        <Border Height="1" 
+                                Background="#E0E0E0" 
+                                Margin="20,15"/>
+
+                        <!-- Section Title -->
+                        <TextBlock Text="SYSTEM" 
+                                   FontSize="11" 
+                                   FontWeight="Bold"
+                                   Foreground="#999999"
+                                   Margin="20,10,0,10"
+                                   Padding="5,0"/>
+
+                        <!-- Settings -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnSettings"
+                                Click="NavigateToSettings">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚙️" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Reports -->
+                        <Button Style="{StaticResource SidebarButtonStyle}"
+                                x:Name="btnReports"
+                                Click="NavigateToReports">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📈" FontSize="18" Margin="0,0,12,0"/>
+                                <TextBlock Text="Reports" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- User Info & Logout -->
+                <Border Grid.Row="2" 
+                        Background="#F8F9FA" 
+                        Padding="20"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="#E0E0E0">
+                    <StackPanel>
+                        <!-- User Info -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <Ellipse Width="40" Height="40" Fill="#667EEA"/>
+                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock x:Name="txtAdminName" 
+                                           Text="Admin User" 
+                                           FontWeight="SemiBold"
+                                           FontSize="13"
+                                           Foreground="#333333"/>
+                                <TextBlock Text="Administrator" 
+                                           FontSize="11"
+                                           Foreground="#999999"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Logout Button -->
+                        <Button Style="{StaticResource LogoutButtonStyle}"
+                                Content="Logout"
+                                Click="LogoutButton_Click"
+                                HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Content Area -->
+        <Border Grid.Column="1" 
+                Background="#F5F5F5">
+            <Frame x:Name="MainFrame" 
+                   NavigationUIVisibility="Hidden"
+                   Background="Transparent"/>
+        </Border>
     </Grid>
 </Window>

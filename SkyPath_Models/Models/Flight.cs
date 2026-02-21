@@ -20,7 +20,7 @@ namespace SkyPath_Models.Models
         public string departure_Time;
         public string arrival_Time;
         public double price;
-        public short seats_Available;
+        public int seats_Available;
         public string departure_Date;
         public string arrival_Date;
 
@@ -72,7 +72,7 @@ namespace SkyPath_Models.Models
         }
         [Required(ErrorMessage = "its required to set the number of seats available")]
         [IsDigits(ErrorMessage = "Must be digits only")]
-        public short Seats_Available
+        public int Seats_Available
         {
             get { return seats_Available; }
             set { seats_Available = value; ValidateProperty(value, "Seats_Available"); }

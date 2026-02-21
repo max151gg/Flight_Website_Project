@@ -15,10 +15,10 @@ namespace ModelSkyPath.Models
         string title;
         string content;
         string announcement_Date;
-        string user_Id;
+        public string user_Id;
 
 
-        
+
         public string Announcement_Id
         {
             get { return announcement_Id; }
