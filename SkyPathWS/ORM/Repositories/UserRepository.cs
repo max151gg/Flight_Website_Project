@@ -142,6 +142,15 @@ namespace SkyPathWS.ORM.Repositories
                 return null;
             }
         }
+
+        public bool UpdateUserRole(string userId, string roleId)
+        {
+            string sql = @"UPDATE [User] SET Role_Id=@Role_Id WHERE User_Id=@User_Id";
+            helperOleDb.AddParameter("@Role_Id", roleId);
+            helperOleDb.AddParameter("@User_Id", userId);
+            return helperOleDb.Update(sql) > 0;
+        }
+
         public bool UpdateUserImage(string userId, string imagePath)
         {
             string sql = @"UPDATE [User] 

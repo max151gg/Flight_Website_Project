@@ -74,6 +74,24 @@ namespace SkyPathWS.Controllers
             }
         }
         [HttpGet]
+        public bool UpdateUserRole(string user_id, string role_id)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                return this.repositoryUOW.UserRepository.UpdateUserRole(user_id, role_id);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+        [HttpGet]
         public bool DeleteUser(string user_id)
         {
             try
