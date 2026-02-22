@@ -18,8 +18,4 @@
 		<ProjectReference Include="..\SkyPath_Models\SkyPath_Models.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="wwwroot\images\profiles\" />
-	</ItemGroup>
-
 </Project>

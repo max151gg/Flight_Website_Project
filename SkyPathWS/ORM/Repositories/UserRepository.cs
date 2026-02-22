@@ -69,7 +69,7 @@ namespace SkyPathWS.ORM.Repositories
         }
         public bool Delete(string id)
         {
-            string sql = @"Delete from User where User_Id=@User_Id";
+            string sql = @"Delete from [User] where User_Id=@User_Id";
             helperOleDb.AddParameter("@User_Id", id);
             return helperOleDb.Delete(sql) > 0;
         }

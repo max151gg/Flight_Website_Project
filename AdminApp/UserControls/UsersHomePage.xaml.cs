@@ -16,6 +16,8 @@ namespace AdminApp.UserControls
         private string searchTerm = string.Empty;
         private List<User> allUsers = new();
 
+        private bool _uiReady = false;
+
         public UsersHomePage()
         {
             InitializeComponent();
@@ -24,45 +26,36 @@ namespace AdminApp.UserControls
 
         private async void UsersHomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadUsers();
+            _uiReady = true;              // UI is now constructed
+            await LoadUsers();            // this will call ApplyFilterAndBind()
         }
+
+
 
         private async Task LoadUsers()
         {
-            var apiClient = new ApiClient<UserViewModel>
+            try
             {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/Admin/GetUser"
-            };
+                var apiClient = new ApiClient<UserViewModel>
+                {
+                    Scheme = "http",
+                    Host = "localhost",
+                    Port = 5125,
+                    Path = "api/Admin/GetUser"
+                };
 
-            UserViewModel vm = await apiClient.GetAsync();
-            allUsers = vm?.users ?? new List<User>();
+                UserViewModel vm = await apiClient.GetAsync();
+                allUsers = vm?.users ?? new List<User>();
 
-            foreach (User user in allUsers)
-            {
-                user.User_Image = NormalizeImagePath(user.User_Image);
+                
+
+                ApplyFilterAndBind();
+                UpdateStatistics();
             }
-
-            ApplyFilterAndBind();
-            UpdateStatistics();
-        }
-
-        private string NormalizeImagePath(string imagePath)
-        {
-            if (string.IsNullOrWhiteSpace(imagePath))
+            catch (Exception ex)
             {
-                return "http://localhost:5125/images/profiles/default.png";
+                throw new Exception("Could not load users from API. Make sure SkyPathWS is running.", ex);
             }
-
-            if (imagePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-            {
-                return imagePath;
-            }
-
-            string normalized = imagePath.StartsWith("/") ? imagePath : $"/{imagePath}";
-            return $"http://localhost:5125{normalized}";
         }
 
         private void ApplyFilterAndBind()
@@ -81,10 +74,10 @@ namespace AdminApp.UserControls
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 filteredUsers = filteredUsers.Where(u =>
-                    (u.User_FullName ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (u.UserName ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (u.Email ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (u.User_Id ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    ((u.User_FullName ?? "").IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    ((u.UserName ?? "").IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    ((u.Email ?? "").IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    ((u.User_Id ?? "").IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0));
             }
 
             List<User> result = filteredUsers.ToList();
@@ -105,18 +98,11 @@ namespace AdminApp.UserControls
 
         private void FilterChanged(object sender, RoutedEventArgs e)
         {
-            if (rbAll.IsChecked == true)
-            {
-                currentFilter = 0;
-            }
-            else if (rbAdmins.IsChecked == true)
-            {
-                currentFilter = 1;
-            }
-            else if (rbRegular.IsChecked == true)
-            {
-                currentFilter = 2;
-            }
+            if (!_uiReady) return;        // ignore early events
+
+            if (rbAll.IsChecked == true) currentFilter = 0;
+            else if (rbAdmins.IsChecked == true) currentFilter = 1;
+            else if (rbRegular.IsChecked == true) currentFilter = 2;
 
             ApplyFilterAndBind();
         }
@@ -129,47 +115,52 @@ namespace AdminApp.UserControls
 
         private async void ToggleRole_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button btn || btn.Tag is not User user)
+            try
             {
-                MessageBox.Show("Could not determine which user to update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                if (sender is not Button btn || btn.Tag is not User user)
+                {
+                    MessageBox.Show("Could not determine which user to update.", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                bool isAdmin = user.Role_Id == "0";
+                string newRoleId = isAdmin ? "1" : "0";
+                string action = isAdmin ? "demote" : "promote";
+
+                var result = MessageBox.Show(
+                    $"Are you sure you want to {action} this user?\n\nThis will change their access permissions.",
+                    "Confirm Role Change",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result != MessageBoxResult.Yes) return;
+
+                var apiClient = new ApiClient<bool>
+                {
+                    Scheme = "http",
+                    Host = "localhost",
+                    Port = 5125,
+                    Path = "api/Admin/UpdateUserRole"
+                };
+                apiClient.SetQueryParameter("user_id", user.User_Id);
+                apiClient.SetQueryParameter("role_id", newRoleId);
+
+                bool ok = await apiClient.GetAsync();
+                if (!ok)
+                {
+                    MessageBox.Show("Failed to update role.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                user.Role_Id = newRoleId;
+                ApplyFilterAndBind();
+                UpdateStatistics();
             }
-
-            bool isAdmin = user.Role_Id == "0";
-            string newRoleId = isAdmin ? "1" : "0";
-            string action = isAdmin ? "demote" : "promote";
-
-            var result = MessageBox.Show(
-                $"Are you sure you want to {action} this user?\n\nThis will change their access permissions.",
-                "Confirm Role Change",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes)
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show($"Role change failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            var apiClient = new ApiClient<bool>
-            {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/Admin/UpdateUserRole"
-            };
-            apiClient.SetQueryParameter("user_id", user.User_Id);
-            apiClient.SetQueryParameter("role_id", newRoleId);
-
-            bool ok = await apiClient.GetAsync();
-            if (!ok)
-            {
-                MessageBox.Show("Failed to update role.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            user.Role_Id = newRoleId;
-            ApplyFilterAndBind();
-            UpdateStatistics();
         }
 
         private async void DeleteUser_Click(object sender, RoutedEventArgs e)
@@ -206,8 +197,11 @@ namespace AdminApp.UserControls
                 MessageBox.Show("Failed to delete user.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            allUsers.RemoveAll(u => u.User_Id == user.User_Id);
+            else
+            {
+                MessageBox.Show($"User deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+                allUsers.RemoveAll(u => u.User_Id == user.User_Id);
             ApplyFilterAndBind();
             UpdateStatistics();
         }
