@@ -122,6 +122,7 @@ namespace AdminApp.Pages
             {
                 var flight = new Flight
                 {
+                    Flight_Id = "",
                     Departure_Id = cmbDeparture.SelectedValue?.ToString(),
                     Arrival_Id = cmbArrival.SelectedValue?.ToString(),
 

@@ -74,7 +74,13 @@ namespace SkyPathWS.ORM.Repositories
             }
             return tickets;
         }
-
+        public bool UpdateTicketStatus(string ticketId, bool status)
+        {
+            string sql = @"Update Ticket set Status=@Status where Ticket_Id=@Ticket_Id";
+            helperOleDb.AddParameter("@Status", status);
+            helperOleDb.AddParameter("@Ticket_Id", ticketId);
+            return helperOleDb.Update(sql) > 0;
+        }
         public bool Update(Ticket model)
         {
             string sql = @"Update Ticket set 

@@ -104,7 +104,6 @@ namespace AdminApp.UserControls
 
         private async void DeleteFlight_Click(object sender, RoutedEventArgs e)
         {
-            // Button.Tag is the bound Flight object (because Tag="{Binding}" in XAML)
             if (sender is not Button btn || btn.Tag is not Flight flight)
             {
                 MessageBox.Show("Could not determine which flight to delete.",
@@ -114,7 +113,15 @@ namespace AdminApp.UserControls
                 return;
             }
 
-            string flightId = flight.Flight_Id?.ToString() ?? "(unknown)";
+            string flightId = flight.Flight_Id?.ToString() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(flightId))
+            {
+                MessageBox.Show("Flight ID is missing.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                return;
+            }
 
             var result = MessageBox.Show(
                 $"Are you sure you want to delete flight {flightId}?\n\nThis action cannot be undone.",
@@ -122,32 +129,52 @@ namespace AdminApp.UserControls
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result == MessageBoxResult.Yes)
+            if (result != MessageBoxResult.Yes)
             {
+                return;
+            }
 
-                try
+            try
+            {
+                bool deleted = await DeleteFlightFromDatabaseAsync(flightId);
+                if (!deleted)
                 {
-                    // TODO: call your WS delete endpoint here (recommended)
-                    // var deleteClient = new ApiClient<bool> { ... Path = "api/Admin/DeleteFlight" };
-                    // deleteClient.SetQueryParameter("flight_id", flightId);
-                    // bool ok = await deleteClient.GetAsync();
-
-                    MessageBox.Show($"Flight {flightId} deleted successfully!",
-                                    "Success",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
-
-                    await LoadFlights();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to delete flight {flightId}.\n\n{ex.Message}",
+                    MessageBox.Show($"Delete failed for flight {flightId}.",
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
+                    return;
                 }
+
+                MessageBox.Show($"Flight {flightId} deleted successfully!",
+                                "Success",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+
+                await LoadFlights();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete flight {flightId}.\n\n{ex.Message}",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
         }
+        private async Task<bool> DeleteFlightFromDatabaseAsync(string flightId)
+        {
+            var apiClient = new ApiClient<bool>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Admin/DeleteFlight"
+            };
+
+            apiClient.SetQueryParameter("flight_id", flightId);
+            return await apiClient.GetAsync();
+        }
+
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {

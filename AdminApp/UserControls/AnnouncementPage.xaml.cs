@@ -82,9 +82,8 @@ namespace AdminApp.UserControls
         }
 
 
-        private void CreateAnnouncement_Click(object sender, RoutedEventArgs e)
+        private async void CreateAnnouncement_Click(object sender, RoutedEventArgs e)
         {
-            // Validate inputs
             if (!ValidateInputs())
             {
                 return;
@@ -92,30 +91,41 @@ namespace AdminApp.UserControls
 
             try
             {
-                // TODO: Create announcement object and save to database
-                /*
-                var announcement = new Announcement
+                Announcement announcement = new Announcement
                 {
-                    Title = txtTitle.Text.Trim(),
+                    Announcement_Id = "",
+                    Admin_Id = "0",
+                    Title = NormalizeTitle(txtTitle.Text),
                     Content = txtContent.Text.Trim(),
-                    AnnouncementDate = dpAnnouncementDate.SelectedDate.Value,
-                    UserId = string.IsNullOrWhiteSpace(txtUserId.Text) ? null : txtUserId.Text.Trim(),
-                    CreatedDate = DateTime.Now
+                    Announcement_Date = dpAnnouncementDate.SelectedDate?.ToString("dd-MM-yyyy") ?? string.Empty,
+                    User_Id = string.IsNullOrWhiteSpace(txtUserId.Text) ? "0" : txtUserId.Text.Trim()
                 };
 
-                SaveAnnouncementToDatabase(announcement);
-                */
+                var apiClient = new ApiClient<Announcement>
+                {
+                    Scheme = "http",
+                    Host = "localhost",
+                    Port = 5125,
+                    Path = "api/Admin/CreateAnnouncement"
+                };
+
+                bool created = await apiClient.PostAsync(announcement);
+                if (!created)
+                {
+                    MessageBox.Show("Failed to create announcement.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                    return;
+                }
 
                 MessageBox.Show("Announcement created successfully!",
                                "Success",
                                MessageBoxButton.OK,
                                MessageBoxImage.Information);
 
-                // Clear form
                 ClearForm();
-
-                // Reload announcements
-                _ = LoadAnnouncements();
+                await LoadAnnouncements();
             }
             catch (Exception ex)
             {
@@ -126,10 +136,24 @@ namespace AdminApp.UserControls
             }
         }
 
+        private string NormalizeTitle(string title)
+        {
+            string value = (title ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+
+            return char.ToUpper(value[0]) + value.Substring(1);
+        }
+
         private bool ValidateInputs()
         {
-            // Title
-            if (string.IsNullOrWhiteSpace(txtTitle.Text))
+            string title = (txtTitle.Text ?? string.Empty).Trim();
+            string content = (txtContent.Text ?? string.Empty).Trim();
+            string userId = (txtUserId.Text ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(title))
             {
                 MessageBox.Show("Please enter an announcement title.",
                                "Validation Error",
@@ -139,8 +163,27 @@ namespace AdminApp.UserControls
                 return false;
             }
 
-            // Content
-            if (string.IsNullOrWhiteSpace(txtContent.Text))
+            if (title.Length < 2 || title.Length > 20)
+            {
+                MessageBox.Show("Title must be between 2 and 20 characters.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                txtTitle.Focus();
+                return false;
+            }
+
+            if (!char.IsUpper(title[0]))
+            {
+                MessageBox.Show("Title must start with a capital letter.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                txtTitle.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(content))
             {
                 MessageBox.Show("Please enter announcement content.",
                                "Validation Error",
@@ -150,7 +193,16 @@ namespace AdminApp.UserControls
                 return false;
             }
 
-            // Date
+            if (content.Length > 500)
+            {
+                MessageBox.Show("Content must be no longer than 500 characters.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                txtContent.Focus();
+                return false;
+            }
+
             if (!dpAnnouncementDate.SelectedDate.HasValue)
             {
                 MessageBox.Show("Please select an announcement date.",
@@ -161,8 +213,19 @@ namespace AdminApp.UserControls
                 return false;
             }
 
+            if (!string.IsNullOrWhiteSpace(userId) && !int.TryParse(userId, out _))
+            {
+                MessageBox.Show("User ID must be a number (or leave empty for public).",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                txtUserId.Focus();
+                return false;
+            }
+
             return true;
         }
+
 
         private void ClearForm()
         {
@@ -268,7 +331,7 @@ namespace AdminApp.UserControls
         }
         private async Task<bool> DeleteAnnouncementFromDatabaseAsync(string announcement_id)
         {
-            var apiClient = new ApiClient<object>
+            var apiClient = new ApiClient<bool>
             {
                 Scheme = "http",
                 Host = "localhost",
@@ -276,13 +339,9 @@ namespace AdminApp.UserControls
                 Path = "api/Admin/DeleteAnnouncement"
             };
 
-            
-
-            
-            var ok = await apiClient.PostAsync(announcement_id);
-            return ok;
-
-            
+            apiClient.SetQueryParameter("announcement_id", announcement_id);
+            return await apiClient.GetAsync();
         }
+
     }
 }

@@ -90,6 +90,40 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+        [HttpGet]
+        public List<Ticket> GetAllTickets()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                return this.repositoryUOW.TicketRepository.GetALL();
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+        [HttpGet]
+        public bool UpdateTicketStatus(string ticket_id, bool status)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                return this.repositoryUOW.TicketRepository.UpdateTicketStatus(ticket_id, status);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
 
         [HttpGet]
         public bool DeleteUser(string user_id)

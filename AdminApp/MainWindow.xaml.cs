@@ -54,8 +54,14 @@ namespace AdminApp
         private void NavigateToTickets(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            // MainFrame.Navigate(new TicketsPage());
-            MessageBox.Show("Tickets page - To be implemented");
+            try
+            {
+                MainFrame.Navigate(new TicketPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Tickets page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToDiscounts(object sender, RoutedEventArgs e)
@@ -88,6 +94,11 @@ namespace AdminApp
         // Set active button style
         private void SetActiveButton(Button button)
         {
+            if (button == null)
+            {
+                return;
+            }
+
             if (currentActiveButton != null)
             {
                 currentActiveButton.Style = (Style)FindResource("SidebarButtonStyle");
