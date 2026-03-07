@@ -12,27 +12,11 @@ namespace AdminApp
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // value should be something like: "default.png" or "someUser.png" or "/images/profiles/x.png"
             var raw = value?.ToString();
 
-            // fallback
-            if (string.IsNullOrWhiteSpace(raw))
-                raw = "default.png";
-
-            // If your DB already stores full URL -> just use it
-            if (raw.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                return new Uri(raw, UriKind.Absolute);
-
-            // If your DB stores "/images/profiles/x.png" -> attach host
-            if (raw.StartsWith("/"))
+            if (!string.IsNullOrWhiteSpace(raw))
                 return new Uri("http://localhost:5125" + raw, UriKind.Absolute);
-
-            // If your DB stores "images/profiles/x.png" -> add leading slash
-            if (raw.StartsWith("images/", StringComparison.OrdinalIgnoreCase))
-                return new Uri("http://localhost:5125/" + raw, UriKind.Absolute);
-
-            // If your DB stores only filename -> assume it's under /images/profiles/
-            return new Uri($"http://localhost:5125/images/profiles/{Uri.EscapeDataString(raw)}", UriKind.Absolute);
+            return new Uri("http://localhost:5125//images/profiles/default.png", UriKind.Absolute);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AdminApp.Converters;
+using SkyPath_Models.Models;
+using SkyPath_Models.ViewModel;
+using SkyPathWSClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,82 +32,153 @@ namespace AdminApp.UserControls
             this.Loaded += (s, e) => txtUsername.Focus();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            PerformLogin();
+            await PerformLoginAsync();
         }
 
         // Handle Enter key press in password field
-        private void TxtPassword_KeyDown(object sender, KeyEventArgs e)
+        private async void TxtPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                PerformLogin();
+                await PerformLoginAsync();
             }
         }
 
-        private void PerformLogin()
+        private async Task PerformLoginAsync()
         {
-            // Hide previous error message
-            txtErrorMessage.Visibility = Visibility.Collapsed;
 
-            // Get input values
-            string username = txtUsername.Text.Trim();
+            string email = txtUsername.Text.Trim();
             string password = txtPassword.Password;
 
-            // Basic validation
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(email))
             {
-                ShowError("Please enter your username or email.");
+                MessageBox.Show("Please enter your email", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtUsername.Focus();
+                return;
+            }
+
+            if (!email.Contains("@", StringComparison.Ordinal))
+            {
+                MessageBox.Show("Please enter a valid email",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
                 txtUsername.Focus();
                 return;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                ShowError("Please enter your password.");
+                MessageBox.Show("Please enter your password.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
                 txtPassword.Focus();
                 return;
             }
 
-            // TODO: Replace with actual authentication logic
-            // For now, use hardcoded credentials for testing
-            if (username.ToLower() == "admin" && password == "admin123")
+            try
             {
-                // Successful login
-                var mainWindow = Window.GetWindow(this) as MainWindow;
-                if (mainWindow != null)
+                var loginClient = new ApiClient<LoginViewModel>
                 {
-                    // Show sidebar
-                    mainWindow.ShowSidebar();
+                    Scheme = "http",
+                    Host = "localhost",
+                    Port = 5125,
+                    Path = "api/Guest/Login"
+                };
 
-                    // Set admin name
-                    mainWindow.SetAdminName(username);
+                var loginVm = new LoginViewModel
+                {
+                    Email = email,
+                    Password = password
+                };
 
-                    // Navigate to dashboard
-                    // mainWindow.MainFrame.Navigate(new DashboardPage());
+                User user = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
 
-                    // For now, show a success message
-                    MessageBox.Show($"Welcome, {username}!\n\nDashboard will load here.",
-                                   "Login Successful",
-                                   MessageBoxButton.OK,
-                                   MessageBoxImage.Information);
+                if (user == null)
+                {
+                    MessageBox.Show("Invalid Email or Password.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                    txtPassword.Clear();
+                    txtUsername.Focus();
+                    return;
                 }
+
+                if (user.Role_Id != "0")
+                {
+                    MessageBox.Show("Only admins can access the admin panel.",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                    txtPassword.Clear();
+                    txtUsername.Focus();
+                    return;
+                }
+
+                var mainWindow = Window.GetWindow(this) as MainWindow;
+                if (mainWindow == null)
+                {
+                    MessageBox.Show("Was unable to access the window.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                string adminDisplayName = await ResolveAdminFullNameAsync(user);
+
+                mainWindow.ShowSidebar();
+                mainWindow.SetAdminName(adminDisplayName);
+                mainWindow.SetAdminProfileImage(user.User_Image ?? string.Empty);
+                mainWindow.MainFrame.Navigate(new FlightPage());
             }
-            else
+            catch (Exception ex)
             {
-                // Failed login
-                ShowError("Invalid username or password. Please try again.");
-                txtPassword.Clear();
-                txtUsername.Focus();
+                MessageBox.Show($"Login failed: {ex.Message}",
+                               "Validation Error",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                
             }
         }
 
-        private void ShowError(string message)
+        private async Task<string> ResolveAdminFullNameAsync(User user)
         {
-            txtErrorMessage.Text = message;
-            txtErrorMessage.Visibility = Visibility.Visible;
+            if (user == null)
+            {
+                return "Admin User";
+            }
+
+            var userClient = new ApiClient<UserViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Admin/GetUser"
+            };
+
+            UserViewModel vm = await userClient.GetAsync();
+            var users = vm?.users ?? new System.Collections.Generic.List<User>();
+
+            UserIdToFullNameConverter.UserNamesById = users
+                .Where(u => u != null && !string.IsNullOrWhiteSpace(u.User_Id))
+                .ToDictionary(
+                    u => u.User_Id,
+                    u => string.IsNullOrWhiteSpace(u.User_FullName) ? $"User {u.User_Id}" : u.User_FullName);
+
+            var converter = new UserIdToFullNameConverter();
+            string converted = converter.Convert(user.User_Id, typeof(string), null, System.Globalization.CultureInfo.InvariantCulture)?.ToString() ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(converted) && !converted.StartsWith("User ", StringComparison.OrdinalIgnoreCase))
+            {
+                return converted;
+            }
+
+            return user.User_FullName ?? user.UserName ?? "Admin User";
         }
+
+        
 
         private void ForgotPassword_Click(object sender, MouseButtonEventArgs e)
         {

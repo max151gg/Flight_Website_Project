@@ -107,6 +107,25 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+        [HttpGet]
+        public List<Discount> GetAllDiscounts()
+        {
+            this.repositoryUOW.HelperOleDb.OpenConnection();
+            try
+            {
+                return this.repositoryUOW.DiscountRepository.GetALL();
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
         [HttpGet]
         public bool UpdateTicketStatus(string ticket_id, bool status)
         {
@@ -126,14 +145,39 @@ namespace SkyPathWS.Controllers
         }
 
         [HttpGet]
-        public bool DeleteUser(string user_id)
+        public bool DeleteUser(string user_id, [FromServices] IWebHostEnvironment env)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(user_id))
+                {
+                    return false;
+                }
+
                 this.repositoryUOW.HelperOleDb.OpenConnection();
-                return this.repositoryUOW.UserRepository.Delete(user_id);
+                bool deleted = this.repositoryUOW.UserRepository.Delete(user_id);
+
+                if (!deleted)
+                {
+                    return false;
+                }
+
+                string folder = Path.Combine(env.WebRootPath, "images", "profiles");
+                string baseName = $"profile_{user_id}";
+                string[] variants = { ".png", ".jpg", ".jpeg", ".gif", ".jfif" };
+
+                foreach (string v in variants)
+                {
+                    string p = Path.Combine(folder, baseName + v);
+                    if (System.IO.File.Exists(p))
+                    {
+                        System.IO.File.Delete(p);
+                    }
+                }
+
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -142,6 +186,7 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
         [HttpGet]
         public bool DeleteFlight(string flight_id)
         {

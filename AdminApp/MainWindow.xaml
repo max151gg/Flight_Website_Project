@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:AdminApp"
         mc:Ignorable="d"
         Title="Admin Panel"
         Height="700"
@@ -13,6 +14,8 @@
 
 
     <Window.Resources>
+        <conv:UrlConverter x:Key="urlConverter"/>
+
         <!-- Sidebar Button Style -->
         <Style x:Key="SidebarButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -238,7 +241,14 @@
                     <StackPanel>
                         <!-- User Info -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                            <Ellipse Width="40" Height="40" Fill="#667EEA"/>
+                            <Ellipse x:Name="imgAdminProfile" Width="40" Height="40">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding AdminImagePath, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource urlConverter}}"
+                                                Stretch="UniformToFill"
+                                                AlignmentX="Center"
+                                                AlignmentY="Center"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
                             <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                                 <TextBlock x:Name="txtAdminName" 
                                            Text="Admin User" 

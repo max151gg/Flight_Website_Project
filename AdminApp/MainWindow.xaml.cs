@@ -1,34 +1,45 @@
-﻿using System.Text;
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using AdminApp.UserControls;
 using AdminApp.Pages;
+using AdminApp.UserControls;
 
 namespace AdminApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private Button currentActiveButton = null;
+
+        private string adminImagePath = string.Empty;
+        public string AdminImagePath
+        {
+            get => adminImagePath;
+            set
+            {
+                if (adminImagePath != value)
+                {
+                    adminImagePath = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
             // Load login page initially
             MainFrame.Navigate(new LoginPage());
 
-            // Hide sidebar initially (until logged in)
-            //HideSidebar();
+            HideSidebar();
+            SetAdminName("Admin User");
+            SetAdminProfileImage(string.Empty);
         }
 
         // Navigate to different pages
@@ -42,13 +53,27 @@ namespace AdminApp
         private void NavigateToFlights(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            MainFrame.Navigate(new FlightPage());
+            try
+            {
+                MainFrame.Navigate(new FlightPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Flights page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToUsers(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            MainFrame.Navigate(new UsersHomePage());
+            try
+            {
+                MainFrame.Navigate(new UsersHomePage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Users page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToTickets(object sender, RoutedEventArgs e)
@@ -67,14 +92,27 @@ namespace AdminApp
         private void NavigateToDiscounts(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            // MainFrame.Navigate(new DiscountsPage());
-            MessageBox.Show("Discounts page - To be implemented");
+            try
+            {
+                MainFrame.Navigate(new DiscountPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Discounts page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToAnnouncements(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            MainFrame.Navigate(new AnnouncementPage());
+            try
+            {
+                MainFrame.Navigate(new AnnouncementPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Announcements page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToSettings(object sender, RoutedEventArgs e)
@@ -119,6 +157,8 @@ namespace AdminApp
             if (result == MessageBoxResult.Yes)
             {
                 HideSidebar();
+                SetAdminName("Admin User");
+                SetAdminProfileImage(string.Empty);
                 MainFrame.Navigate(new LoginPage());
 
                 // Reset active button
@@ -161,7 +201,25 @@ namespace AdminApp
         // Update admin name in sidebar
         public void SetAdminName(string name)
         {
-            txtAdminName.Text = name;
+            txtAdminName.Text = string.IsNullOrWhiteSpace(name) ? "Admin User" : name;
+        }
+
+        public void SetAdminProfileImage(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                AdminImagePath = string.Empty;
+                return;
+            }
+
+            string separator = imagePath.Contains("?") ? "&" : "?";
+            AdminImagePath = $"{imagePath}{separator}v={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

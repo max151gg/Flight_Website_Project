@@ -47,6 +47,7 @@ namespace SkyPath_Models.Models
             get { return valid_To; }
             set { valid_To = value; ValidateProperty(value, "Valid_To"); }
         }
+        [Required(ErrorMessage = "User Id is required")]
         public string User_Id
         {
             get { return user_Id; }

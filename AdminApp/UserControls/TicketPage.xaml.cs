@@ -1,9 +1,9 @@
 ﻿using AdminApp.Converters;
 using SkyPath_Models.Models;
+using SkyPath_Models.ViewModel;
 using SkyPathWSClient;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +16,7 @@ namespace AdminApp.UserControls
         private int currentFilter; // 0 = All, 1 = Active, 2 = Cancelled
         private string searchTerm = string.Empty;
 
-        private List<TicketDisplayItem> allTickets = new();
+        private List<Ticket> allTickets = new();
 
         public TicketPage()
         {
@@ -24,12 +24,10 @@ namespace AdminApp.UserControls
             Loaded += TicketPage_Loaded;
         }
 
-
         private async void TicketPage_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                UpdateLayout();
                 await LoadTickets();
             }
             catch (Exception ex)
@@ -48,7 +46,7 @@ namespace AdminApp.UserControls
                 Path = "api/Admin/GetAllTickets"
             };
 
-            var userClient = new ApiClient<SkyPath_Models.ViewModel.UserViewModel>
+            var userClient = new ApiClient<UserViewModel>
             {
                 Scheme = "http",
                 Host = "localhost",
@@ -72,88 +70,34 @@ namespace AdminApp.UserControls
                 Path = "api/City/GetAll"
             };
 
-            List<Ticket> tickets = await ticketClient.GetAsync() ?? new List<Ticket>();
-            var usersVm = await userClient.GetAsync();
-            List<User> users = usersVm?.users ?? new List<User>();
+            allTickets = await ticketClient.GetAsync() ?? new List<Ticket>();
+            List<User> users = (await userClient.GetAsync())?.users ?? new List<User>();
             List<Flight> flights = await flightClient.GetAsync() ?? new List<Flight>();
             List<City> cities = await cityClient.GetAsync() ?? new List<City>();
 
-            var userNameById = users
+            UserIdToFullNameConverter.UserNamesById = users
                 .Where(u => u != null && !string.IsNullOrWhiteSpace(u.User_Id))
                 .ToDictionary(u => u.User_Id, u => string.IsNullOrWhiteSpace(u.User_FullName) ? $"User {u.User_Id}" : u.User_FullName);
-
-            var flightById = flights
-                .Where(f => f != null && !string.IsNullOrWhiteSpace(f.Flight_Id))
-                .ToDictionary(f => f.Flight_Id, f => f);
 
             CityIdToNameConverter.CityNamesById = cities
                 .Where(c => c != null && !string.IsNullOrWhiteSpace(c.CityId))
                 .ToDictionary(c => c.CityId.Trim(), c => c.CityName ?? c.CityId);
 
-            allTickets = tickets.Where(t => t != null).Select(t =>
-            {
-                flightById.TryGetValue(t.Flight_Id ?? string.Empty, out Flight? flight);
-                string departure = ResolveCityName(flight?.Departure_Id);
-                string arrival = ResolveCityName(flight?.Arrival_Id);
+            FlightIdToNumberConverter.FlightNumberById = flights
+                .Where(f => f != null && !string.IsNullOrWhiteSpace(f.Flight_Id))
+                .ToDictionary(f => f.Flight_Id, f => string.IsNullOrWhiteSpace(f.Flight_Number) ? "N/A" : f.Flight_Number);
 
-                return new TicketDisplayItem
-                {
-                    Ticket_Id = t.Ticket_Id,
-                    User_Id = t.User_Id,
-                    Flight_Id = t.Flight_Id,
-                    Purchase_Date = t.Purchase_Date,
-                    Status = t.Status,
-                    Type = t.Type,
-                    UserFullName = userNameById.TryGetValue(t.User_Id ?? string.Empty, out var fullName) ? fullName : $"User {t.User_Id}",
-                    FlightNumber = string.IsNullOrWhiteSpace(flight?.Flight_Number) ? "N/A" : flight.Flight_Number,
-                    Route = string.IsNullOrWhiteSpace(departure) || string.IsNullOrWhiteSpace(arrival)
-                        ? "N/A"
-                        : $"{departure} → {arrival}"
-                };
-            }).ToList();
+            TicketFlightRouteConverter.FlightsById = flights
+                .Where(f => f != null && !string.IsNullOrWhiteSpace(f.Flight_Id))
+                .ToDictionary(f => f.Flight_Id, f => f);
 
             ApplyFilterAndBind();
             UpdateStatistics();
         }
 
-        private static string ResolveCityName(string? cityId)
-        {
-            if (string.IsNullOrWhiteSpace(cityId))
-            {
-                return string.Empty;
-            }
-
-            if (CityIdToNameConverter.CityNamesById.TryGetValue(cityId.Trim(), out string? name))
-            {
-                return name;
-            }
-
-            return cityId;
-        }
-        private bool EnsureTicketsListReady()
-        {
-            if (TicketsList != null)
-            {
-                return true;
-            }
-
-            var located = FindName("TicketsList") as ItemsControl;
-            if (located != null)
-            {
-                TicketsList = located;
-                return true;
-            }
-
-            return false;
-        }
         private void ApplyFilterAndBind()
         {
-            if (!EnsureTicketsListReady())
-            {
-                return;
-            }
-
-            IEnumerable<TicketDisplayItem> filtered = allTickets;
+            IEnumerable<Ticket> filtered = allTickets.Where(t => t != null);
 
             if (currentFilter == 1)
             {
@@ -169,18 +113,44 @@ namespace AdminApp.UserControls
                 filtered = filtered.Where(t =>
                     (t.Ticket_Id ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                     (t.User_Id ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (t.UserFullName ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                     (t.Flight_Id ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (t.FlightNumber ?? string.Empty).Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    ResolveUserName(t.User_Id).Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    ResolveFlightNumber(t.Flight_Id).Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
             }
 
-            TicketsList.ItemsSource = filtered.ToList();
+            DataContext = filtered.ToList();
+        }
+
+        private static string ResolveUserName(string? userId)
+        {
+            string key = userId?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return string.Empty;
+            }
+
+            return UserIdToFullNameConverter.UserNamesById.TryGetValue(key, out string? name)
+                ? name
+                : $"User {key}";
+        }
+
+        private static string ResolveFlightNumber(string? flightId)
+        {
+            string key = flightId?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return string.Empty;
+            }
+
+            return FlightIdToNumberConverter.FlightNumberById.TryGetValue(key, out string? number)
+                ? number
+                : string.Empty;
         }
 
         private void UpdateStatistics()
         {
             int total = allTickets.Count;
-            int active = allTickets.Count(t => t.Status);
+            int active = allTickets.Count(t => t != null && t.Status);
             int cancelled = total - active;
 
             txtTotalTickets.Text = total.ToString("N0");
@@ -215,7 +185,7 @@ namespace AdminApp.UserControls
 
         private async void ToggleTicketStatus_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button btn || btn.Tag is not TicketDisplayItem ticket)
+            if (sender is not Button btn || btn.Tag is not Ticket ticket)
             {
                 MessageBox.Show("Could not determine which ticket to update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -224,11 +194,13 @@ namespace AdminApp.UserControls
             bool newStatus = !ticket.Status;
             string action = ticket.Status ? "cancel" : "reactivate";
 
+
             var confirm = MessageBox.Show(
                 $"Are you sure you want to {action} ticket {ticket.Ticket_Id}?",
                 "Confirm Status Change",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
+
 
             if (confirm != MessageBoxResult.Yes)
             {
@@ -259,7 +231,7 @@ namespace AdminApp.UserControls
 
         private async void DeleteTicket_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button btn || btn.Tag is not TicketDisplayItem ticket)
+            if (sender is not Button btn || btn.Tag is not Ticket ticket)
             {
                 MessageBox.Show("Could not determine which ticket to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -271,8 +243,9 @@ namespace AdminApp.UserControls
                 return;
             }
 
+
             var result = MessageBox.Show(
-                $"Are you sure you want to delete ticket {ticket.Ticket_Id}?\n\nThis action cannot be undone.",
+                $"Are you sure you want to delete Ticket {ticket.Ticket_Id}?\n\nThis action cannot be undone.",
                 "Delete Ticket",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -303,23 +276,5 @@ namespace AdminApp.UserControls
             UpdateStatistics();
         }
 
-        private class TicketDisplayItem
-        {
-            public string? Ticket_Id { get; set; }
-            public string? User_Id { get; set; }
-            public string? Flight_Id { get; set; }
-            public string? Purchase_Date { get; set; }
-            public bool Status { get; set; }
-            public string? Type { get; set; }
-
-            public string? UserFullName { get; set; }
-            public string? FlightNumber { get; set; }
-            public string? Route { get; set; }
-
-            
-            
-            
-            
-        }
     }
 }

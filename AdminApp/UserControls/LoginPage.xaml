@@ -120,12 +120,12 @@
 
     <Grid>
         <!-- Center Login Form -->
-        <Border Width="450" 
-                Height="550"
+        <Border Width="450"
                 Background="White"
-                CornerRadius="16"
+                CornerRadius="12"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center">
+                Margin="20">
             <Border.Effect>
                 <DropShadowEffect Color="#000000" 
                                   Direction="270" 
@@ -165,7 +165,7 @@
 
                 <!-- Username/Email Input -->
                 <StackPanel Margin="0,0,0,20">
-                    <TextBlock Text="USERNAME OR EMAIL" 
+                    <TextBlock Text="EMAIL" 
                                Style="{StaticResource InputLabelStyle}"/>
                     <TextBox x:Name="txtUsername"
                              Style="{StaticResource ModernTextBoxStyle}"
@@ -212,26 +212,10 @@
                         Style="{StaticResource LoginButtonStyle}"
                         Height="50"
                         Click="LoginButton_Click"/>
-
-                <!-- Error Message -->
-                <TextBlock x:Name="txtErrorMessage"
-                           Foreground="#DC3545"
-                           FontSize="13"
-                           HorizontalAlignment="Center"
-                           Margin="0,15,0,0"
-                           TextWrapping="Wrap"
-                           Visibility="Collapsed"/>
-
-                <!-- Footer -->
-                <TextBlock Text="© 2025 Your Company. All rights reserved."
-                           FontSize="11"
-                           Foreground="#CCCCCC"
-                           HorizontalAlignment="Center"
-                           Margin="0,30,0,0"/>
             </StackPanel>
         </Border>
 
         <!-- Background Pattern (Optional) -->
-        
+
     </Grid>
 </Page>
