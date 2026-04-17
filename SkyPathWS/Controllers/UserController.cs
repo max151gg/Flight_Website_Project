@@ -33,7 +33,7 @@ namespace SkyPathWS.Controllers
                 _ => flights // default: keep repository order (or sort by newest/soonest if you want)
             };
         }
-
+        
         private static decimal TryParseDecimal(object price)
         {
             if (price == null) return decimal.MaxValue;
@@ -250,7 +250,7 @@ namespace SkyPathWS.Controllers
 
                 // Add: load flights for those tickets
                 var flightIds = ticketViewModel.tickets
-                    .Select(t => t.flight_Id)
+                    .Select(t => t.Flight_Id)
                     .Distinct()
                     .ToList();
 
@@ -302,17 +302,17 @@ namespace SkyPathWS.Controllers
                 announcementViewModel.announcements = this.repositoryUOW.AnnouncementRepository.GetByUserId(user_id);
                 announcementViewModel.publicAnnouncements = this.repositoryUOW.AnnouncementRepository.GetByUserId("0");
 
-                // NEW: sort newest -> oldest by dd-MM-yyyy
+                //sort newest -> oldest by dd-MM-yyyy
                 announcementViewModel.announcements = announcementViewModel.announcements
                     .OrderByDescending(a => DateTime.ParseExact(
-                        a.Announcement_Date,   // <-- change property name if different
+                        a.Announcement_Date,
                         "dd-MM-yyyy",
                         CultureInfo.InvariantCulture))
                     .ToList();
 
                 announcementViewModel.publicAnnouncements = announcementViewModel.publicAnnouncements
                     .OrderByDescending(a => DateTime.ParseExact(
-                        a.Announcement_Date,   // <-- change property name if different
+                        a.Announcement_Date,
                         "dd-MM-yyyy",
                         CultureInfo.InvariantCulture))
                     .ToList();
@@ -353,7 +353,7 @@ namespace SkyPathWS.Controllers
             try
             {
                 this.repositoryUOW.HelperOleDb.OpenConnection();
-                return this.repositoryUOW.UserRepository.GetById(user_id); // implement if missing
+                return this.repositoryUOW.UserRepository.GetById(user_id);
             }
             catch
             {
@@ -364,6 +364,65 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+
+        [HttpPost]
+        public bool UpdateProfile(UpdateProfileViewModel model)
+        {
+            try
+            {
+                repositoryUOW.HelperOleDb.OpenConnection();
+                User user = new User
+                {
+                    User_Id = model.User_Id,
+                    UserName = model.UserName,
+                    User_Telephone = model.User_Telephone,
+                    User_Adress = model.User_Adress,
+                    User_FullName = model.User_FullName
+                };
+
+                bool ok = repositoryUOW.UserRepository.UpdateProfile(user);
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+
+        [HttpPost]
+        public ActionResult<bool> UpdatePassword([FromBody] ChangePasswordViewModel model)
+        {
+            try
+            {
+                if (model == null ||
+                    string.IsNullOrWhiteSpace(model.User_Id) ||
+                    string.IsNullOrWhiteSpace(model.NewPassword) ||
+                    model.NewPassword != model.ConfirmNewPassword)
+                {
+                    return BadRequest(false);
+                }
+
+                repositoryUOW.HelperOleDb.OpenConnection();
+                bool ok = repositoryUOW.UserRepository.UpdatePassword(model.User_Id, model.NewPassword);
+                return Ok(ok);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500, false);
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
 
         [HttpGet]
         public IActionResult GetProfileImage([FromQuery] string user_id, [FromServices] IWebHostEnvironment env)

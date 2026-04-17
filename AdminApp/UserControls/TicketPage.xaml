@@ -221,10 +221,7 @@
                                                 <TextBlock Text="{Binding Flight_Id, Converter={StaticResource ticketRouteConverter}}" FontSize="14" FontWeight="SemiBold" Foreground="#667EEA"/>
                                             </StackPanel>
 
-                                            <StackPanel Grid.Column="3">
-                                                <TextBlock Text="TYPE" FontSize="11" Foreground="#999999" Margin="0,0,0,5"/>
-                                                <TextBlock Text="{Binding Type}" FontSize="14" FontWeight="Bold" Foreground="#333333"/>
-                                            </StackPanel>
+                                            
                                         </Grid>
                                     </Grid>
 

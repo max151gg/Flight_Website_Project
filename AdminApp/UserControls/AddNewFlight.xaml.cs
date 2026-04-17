@@ -24,9 +24,10 @@ namespace AdminApp.Pages
     /// <summary>
     /// Interaction logic for NewFlight.xaml
     /// </summary>
-    public partial class AddNewFlight : Page
+    public partial class AddNewFlight : UserControl
     {
         private bool isEditMode = false;
+        private string editingFlightId = string.Empty;
         private string selectedImagePath = null;
         private List<City> _cities = new();
 
@@ -36,6 +37,19 @@ namespace AdminApp.Pages
             InitializeComponent();
             InitializePage();
             Loaded += AddNewFlight_Loaded;
+        }
+
+        public AddNewFlight(Flight flightToEdit)
+        {
+            InitializeComponent();
+            isEditMode = true;
+            editingFlightId = flightToEdit?.Flight_Id?.Trim() ?? string.Empty;
+            InitializePage();
+            Loaded += async (sender, e) =>
+            {
+                await LoadCities();
+                LoadFlightData(flightToEdit);
+            };
         }
         private async void AddNewFlight_Loaded(object sender, RoutedEventArgs e)
         {
@@ -61,27 +75,16 @@ namespace AdminApp.Pages
 
             cmbDeparture.ItemsSource = _cities;
             cmbArrival.ItemsSource = _cities;
-            
-            
-        }
 
-        // Constructor for Edit mode (pass flight data)
-        /*
-        public AddFlightPage(Flight flight)
-        {
-            InitializeComponent();
-            isEditMode = true;
-            InitializePage();
-            LoadFlightData(flight);
+
         }
-        */
 
         private void InitializePage()
         {
             if (isEditMode)
             {
                 txtPageTitle.Text = "Edit Flight";
-                btnSubmit.Content = "Update Flight";
+                btnSubmit.Content = "Accept Changes";
             }
             else
             {
@@ -90,28 +93,43 @@ namespace AdminApp.Pages
             }
         }
 
-        /*
         private void LoadFlightData(Flight flight)
         {
-            // Populate form fields with flight data
-            cmbDeparture.SelectedItem = flight.Departure;
-            cmbArrival.SelectedItem = flight.Arrival;
-            cmbAirline.SelectedItem = flight.Airline;
-            txtFlightNumber.Text = flight.FlightNumber;
-            dpDepartureDate.SelectedDate = flight.DepartureDate;
-            txtDepartureTime.Text = flight.DepartureTime.ToString("HH:mm");
-            dpArrivalDate.SelectedDate = flight.ArrivalDate;
-            txtArrivalTime.Text = flight.ArrivalTime.ToString("HH:mm");
-            txtPrice.Text = flight.Price.ToString("F2");
-            txtSeats.Text = flight.TotalSeats.ToString();
-            
-            if (!string.IsNullOrEmpty(flight.ImagePath))
+            if (flight == null)
             {
-                selectedImagePath = flight.ImagePath;
-                txtImageName.Text = System.IO.Path.GetFileName(flight.ImagePath);
+                return;
             }
+
+            cmbDeparture.SelectedValue = flight.Departure_Id?.Trim();
+            cmbArrival.SelectedValue = flight.Arrival_Id?.Trim();
+            txtAirline.Text = flight.Airline ?? string.Empty;
+            txtFlightNumber.Text = flight.Flight_Number ?? string.Empty;
+
+            if (DateTime.TryParseExact(
+                    flight.Departure_Date,
+                    new[] { "dd-MM-yyyy", "d-M-yyyy" },
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out DateTime departureDate))
+            {
+                dpDepartureDate.SelectedDate = departureDate;
+            }
+
+            if (DateTime.TryParseExact(
+                    flight.Arrival_Date,
+                    new[] { "dd-MM-yyyy", "d-M-yyyy" },
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out DateTime arrivalDate))
+            {
+                dpArrivalDate.SelectedDate = arrivalDate;
+            }
+
+            txtDepartureTime.Text = flight.Departure_Time ?? string.Empty;
+            txtArrivalTime.Text = flight.Arrival_Time ?? string.Empty;
+            txtPrice.Text = flight.Price.ToString("0.##");
+            txtSeats.Text = flight.Seats_Available.ToString();
         }
-        */
 
         private async void SubmitFlight_Click(object sender, RoutedEventArgs e)
         {
@@ -122,7 +140,7 @@ namespace AdminApp.Pages
             {
                 var flight = new Flight
                 {
-                    Flight_Id = "",
+                    Flight_Id = isEditMode ? editingFlightId : "",
                     Departure_Id = cmbDeparture.SelectedValue?.ToString(),
                     Arrival_Id = cmbArrival.SelectedValue?.ToString(),
 
@@ -143,7 +161,7 @@ namespace AdminApp.Pages
 
                 if (isEditMode)
                 {
-                    ok = false; // until update is implemented
+                    ok = await UpdateFlightInDatabaseAsync(flight);
                 }
                 else
                 {
@@ -152,14 +170,15 @@ namespace AdminApp.Pages
 
                 if (!ok)
                 {
-                    MessageBox.Show("Failed to save flight.",
+                    MessageBox.Show(isEditMode ? "Failed to update flight." : "Failed to create flight.",
                         "Error",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return;
                 }
-                else { 
-                    MessageBox.Show("Flight saved successfully!",
+                else
+                {
+                    MessageBox.Show(isEditMode ? "Flight updated successfully!" : "Flight created successfully!",
                         "Success",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
@@ -185,13 +204,21 @@ namespace AdminApp.Pages
                 Path = "api/Admin/CreateFlight"
             };
 
-            var response = await client.PostAsync(flight);
+            return await client.PostAsyncReturn<Flight, bool>(flight);
+        }
 
-            // If your WS returns bool:
-            return response;
+        private async Task<bool> UpdateFlightInDatabaseAsync(Flight flight)
+        {
+            var client = new ApiClient<Flight>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Admin/UpdateFlight"
+            };
 
-            // If your WS returns Flight:
-            // return response != null;
+            return await client.PostAsyncReturn<Flight, bool>(flight);
+
         }
         private bool ValidateInputs()
         {
@@ -305,21 +332,21 @@ namespace AdminApp.Pages
                           MessageBoxImage.Warning);
         }
 
-        private void ChooseImage_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog
+        //private void ChooseImage_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var openFileDialog = new OpenFileDialog
 
-            {
-                Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif",
-                Title = "Select Flight Image"
-            };
+        //    {
+        //        Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif",
+        //        Title = "Select Flight Image"
+        //    };
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                selectedImagePath = openFileDialog.FileName;
-                txtImageName.Text = System.IO.Path.GetFileName(selectedImagePath);
-            }
-        }
+        //    if (openFileDialog.ShowDialog() == true)
+        //    {
+        //        selectedImagePath = openFileDialog.FileName;
+        //        txtImageName.Text = System.IO.Path.GetFileName(selectedImagePath);
+        //    }
+        //}
         //private void ChooseImage_Click(object sender, RoutedEventArgs e)
         //{
         //    OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -344,6 +371,16 @@ namespace AdminApp.Pages
             if (result == MessageBoxResult.Yes)
             {
                 NavigationService?.GoBack();
+            }
+        }
+
+        // Add this property to your AddNewFlight class to provide navigation support
+        public System.Windows.Navigation.NavigationService NavigationService
+        {
+            get
+            {
+                // Try to get NavigationService from the parent window or frame
+                return System.Windows.Navigation.NavigationService.GetNavigationService(this);
             }
         }
     }

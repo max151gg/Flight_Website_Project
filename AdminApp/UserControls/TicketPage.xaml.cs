@@ -214,7 +214,7 @@ namespace AdminApp.UserControls
                 Port = 5125,
                 Path = "api/Admin/UpdateTicketStatus"
             };
-            apiClient.SetQueryParameter("ticket_id", ticket.Ticket_Id ?? string.Empty);
+            apiClient.SetQueryParameter("ticket_id", ticket.Ticket_Id);
             apiClient.SetQueryParameter("status", newStatus.ToString());
 
             bool ok = await apiClient.GetAsync();

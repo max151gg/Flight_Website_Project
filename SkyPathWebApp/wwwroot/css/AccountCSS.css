@@ -426,9 +426,110 @@ h1 {
     .security-action:hover {
         background: #5568d3;
     }
+/* Edit Profile Popout */
+.profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 1500;
+}
 
+    .profile-overlay.open {
+        opacity: 1;
+        visibility: visible;
+    }
 
+.profile-popout {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -46%);
+    width: min(560px, calc(100vw - 30px));
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.25s ease, visibility 0.2s ease;
+    z-index: 1600;
+}
 
+    .profile-popout.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%);
+    }
+
+    .profile-popout h2 {
+        margin-bottom: 14px;
+        color: #333;
+    }
+
+.popout-input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+    .popout-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+    }
+
+.popout-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.popout-submit,
+.popout-cancel {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.popout-submit {
+    background: #667eea;
+    color: #fff;
+}
+
+    .popout-submit:hover {
+        background: #5568d3;
+    }
+
+.popout-cancel {
+    background: #eef0f4;
+    color: #444;
+}
+
+.password-error {
+    display: none;
+    color: #c0392b;
+    font-size: 13px;
+    margin-top: -8px;
+}
+
+    .password-error.show {
+        display: block;
+    }
+
+.password-success {
+    color: #1f8f3a;
+    font-size: 13px;
+    margin-top: -8px;
+}
 
 
 

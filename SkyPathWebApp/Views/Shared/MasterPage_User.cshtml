@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Http
 
 @{
-    
+
     string wsBase = "http://localhost:5125";
     string userfullname = Context.Session.GetString("user_FullName") ?? "My Account";
 }
@@ -56,7 +56,7 @@
             <a href="http://localhost:5076/User/Ticket" class="nav-link @(currentController == "User" && currentAction == "Ticket" ? "active" : "")">Tickets</a>
         </nav>
         <div class="auth-buttons">
-            <a href="http://localhost:5076/User/Account" class="account-pill">
+            <button type="button" class="account-pill" id="accountMenuButton" aria-expanded="false" aria-controls="accountDropdownMenu">
                 <span class="account-name">
                     @userfullname
                 </span>
@@ -72,7 +72,14 @@
 
 
 
-            </a>
+            </button>
+
+            <div class="account-dropdown" id="accountDropdownMenu">
+                <a href="http://localhost:5076/User/Account" class="account-dropdown-item">Settings</a>
+                <form method="post" action="http://localhost:5076/User/Logout">
+                    <button type="submit" class="account-dropdown-item account-dropdown-button">Log out</button>
+                </form>
+            </div>
         </div>
     </header>
 
@@ -107,5 +114,26 @@
             © 2025 SkyPath. All rights reserved.
         </div>
     </footer>
+
+    <script>
+        (() => {
+            const button = document.getElementById('accountMenuButton');
+            const menu = document.getElementById('accountDropdownMenu');
+            if (!button || !menu) return;
+
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isOpen = menu.classList.toggle('open');
+                button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!menu.classList.contains('open')) return;
+                if (menu.contains(event.target) || button.contains(event.target)) return;
+                menu.classList.remove('open');
+                button.setAttribute('aria-expanded', 'false');
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -57,7 +57,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="5,0"/>
-            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Width" Value="150"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -211,7 +211,7 @@
                                                             <Setter Property="Text" Value="👤 USER"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding Role_Id}" Value="0">
-                                                                    <Setter Property="Text" Value="⭐ ADMINISTRATOR"/>
+                                                                    <Setter Property="Text" Value="* ADMIN"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -272,7 +272,22 @@
                                             </Button.Content>
                                         </Button>
 
-                                        <Button Content="Delete User" Style="{StaticResource ActionButtonStyle}" Background="#DC3545" Foreground="White" Margin="5,10,5,0" Click="DeleteUser_Click" Tag="{Binding}"/>
+                                        <Button Style="{StaticResource ActionButtonStyle}" Background="#DC3545" Foreground="White" Margin="5,10,5,0" Click="ToggleBan_Click" Tag="{Binding}">
+                                            <Button.Content>
+                                                <TextBlock>
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="Ban User"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding User_Ban}" Value="True">
+                                                                    <Setter Property="Text" Value="Unban User"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Button.Content>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Border>

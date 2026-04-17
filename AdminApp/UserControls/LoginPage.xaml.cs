@@ -22,7 +22,7 @@ namespace AdminApp.UserControls
     /// <summary>
     /// Interaction logic for LoginPage.xaml
     /// </summary>
-    public partial class LoginPage : Page
+    public partial class LoginPage : UserControl
     {
         public LoginPage()
         {
@@ -131,7 +131,7 @@ namespace AdminApp.UserControls
                 mainWindow.ShowSidebar();
                 mainWindow.SetAdminName(adminDisplayName);
                 mainWindow.SetAdminProfileImage(user.User_Image ?? string.Empty);
-                mainWindow.MainFrame.Navigate(new FlightPage());
+                mainWindow.MainFrame.Navigate(new DashboardPage());
             }
             catch (Exception ex)
             {

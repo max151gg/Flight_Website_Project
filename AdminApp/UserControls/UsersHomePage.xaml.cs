@@ -4,6 +4,7 @@ using SkyPathWSClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -163,47 +164,63 @@ namespace AdminApp.UserControls
             }
         }
 
-        private async void DeleteUser_Click(object sender, RoutedEventArgs e)
+        private async void ToggleBan_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button btn || btn.Tag is not User user)
+            try
             {
-                MessageBox.Show("Could not determine which user to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+                if (sender is not Button btn || btn.Tag is not User user)
+                {
+                    MessageBox.Show("Could not determine which user to update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-            var result = MessageBox.Show(
-                $"Delete {user.User_FullName}?\n\nThis action cannot be undone.",
-                "Delete User",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+                bool newBanStatus = !user.User_Ban;
+                string action = newBanStatus ? "ban" : "unban";
+                string pastAction = newBanStatus ? "banned" : "unbanned";
 
-            if (result != MessageBoxResult.Yes)
-            {
-                return;
-            }
+                var result = MessageBox.Show(
+                    $"Are you sure you want to {action} {user.User_FullName}?",
+                    newBanStatus ? "Ban User" : "Unban User",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
 
-            var apiClient = new ApiClient<bool>
-            {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/Admin/DeleteUser"
-            };
-            apiClient.SetQueryParameter("user_id", user.User_Id);
+                if (result != MessageBoxResult.Yes)
+                {
+                    return;
+                }
 
-            bool ok = await apiClient.GetAsync();
-            if (!ok)
-            {
-                MessageBox.Show("Failed to delete user.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                var apiClient = new ApiClient<bool>
+                {
+                    Scheme = "http",
+                    Host = "localhost",
+                    Port = 5125,
+                    Path = "api/Admin/BanUser"
+                };
+                apiClient.SetQueryParameter("user_id", user.User_Id);
+                apiClient.SetQueryParameter("user_Ban", newBanStatus.ToString().ToLowerInvariant());
+
+                bool ok = await apiClient.GetAsync();
+                if (!ok)
+                {
+                    MessageBox.Show($"Failed to {action} user.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                user.User_Ban = newBanStatus;
+                MessageBox.Show($"User {pastAction} successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                ApplyFilterAndBind();
+                UpdateStatistics();
             }
-            else
+            catch (TaskCanceledException)
             {
-                MessageBox.Show($"User deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Ban request timed out. Please verify SkyPathWS is running and try again.",
+                    "Request Timeout", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-                allUsers.RemoveAll(u => u.User_Id == user.User_Id);
-            ApplyFilterAndBind();
-            UpdateStatistics();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ban operation failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

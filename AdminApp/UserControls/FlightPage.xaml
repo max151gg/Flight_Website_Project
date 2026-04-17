@@ -1,18 +1,12 @@
-﻿<Page x:Class="AdminApp.UserControls.FlightPage"
+﻿<UserControl x:Class="AdminApp.UserControls.FlightPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="clr-namespace:AdminApp"
       xmlns:conver="clr-namespace:AdminApp"
       xmlns:conv="clr-namespace:AdminApp.Converters"
+      Background="#F5F5F5">
 
-
-
-      Background="#F5F5F5"
-      Title="Flights Management">
-
-    <Page.Resources>
-        
-        <local:UrlConverter x:Key="urlConverter"/>
+    <UserControl.Resources>
         <conv:CityIdToNameConverter x:Key="cityNameConverter"/>
 
 
@@ -79,7 +73,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Page.Resources>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -156,25 +150,24 @@
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Image placeholder -->
-                                <Border Grid.Column="0"
-                            Width="120"
-                            Height="90"
-                            CornerRadius="8"
-                            Background="#E0E0E0"
-                            Margin="0,0,20,0">
+                                <!--<Border Grid.Column="0"
+                                    Width="120"
+                                    Height="90"
+                                    CornerRadius="8"
+                                    Background="#E0E0E0"
+                                    Margin="0,0,20,0">
                                    <Image Source="{Binding imageUrl, Converter={StaticResource urlConverter}}"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
-                                </Border>
+                                </Border>-->
 
                                 <!-- Flight Details -->
-                                <Grid Grid.Column="1">
+                                <Grid Grid.Column="0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
@@ -218,6 +211,7 @@
                                     <!-- Info -->
                                     <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
@@ -283,6 +277,18 @@
                                            Foreground="#28A745"
                                            Margin="0,2,0,0"/>
                                         </StackPanel>
+                                        
+                                        <!-- Flight Number -->
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="FLIGHT NUMBER"
+                                                FontSize="10"
+                                                Foreground="#999999"
+                                                Margin="0,0,0,4"/>
+                                                <TextBlock Text="{Binding Flight_Number}"
+                                                FontSize="18"
+                                                           FontWeight="SemiBold"
+                                                Foreground="#5c5b5b"/>
+                                        </StackPanel>
                                     </Grid>
                                 </Grid>
 
@@ -325,4 +331,4 @@
                    Click="AddFlight_Click"/>
         </Border>
     </Grid>
-</Page>
+</UserControl>

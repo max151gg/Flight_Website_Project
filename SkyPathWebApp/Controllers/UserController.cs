@@ -43,6 +43,12 @@ namespace SkyPathWebApp.Controllers
             return View(browseViewModel);
         }
 
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("LoginHome", "Guest");
+        }
 
         [HttpGet]
         public async Task<IActionResult> Ticket()
@@ -319,6 +325,53 @@ namespace SkyPathWebApp.Controllers
 
             return RedirectToAction("Account");
 
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
+        {
+            string userId = HttpContext.Session.GetString("user_Id");
+            model.User_Id = userId;
+
+            var client = new ApiClient<UpdateProfileViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/User/UpdateProfile"
+            };
+
+            bool ok = await client.PostAsync(model);
+            if (ok)
+            {
+                HttpContext.Session.SetString("user_FullName", model.User_FullName ?? "My Account");
+            }
+
+            return RedirectToAction("Account");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword(ChangePasswordViewModel model)
+        {
+            string userId = HttpContext.Session.GetString("user_Id");
+
+            if (string.IsNullOrWhiteSpace(model.NewPassword) || model.NewPassword != model.ConfirmNewPassword)
+                return RedirectToAction("Account");
+
+            model.User_Id = userId;
+
+            var client = new ApiClient<ChangePasswordViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/User/UpdatePassword"
+            };
+
+            bool ok = await client.PostAsync(model);
+            TempData["PasswordStatus"] = ok ? "Password changed successfully." : "Could not change password.";
+            return RedirectToAction("Account");
         }
     }
 }

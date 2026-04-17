@@ -76,7 +76,9 @@ namespace SkyPathWS.ORM.Repositories
             string sql = @"Update Flight set 
                             Flight_Number=@Flight_Number, Airline=@Airline, Departure_Id=@Departure_Id,
                             Arrival_Id=@Arrival_Id, Departure_Time=@Departure_Time, Arrival_Time=@Arrival_Time,
-                            Price=@Price, Seats_Available=@Seats_Available";
+                            Price=@Price, Seats_Available=@Seats_Available, Departure_Date=@Departure_Date,
+                            Arrival_Date=@Arrival_Date
+                            where Flight_Id=@Flight_Id";
             this.helperOleDb.AddParameter("@Flight_Number", model.Flight_Number);
             this.helperOleDb.AddParameter("@Airline", model.Airline);
             this.helperOleDb.AddParameter("@Departure_Id", model.Departure_Id);
@@ -87,7 +89,8 @@ namespace SkyPathWS.ORM.Repositories
             this.helperOleDb.AddParameter("@Seats_Available", model.Seats_Available);
             this.helperOleDb.AddParameter("@Departure_Date", model.Departure_Date);
             this.helperOleDb.AddParameter("@Arrival_Date", model.Arrival_Date);
-            return this.helperOleDb.Insert(sql) > 0;
+            this.helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
+            return this.helperOleDb.Update(sql) > 0;
         }
         //מעתיקים GET ALL FUNCTION ומשנים את משפטי SQL לפי הUSE CASE כגון(FILTER BY DATE, BY PRICE...)
         public List<Flight> GetFlightsByDeparture(string departureCityId)

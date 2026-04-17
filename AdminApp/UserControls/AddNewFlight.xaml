@@ -1,10 +1,9 @@
-﻿<Page x:Class="AdminApp.Pages.AddNewFlight"
+﻿<UserControl x:Class="AdminApp.Pages.AddNewFlight"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="#F5F5F5"
-      Title="Add Flight">
+      Background="#F5F5F5">
 
-    <Page.Resources>
+    <UserControl.Resources>
         <!-- Input Style -->
         <Style x:Key="ModernInputStyle" TargetType="TextBox">
             <Setter Property="Padding" Value="12,10"/>
@@ -132,7 +131,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Page.Resources>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -332,7 +331,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Section 4: Image -->
+                    <!-- Section 4: Image --><!--
                     <StackPanel Grid.Row="3">
                         <TextBlock Text="Flight Image" 
                                    FontSize="18"
@@ -371,7 +370,7 @@
                                           Margin="15,0,0,0"/>
                             </StackPanel>
                         </Border>
-                    </StackPanel>
+                    </StackPanel>-->
                 </Grid>
             </Border>
         </ScrollViewer>
@@ -395,4 +394,4 @@
             </StackPanel>
         </Border>
     </Grid>
-</Page>
+</UserControl>

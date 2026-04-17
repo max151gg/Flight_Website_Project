@@ -10,13 +10,12 @@ namespace SkyPath_Models.Models
 {
     public class Ticket : Model
     {
-        public string ticket_Id;
-        public string user_Id;
-        public string flight_Id;
-        public string purchase_Date;
-        public bool status;
-        public string type;
-        public Ticket() { }
+        string ticket_Id;
+        string user_Id;
+        string flight_Id;
+        string purchase_Date;
+        bool status;
+        
 
         public string Ticket_Id
         {
@@ -44,11 +43,6 @@ namespace SkyPath_Models.Models
         {
             get { return status; }
             set { status = value; ValidateProperty(value, "Status"); }
-        }
-        public string Type
-        {
-            get { return type; }
-            set { type = value; }
         }
     }
 }

@@ -86,10 +86,6 @@
                     <span class="menu-icon">🔒</span>
                     <span>Security</span>
                 </div>
-                <div class="menu-item" onclick="showSection('preferences')">
-                    <span class="menu-icon">⚙️</span>
-                    <span>Preferences</span>
-                </div>
             </div>
         </div>
 
@@ -100,7 +96,7 @@
                 <div class="section-title">Profile Information</div>
 
                 <div class="edit-toggle">
-                    <button class="toggle-btn" id="editBtn" onclick="toggleEditMode()">Edit Profile</button>
+                    <button class="toggle-btn" id="editBtn" type="button">Edit Profile</button>
                 </div>
 
                 <!-- View Mode -->
@@ -130,14 +126,112 @@
                 </div>
 
                 <!-- Edit Mode -->
+                <div class="profile-overlay" id="profileOverlay"></div>
+                <div class="profile-popout" id="profilePopout">
+                    <h2>Update Profile</h2>
+                    <form asp-controller="User" asp-action="UpdateProfile" method="post">
+                        <input name="UserName" placeholder="Username" class="popout-input" value="@Model.UserName" />
+                        <input name="User_FullName" placeholder="Full Name" class="popout-input" value="@Model.User_FullName" />
+                        <input name="User_Telephone" placeholder="Phone Number" class="popout-input" value="@Model.User_Telephone" />
+                        <input name="User_Adress" placeholder="Address" class="popout-input" value="@Model.User_Adress" />
+
+                        <div class="popout-actions">
+                            <button class="popout-submit" type="submit">Save Changes</button>
+                            <button class="popout-cancel" type="button" id="closeProfilePopout">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
                 
             </div>
 
             <!-- Security Section -->
-           
+            <div class="content-section" id="securitySection">
+                <div class="section-title">Security</div>
+                <form asp-controller="User" asp-action="UpdatePassword" method="post" id="passwordForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-input" name="NewPassword" id="newPassword" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-input" name="ConfirmNewPassword" id="confirmNewPassword" required />
+                        </div>
+                    </div>
 
-            <!-- Preferences Section -->
-            
+                    <div class="password-error" id="passwordError">Passwords do not match.</div>
+                    @if (TempData["PasswordStatus"] != null)
+                    {
+                        var isSuccess = TempData["PasswordStatus"]?.ToString() == "Password changed successfully.";
+                        <div class="@(isSuccess ? "password-success" : "password-error show")">
+                            @TempData["PasswordStatus"]
+                        </div>
+                    }
+                    <div class="form-actions">
+                        <button type="submit" class="action-btn btn-save">Update Password</button>
+                    </div>
+                </form>
+            </div>           
         </div>
     </div>
 </div>
+<script>
+    (() => {
+        const popout = document.getElementById('profilePopout');
+        const overlay = document.getElementById('profileOverlay');
+        const openBtn = document.getElementById('editBtn');
+        const closeBtn = document.getElementById('closeProfilePopout');
+
+        if (!popout || !overlay || !openBtn || !closeBtn) return;
+
+        const openPopout = () => {
+            popout.classList.add('open');
+            overlay.classList.add('open');
+        };
+
+        const closePopout = () => {
+            popout.classList.remove('open');
+            overlay.classList.remove('open');
+        };
+
+        openBtn.addEventListener('click', openPopout);
+        closeBtn.addEventListener('click', closePopout);
+        overlay.addEventListener('click', closePopout);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closePopout();
+        });
+            window.showSection = (sectionName) => {
+        const sections = document.querySelectorAll('.content-section');
+        const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
+
+        sections.forEach((section) => section.classList.remove('active'));
+        menuItems.forEach((item) => item.classList.remove('active'));
+
+        const targetSection = document.getElementById(`${sectionName}Section`);
+        if (targetSection) targetSection.classList.add('active');
+
+        const activeItem = Array.from(menuItems).find((item) =>
+            item.getAttribute('onclick')?.includes(`'${sectionName}'`)
+        );
+        if (activeItem) activeItem.classList.add('active');
+    };
+
+    const passwordForm = document.getElementById('passwordForm');
+    const newPassword = document.getElementById('newPassword');
+    const confirmNewPassword = document.getElementById('confirmNewPassword');
+    const passwordError = document.getElementById('passwordError');
+
+    if (passwordForm && newPassword && confirmNewPassword && passwordError) {
+        passwordForm.addEventListener('submit', (event) => {
+            if (newPassword.value !== confirmNewPassword.value) {
+                event.preventDefault();
+                passwordError.classList.add('show');
+                return;
+            }
+            passwordError.classList.remove('show');
+        });
+    }
+    })();
+
+</script>

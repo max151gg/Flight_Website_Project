@@ -19,8 +19,10 @@ namespace SkyPath_Models.Models
         string user_FullName;
         string role_Id;
         string user_Image;
+        bool user_Ban;
 
 
+        
         public string UserSalt {  get; set; }
 
         public string User_Id
@@ -73,11 +75,16 @@ namespace SkyPath_Models.Models
             set { role_Id = value; }
         }
 
-        [OnlyImage(ErrorMessage = "Image must be in jpg, jpeg or png format")]
+        //[OnlyImage(ErrorMessage = "Image must be in jpg, jpeg or png format")]
         public string User_Image
         {
             get { return user_Image; }
             set { user_Image = value; }
+        }
+        public bool User_Ban
+        {
+            get { return user_Ban; }
+            set { user_Ban = value; }
         }
     }
 }

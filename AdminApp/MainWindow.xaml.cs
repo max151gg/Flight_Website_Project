@@ -46,8 +46,14 @@ namespace AdminApp
         private void NavigateToDashboard(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
-            // MainFrame.Navigate(new DashboardPage());
-            MessageBox.Show("Dashboard page - To be implemented");
+            try
+            {
+                MainFrame.Navigate(new DashboardPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Dashboard page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigateToFlights(object sender, RoutedEventArgs e)
@@ -112,6 +118,20 @@ namespace AdminApp
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to open Announcements page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        
+
+        private void NavigateToCities(object sender, RoutedEventArgs e)
+        {
+            SetActiveButton(sender as Button);
+            try
+            {
+                MainFrame.Navigate(new CitiesPage());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Cities page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

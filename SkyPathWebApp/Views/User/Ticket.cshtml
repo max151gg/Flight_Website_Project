@@ -33,17 +33,17 @@
         {
             @foreach (var ticket in Model.tickets)
             {
-                var flight = Model?.flights?.FirstOrDefault(f => f.Flight_Id == ticket.flight_Id);
+                var flight = Model?.flights?.FirstOrDefault(f => f.Flight_Id == ticket.Flight_Id);
                 // NOTE: Change f.Flight_Id to your actual Flight property name (maybe flight_Id)
 
                 <div class="ticket-card">
                     <div class="ticket-header">
                         <div class="flight-number">
-                            Flight @(flight?.Flight_Number ?? ticket.flight_Id)
+                            Flight @(flight?.Flight_Number ?? ticket.Flight_Id)
                             @* Change Flight_Number to your real flight number field *@
                         </div>
                         <div class="ticket-status">
-                            @(ticket.status ? "Confirmed" : "Cancelled")
+                            @(ticket.Status ? "Confirmed" : "Cancelled")
                         </div>
                     </div>
 
@@ -99,15 +99,11 @@
                             </div>
                             <div class="passenger-section">
                                 <div class="info-label">Status</div>
-                                <div class="info-value">@(ticket.status ? "Active" : "Inactive")</div>
-                            </div>
-                            <div class="passenger-section">
-                                <div class="info-label">CLASS</div>
-                                <div class="info-value">@ticket.type</div>
+                                <div class="info-value">@(ticket.Status ? "Active" : "Inactive")</div>
                             </div>
                             <div class="passenger-section">
                                 <div class="info-label">PURCHASE DATE</div>
-                                <div class="info-value">@ticket.purchase_Date</div>
+                                <div class="info-value">@ticket.Purchase_Date</div>
                             </div>
                         </div>
                     </div>
@@ -120,7 +116,7 @@
                                     <div class="barcode-line"></div>
                                 }
                             </div>
-                            <div class="booking-ref">@ticket.ticket_Id</div>
+                            <div class="booking-ref">@ticket.Ticket_Id</div>
                         </div>
                     </div>
                 </div>

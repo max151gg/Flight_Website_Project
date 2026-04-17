@@ -143,6 +143,23 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+        [HttpGet]
+        public bool BanUser(string user_id, bool user_ban)
+        {
+            try
+            {
+                this.repositoryUOW.HelperOleDb.OpenConnection();
+                return this.repositoryUOW.UserRepository.BanUser(user_id, user_ban);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
 
         [HttpGet]
         public bool DeleteUser(string user_id, [FromServices] IWebHostEnvironment env)
@@ -364,6 +381,25 @@ namespace SkyPathWS.Controllers
             }
         }
 
+        [HttpPost]
+        public bool UpdateFlight(Flight flight)
+        {
+            try
+            {
+                repositoryUOW.HelperOleDb.OpenConnection();
+                return repositoryUOW.FlightRepository.Update(flight);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
         //[HttpPost]
         //public bool AddNewFlight(Flight flight)
         //{
@@ -398,7 +434,7 @@ namespace SkyPathWS.Controllers
                 var list = this.repositoryUOW.AnnouncementRepository.GetALL() ?? new List<Announcement>();
 
                 // NEW: sort newest -> oldest (dd-MM-yyyy)
-                return list.OrderByDescending(a =>DateTime.TryParseExact(a.Announcement_Date, "dd-MM-yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)? dt : DateTime.MinValue).ToList();
+                return list.OrderByDescending(a => DateTime.TryParseExact(a.Announcement_Date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt) ? dt : DateTime.MinValue).ToList();
 
             }
             catch
@@ -410,6 +446,6 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
-        
+
     }
 }

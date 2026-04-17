@@ -280,6 +280,7 @@ namespace SkyPathWebApp.Controllers
             user.User_Image = "";
             user.User_Id = "";
             user.UserSalt = "";
+            user.User_Ban = false;
 
 
 

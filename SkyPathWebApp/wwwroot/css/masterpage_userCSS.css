@@ -52,6 +52,7 @@ nav {
             font-weight: 500;
         }
 
+
 /* Account pill (name left, avatar right) */
 .account-pill {
     display: flex;
@@ -64,6 +65,8 @@ nav {
     text-decoration: none;
     color: #333;
     transition: background 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    font: inherit;
 }
 
     /* Very subtle hover — no jump, no glow */
@@ -71,6 +74,76 @@ nav {
         background: #f6f6f6;
         border-color: #d6d6d6;
     }
+
+
+.auth-buttons {
+    position: relative;
+    display: inline-block;
+    width: max-content;
+}
+
+    .auth-buttons.menu-open .account-pill {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-color: transparent;
+    }
+
+.account-dropdown {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    width: 100%;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 220ms ease, visibility 220ms ease;
+}
+
+
+    .account-dropdown.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+.account-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #333;
+    background: white;
+    border: none;
+    text-align: left;
+}
+
+    .account-dropdown-item:hover {
+        background: #f6f6f6;
+    }
+
+.account-dropdown-button {
+    cursor: pointer;
+    font: inherit;
+    color: #b54747;
+}
+
+.account-dropdown-button:hover {
+    background: #fff1f1;
+}
+
 
 /* Username */
 .account-name {

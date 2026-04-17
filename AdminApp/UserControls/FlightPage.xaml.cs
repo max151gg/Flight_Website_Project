@@ -23,17 +23,17 @@ namespace AdminApp.UserControls
     /// <summary>
     /// Interaction logic for FlightPage.xaml
     /// </summary>
-    public partial class FlightPage : Page
+    public partial class FlightPage : UserControl
     {
         List<Flight> flights;
-        
+
 
         public FlightPage()
         {
             InitializeComponent();
             Loaded += FlightPage_Loaded;
         }
-        
+
         private async Task LoadCityDictionary()
         {
             var cityClient = new ApiClient<List<City>>
@@ -53,7 +53,7 @@ namespace AdminApp.UserControls
         }
 
 
-        
+
 
         private async void FlightPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -87,19 +87,16 @@ namespace AdminApp.UserControls
 
         private void UpdateFlight_Click(object sender, RoutedEventArgs e)
         {
-            // Get the flight data associated with this button
-            // For now, just show a message
-            var result = MessageBox.Show("Navigate to edit page for this flight?",
-                                        "Update Flight",
-                                        MessageBoxButton.YesNo,
-                                        MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (sender is not Button btn || btn.Tag is not Flight flight)
             {
-                // TODO: Pass flight data to edit page
-                // NavigationService?.Navigate(new AddFlightPage(flightData));
-                NavigationService?.Navigate(new AddNewFlight());
+                MessageBox.Show("Could not determine which flight to edit.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                return;
             }
+
+            NavigationService?.Navigate(new AddNewFlight(flight));
         }
 
         private async void DeleteFlight_Click(object sender, RoutedEventArgs e)
@@ -226,5 +223,14 @@ namespace AdminApp.UserControls
             return border;
         }
         */
+
+        public System.Windows.Navigation.NavigationService NavigationService
+        {
+            get
+            {
+                // Try to get NavigationService from the parent window or frame
+                return System.Windows.Navigation.NavigationService.GetNavigationService(this);
+            }
+        }
     }
 }
