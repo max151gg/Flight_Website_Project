@@ -37,7 +37,7 @@ namespace AdminApp
             // Load login page initially
             MainFrame.Navigate(new LoginPage());
 
-            HideSidebar();
+            //HideSidebar();
             SetAdminName("Admin User");
             SetAdminProfileImage(string.Empty);
         }
@@ -202,6 +202,11 @@ namespace AdminApp
             btnAnnouncements.IsEnabled = true;
             btnSettings.IsEnabled = true;
             btnReports.IsEnabled = true;
+
+
+            // Default active button
+            SetActiveButton(btnDashboard);
+
         }
 
         // Hide sidebar before login

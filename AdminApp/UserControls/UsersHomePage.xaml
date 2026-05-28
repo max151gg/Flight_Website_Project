@@ -263,7 +263,7 @@
                                                             <Setter Property="Text" Value="Promote to Admin"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding Role_Id}" Value="0">
-                                                                    <Setter Property="Text" Value="Demote to User"/>
+                                                                    <Setter Property="Text" Value="Demote User"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
