@@ -234,22 +234,7 @@ namespace SkyPathWebApp.Controllers
             if (string.IsNullOrEmpty(flight_id))
                 return RedirectToAction("Browse");
 
-            // Load the selected outbound flight
-            var flightClient = new ApiClient<Flight>
-            {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/Guest/GetFlightDetails"
-            };
-            flightClient.SetQueryParameter("flight_id", flight_id);
-            Flight outboundFlight = await flightClient.GetAsync();
-
-            if (outboundFlight == null)
-                return RedirectToAction("Browse");
-
-            // Load all flights to find possible return flights
-            // Return flights go from the arrival city back to the departure city
+            // Load all flights once — used for both the outbound lookup and return flight filtering
             var allFlightsClient = new ApiClient<List<Flight>>
             {
                 Scheme = "http",
@@ -259,13 +244,20 @@ namespace SkyPathWebApp.Controllers
             };
             List<Flight> allFlights = await allFlightsClient.GetAsync() ?? new List<Flight>();
 
+            // Find the chosen outbound flight by its ID
+            Flight outboundFlight = allFlights.FirstOrDefault(f => f.Flight_Id == flight_id);
+
+            if (outboundFlight == null)
+                return RedirectToAction("Browse");
+
+            // Return flights: depart from outbound's arrival city, arrive at outbound's departure city
             List<Flight> returnFlights = allFlights
                 .Where(f => f.Departure_Id == outboundFlight.Arrival_Id &&
                             f.Arrival_Id == outboundFlight.Departure_Id &&
                             f.Seats_Available > 0)
                 .ToList();
 
-            // Load cities for display names
+            // Load city names for the view
             var cityClient = new ApiClient<List<City>>
             {
                 Scheme = "http",
