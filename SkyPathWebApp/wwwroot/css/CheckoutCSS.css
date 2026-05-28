@@ -1,78 +1,110 @@
-﻿.checkout-container {
-    max-width: 720px;
-    margin: 40px auto;
-    padding: 0 20px 60px;
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+}
+
+.checkout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
 }
 
 .checkout-title {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 600;
     color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
-.checkout-card {
-    background: white;
-    border-radius: 12px;
-    padding: 30px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+.checkout-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.checkout-left {
+    flex: 2;
+    min-width: 0;
+}
+
+.checkout-right {
+    flex: 1;
+    min-width: 280px;
+    position: sticky;
+    top: 24px;
 }
 
 .section-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: #667eea;
-    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 10px;
 }
 
-.flight-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* Flight Detail Card */
+.flight-detail-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
 
-.route-display {
+.fdc-route {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    font-size: 22px;
-    font-weight: 700;
-    color: #333;
+    gap: 10px;
 }
 
-.arrow {
-    color: #667eea;
-}
-
-.flight-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 14px;
+.fdc-arrow {
     color: #666;
 }
 
-    .flight-meta span {
-        background: #f5f5f5;
-        padding: 4px 10px;
-        border-radius: 6px;
-    }
+.fdc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
 
-.price-display {
-    font-size: 26px;
-    font-weight: 700;
+.fdc-box {
+    background: #f8f8f8;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.fdc-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 4px;
+}
+
+.fdc-value {
+    font-size: 14px;
+    font-weight: 500;
     color: #333;
 }
 
-.hint {
-    font-size: 13px;
-    color: #999;
-    margin-bottom: 16px;
+.fdc-price {
+    color: #2a7d4f;
+    font-weight: 700;
+    font-size: 16px;
 }
 
+/* Return flight dropdown */
 .return-select {
     width: 100%;
     padding: 12px 14px;
@@ -80,60 +112,136 @@
     border-radius: 8px;
     font-size: 14px;
     background: white;
-    color: #333;
     cursor: pointer;
-    margin-bottom: 20px;
+    color: #333;
+    transition: border-color 0.2s;
 }
 
     .return-select:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #333;
+        box-shadow: 0 0 0 3px rgba(51,51,51,0.08);
     }
 
-.checkout-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.btn-back {
-    padding: 12px 24px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #666;
-    text-decoration: none;
+.no-return-note {
     background: white;
-    transition: background 0.2s;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #888;
+    border: 1px solid #e8e8e8;
 }
 
-    .btn-back:hover {
-        background: #f5f5f5;
-    }
+/* Price Summary */
+.price-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
 
-.btn-confirm {
-    padding: 12px 32px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+.ps-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ps-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+    padding: 8px 0;
+}
+
+.ps-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    padding: 10px 0;
+}
+
+.ps-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 6px 0;
+}
+
+.ps-discount-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.discount-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #999;
+    background: #f8f8f8;
+    cursor: not-allowed;
+}
+
+.confirm-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #333;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.2s;
+    margin-top: 20px;
+    transition: background 0.2s;
 }
 
-    .btn-confirm:hover {
-        opacity: 0.9;
+    .confirm-btn:hover {
+        background: #555;
     }
 
-.booking-error {
-    background: #fff5f5;
-    color: #e53e3e;
-    border: 1px solid #fc8181;
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    .back-link:hover {
+        color: #333;
+    }
+
+.purchase-error-msg {
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: #cc0000;
     border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
+    padding: 14px 18px;
+    margin-top: 20px;
     font-size: 14px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .checkout-layout {
+        flex-direction: column;
+    }
+
+    .checkout-right {
+        position: static;
+        min-width: 0;
+        width: 100%;
+    }
 }

@@ -367,53 +367,56 @@ namespace SkyPathWS.Controllers
         }
 
         [HttpPost]
-        public bool PurchaseTicket([FromBody] CheckoutViewModel vm)
+        public IActionResult PurchaseTicket([FromBody] CheckoutViewModel vm)
         {
             try
             {
                 if (vm == null || string.IsNullOrEmpty(vm.UserId) || string.IsNullOrEmpty(vm.OutboundFlightId))
-                    return false;
+                    return BadRequest();
 
                 repositoryUOW.HelperOleDb.OpenConnection();
 
-                // Create the outbound ticket
-                var outboundTicket = new Ticket
+                List<Flight> allFlights = repositoryUOW.FlightRepository.GetALL();
+
+                Flight outbound = allFlights.FirstOrDefault(f => f.Flight_Id == vm.OutboundFlightId);
+                if (outbound == null || outbound.Seats_Available <= 0)
+                    return BadRequest();
+
+                string today = DateTime.Now.ToString("dd-MM-yyyy");
+
+                Ticket ticket1 = new Ticket
                 {
                     User_Id = vm.UserId,
                     Flight_Id = vm.OutboundFlightId,
-                    Purchase_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                    Purchase_Date = today,
                     Status = true
                 };
-
-                bool ok = repositoryUOW.TicketRepository.Create(outboundTicket);
-                if (!ok) return false;
-
-                // Reduce seats for the outbound flight
+                repositoryUOW.TicketRepository.Create(ticket1);
                 repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
 
-                // If the user also selected a return flight, create that ticket too
                 if (!string.IsNullOrEmpty(vm.ReturnFlightId))
                 {
-                    var returnTicket = new Ticket
+                    Flight returnFlight = allFlights.FirstOrDefault(f => f.Flight_Id == vm.ReturnFlightId);
+                    if (returnFlight != null && returnFlight.Seats_Available > 0)
                     {
-                        User_Id = vm.UserId,
-                        Flight_Id = vm.ReturnFlightId,
-                        Purchase_Date = DateTime.Now.ToString("dd-MM-yyyy"),
-                        Status = true
-                    };
-
-                    ok = repositoryUOW.TicketRepository.Create(returnTicket);
-                    if (!ok) return false;
-
-                    repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
+                        Ticket ticket2 = new Ticket
+                        {
+                            User_Id = vm.UserId,
+                            Flight_Id = vm.ReturnFlightId,
+                            Purchase_Date = today,
+                            Status = true
+                        };
+                        repositoryUOW.TicketRepository.Create(ticket2);
+                        repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
+                    }
                 }
 
-                return true;
+                return Ok();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return false;
+                return BadRequest();
             }
             finally
             {

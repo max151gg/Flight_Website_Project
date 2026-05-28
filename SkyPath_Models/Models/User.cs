@@ -51,7 +51,6 @@ namespace SkyPath_Models.Models
             set { password = value; ValidateProperty(value, "Password"); }
         }
         [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Must be proper phone number")]
         public string User_Telephone
         {
             get { return user_Telephone; }

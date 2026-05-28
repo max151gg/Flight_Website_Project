@@ -223,18 +223,15 @@ namespace SkyPathWebApp.Controllers
             return View(browseViewModel);
         }
 
-        // ─── GET: /User/Checkout?flight_id=X ────────────────────────────────────────
         [HttpGet]
         public async Task<IActionResult> Checkout(string flight_id)
         {
             string userId = HttpContext.Session.GetString("user_Id");
             if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("LoginHome", "Guest");
-
             if (string.IsNullOrEmpty(flight_id))
                 return RedirectToAction("Browse");
 
-            // Load all flights once — used for both the outbound lookup and return flight filtering
             var allFlightsClient = new ApiClient<List<Flight>>
             {
                 Scheme = "http",
@@ -244,20 +241,16 @@ namespace SkyPathWebApp.Controllers
             };
             List<Flight> allFlights = await allFlightsClient.GetAsync() ?? new List<Flight>();
 
-            // Find the chosen outbound flight by its ID
             Flight outboundFlight = allFlights.FirstOrDefault(f => f.Flight_Id == flight_id);
-
             if (outboundFlight == null)
                 return RedirectToAction("Browse");
 
-            // Return flights: depart from outbound's arrival city, arrive at outbound's departure city
             List<Flight> returnFlights = allFlights
-                .Where(f => f.Departure_Id == outboundFlight.Arrival_Id &&
-                            f.Arrival_Id == outboundFlight.Departure_Id &&
-                            f.Seats_Available > 0)
+                .Where(f => f.Departure_Id == outboundFlight.Arrival_Id
+                         && f.Arrival_Id == outboundFlight.Departure_Id
+                         && f.Seats_Available > 0)
                 .ToList();
 
-            // Load city names for the view
             var cityClient = new ApiClient<List<City>>
             {
                 Scheme = "http",
@@ -270,26 +263,22 @@ namespace SkyPathWebApp.Controllers
 
             var vm = new CheckoutViewModel
             {
+                UserId = userId,
                 OutboundFlightId = flight_id,
                 OutboundFlight = outboundFlight,
                 AvailableReturnFlights = returnFlights
             };
-
             return View(vm);
         }
 
-        // ─── POST: /User/Purchase ────────────────────────────────────────────────────
         [HttpPost]
-        public async Task<IActionResult> Purchase(CheckoutViewModel model)
+        public async Task<IActionResult> Purchase(CheckoutViewModel vm)
         {
             string userId = HttpContext.Session.GetString("user_Id");
             if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("LoginHome", "Guest");
 
-            if (string.IsNullOrEmpty(model.OutboundFlightId))
-                return RedirectToAction("Browse");
-
-            model.UserId = userId;
+            vm.UserId = userId;
 
             var client = new ApiClient<CheckoutViewModel>
             {
@@ -299,15 +288,11 @@ namespace SkyPathWebApp.Controllers
                 Path = "api/User/PurchaseTicket"
             };
 
-            bool ok = await client.PostAsyncReturn<CheckoutViewModel, bool>(model);
-
+            bool ok = await client.PostAsync(vm);
             if (ok)
-            {
-                TempData["BookingSuccess"] = "Your booking was confirmed! Check your tickets below.";
                 return RedirectToAction("Ticket");
-            }
 
-            TempData["BookingError"] = "Booking failed. The flight may be sold out. Please try again.";
+            TempData["PurchaseError"] = "Booking failed. The flight may be sold out.";
             return RedirectToAction("Browse");
         }
 
