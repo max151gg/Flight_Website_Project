@@ -20,10 +20,7 @@ namespace SkyPath_Models.Models
         string role_Id;
         string user_Image;
         bool user_Ban;
-
-
-        
-        public string UserSalt {  get; set; }
+        string userSalt;
 
         public string User_Id
         {
@@ -85,6 +82,11 @@ namespace SkyPath_Models.Models
         {
             get { return user_Ban; }
             set { user_Ban = value; }
+        }
+        public string UserSalt
+        {
+            get { return userSalt; }
+            set { userSalt = value; }
         }
     }
 }

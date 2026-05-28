@@ -292,8 +292,8 @@ namespace SkyPathWebApp.Controllers
             if (ok)
                 return RedirectToAction("Ticket");
 
-            TempData["PurchaseError"] = "Booking failed. The flight may be sold out.";
-            return RedirectToAction("Browse");
+            TempData["PurchaseError"] = "Booking failed. Please try again or choose a different flight.";
+            return RedirectToAction("Checkout", new { flight_id = vm.OutboundFlightId });
         }
 
         [HttpGet]

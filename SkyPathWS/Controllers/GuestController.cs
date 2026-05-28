@@ -270,24 +270,32 @@ namespace SkyPathWS.Controllers
 
 
         [HttpPost]
-        public bool Register([FromBody]User user)
+        public IActionResult Register([FromBody] User user)
         {
-            //string json = HttpContext.Request.Form["model"];
-            //User user = System.Text.Json.JsonSerializer.Deserialize<User>(json);
+            
 
             try
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
 
-                // No image at register-time:
-                user.User_Image = ""; // or ""
+                user.Role_Id = string.IsNullOrWhiteSpace(user.Role_Id) ? "1" : user.Role_Id;
+                user.User_Image = user.User_Image ?? "";
+                user.User_Ban = false;
 
-                return repositoryUOW.UserRepository.Create(user);
+                bool created = repositoryUOW.UserRepository.Create(user);
+
+                if (!created)
+                    return BadRequest(false);
+
+                return Ok(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return false;
+
+                // For development, this helps you actually see the real cause.
+                // Later, replace ex.Message with a generic message.
+                return StatusCode(500, ex.Message);
             }
             finally
             {

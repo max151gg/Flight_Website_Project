@@ -19,15 +19,33 @@ namespace SkyPathWS.ORM
         OleDbTransaction dbTransaction;
 
 
+        //public DbHelperOleDb()
+        //{
+        //    oleDbConnetction = new OleDbConnection();
+        //    //הסבר לאיזה מוסד נתונים ליצור קשר על ידי מחרוזת התחברות
+        //    oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\maxka\source\repos\Flight_Website_Project\SkyPathWS\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
+        //    //this.oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={Directory.GetCurrentDirectory()}\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
+        //    dbCommand = new OleDbCommand();
+        //    dbCommand.Connection = oleDbConnetction;
+        //}
+
         public DbHelperOleDb()
         {
             oleDbConnetction = new OleDbConnection();
-            //הסבר לאיזה מוסד נתונים ליצור קשר על ידי מחרוזת התחברות
-            oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\maxka\source\repos\Flight_Website_Project\SkyPathWS\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
-            //this.oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={Directory.GetCurrentDirectory()}\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
+
+            string dbPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "App_Data",
+                "Database_SkyPath.accdb"
+            );
+
+            oleDbConnetction.ConnectionString =
+                $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbPath};Persist Security Info=True";
+
             dbCommand = new OleDbCommand();
             dbCommand.Connection = oleDbConnetction;
         }
+
         public void CloseConnection()
         {
             oleDbConnetction.Close();

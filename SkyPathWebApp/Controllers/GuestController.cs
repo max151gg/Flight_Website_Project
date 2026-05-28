@@ -100,29 +100,90 @@ namespace SkyPathWebApp.Controllers
         }
 
         // ─── POST: /Guest/Register ───────────────────────────────────────────────
+        //[HttpPost]
+        //public async Task<IActionResult> Register(User user)
+        //{
+        //    if (user == null)
+        //        return RedirectToAction("HomePage");
+
+        //    // Set these before ModelState runs — they are not form fields
+        //    if (string.IsNullOrWhiteSpace(user.Role_Id))
+        //        user.Role_Id = "1";
+        //    user.User_Image = "";
+        //    user.User_Id = "";
+        //    user.UserSalt = "";
+        //    user.User_Ban = false;
+
+        //    //Server - side field validation
+        //    if (!ModelState.IsValid)
+        //    {
+        //        BrowseViewModel vm = await LoadBrowseViewModelAsync();
+        //        vm.user = user;
+        //        return View("HomePage", vm);
+        //    }
+
+        //    // Call API to create the user
+        //    var registerClient = new ApiClient<User>
+        //    {
+        //        Scheme = "http",
+        //        Host = "localhost",
+        //        Port = 5125,
+        //        Path = "api/Guest/Register"
+        //    };
+        //    bool ok = await registerClient.PostAsync(user);
+
+        //    if (!ok)
+        //    {
+        //        ModelState.AddModelError("", "Registration failed. Please try again.");
+        //        BrowseViewModel vm = await LoadBrowseViewModelAsync();
+        //        vm.user = user;
+        //        return View("HomePage", vm);
+        //    }
+
+        //    // Auto-login after successful registration
+        //    var loginClient = new ApiClient<LoginViewModel>
+        //    {
+        //        Scheme = "http",
+        //        Host = "localhost",
+        //        Port = 5125,
+        //        Path = "api/Guest/Login"
+        //    };
+        //    var loginVm = new LoginViewModel { Email = user.Email, Password = user.Password };
+        //    User loggedInUser = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
+
+        //    if (loggedInUser != null)
+        //    {
+        //        HttpContext.Session.SetString("user_Id", loggedInUser.User_Id);
+        //        HttpContext.Session.SetString("user_FullName", loggedInUser.User_FullName ?? "My Account");
+        //        HttpContext.Session.SetString("user_Image", loggedInUser.User_Image ?? "");
+        //        return RedirectToAction("HomePage", "User");
+        //    }
+
+        //    return RedirectToAction("LoginHome");
+        //}
         [HttpPost]
         public async Task<IActionResult> Register(User user)
         {
             if (user == null)
                 return RedirectToAction("HomePage");
 
-            // Set these before ModelState runs — they are not form fields
-            if (string.IsNullOrWhiteSpace(user.Role_Id))
-                user.Role_Id = "1";
+            user.Role_Id = string.IsNullOrWhiteSpace(user.Role_Id) ? "1" : user.Role_Id;
             user.User_Image = "";
             user.User_Id = "";
             user.UserSalt = "";
             user.User_Ban = false;
 
-            // Server-side field validation
-            if (!ModelState.IsValid)
+            // These are server-managed fields, not user-entered form fields.
+            // Remove possible validation errors that were created before this method ran.
+            
+            user.Validate(); // This will populate ModelState with any validation errors based on data annotations in the User model.
+            if (!user.IsValid)
             {
                 BrowseViewModel vm = await LoadBrowseViewModelAsync();
                 vm.user = user;
                 return View("HomePage", vm);
             }
 
-            // Call API to create the user
             var registerClient = new ApiClient<User>
             {
                 Scheme = "http",
@@ -130,17 +191,17 @@ namespace SkyPathWebApp.Controllers
                 Port = 5125,
                 Path = "api/Guest/Register"
             };
+
             bool ok = await registerClient.PostAsync(user);
 
             if (!ok)
             {
-                ModelState.AddModelError("", "Registration failed. Please try again.");
+                ModelState.AddModelError("", "Registration failed. Please check the API/database error.");
                 BrowseViewModel vm = await LoadBrowseViewModelAsync();
                 vm.user = user;
                 return View("HomePage", vm);
             }
 
-            // Auto-login after successful registration
             var loginClient = new ApiClient<LoginViewModel>
             {
                 Scheme = "http",
@@ -148,7 +209,13 @@ namespace SkyPathWebApp.Controllers
                 Port = 5125,
                 Path = "api/Guest/Login"
             };
-            var loginVm = new LoginViewModel { Email = user.Email, Password = user.Password };
+
+            var loginVm = new LoginViewModel
+            {
+                Email = user.Email,
+                Password = user.Password
+            };
+
             User loggedInUser = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
 
             if (loggedInUser != null)
@@ -159,7 +226,10 @@ namespace SkyPathWebApp.Controllers
                 return RedirectToAction("HomePage", "User");
             }
 
-            return RedirectToAction("LoginHome");
+            ModelState.AddModelError("", "Registration succeeded, but automatic login failed. Please log in manually.");
+            BrowseViewModel failedLoginVm = await LoadBrowseViewModelAsync();
+            failedLoginVm.user = user;
+            return View("HomePage", failedLoginVm);
         }
 
         // ─── GET: /Guest/Browse ──────────────────────────────────────────────────

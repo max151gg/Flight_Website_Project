@@ -79,14 +79,26 @@ namespace SkyPathWSClient
             {
                 httpRequest.Method = HttpMethod.Post;
                 httpRequest.RequestUri = this.uriBuilder.Uri;
+
                 string json = JsonSerializer.Serialize<T>(model);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                httpRequest.Content = content;
+                httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
                 using (HttpResponseMessage httpResponse = await this.httpClient.SendAsync(httpRequest))
                 {
-                    return httpResponse.IsSuccessStatusCode;
-                }
+                    string responseBody = await httpResponse.Content.ReadAsStringAsync();
 
+                    if (!httpResponse.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"POST failed: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
+                        Console.WriteLine(responseBody);
+                        return false;
+                    }
+
+                    if (bool.TryParse(responseBody, out bool apiResult))
+                        return apiResult;
+
+                    return false;
+                }
             }
         }
 

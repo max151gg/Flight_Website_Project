@@ -391,7 +391,9 @@ namespace SkyPathWS.Controllers
                     Purchase_Date = today,
                     Status = true
                 };
-                repositoryUOW.TicketRepository.Create(ticket1);
+                bool created = repositoryUOW.TicketRepository.Create(ticket1);
+                if (!created)
+                    return BadRequest("Failed to create ticket.");
                 repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
 
                 if (!string.IsNullOrEmpty(vm.ReturnFlightId))
@@ -406,8 +408,10 @@ namespace SkyPathWS.Controllers
                             Purchase_Date = today,
                             Status = true
                         };
-                        repositoryUOW.TicketRepository.Create(ticket2);
-                        repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
+                        bool created2 = repositoryUOW.TicketRepository.Create(ticket2);
+                        if (created2)
+                            repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
+
                     }
                 }
 
