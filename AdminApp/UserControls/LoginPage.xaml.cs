@@ -48,34 +48,41 @@ namespace AdminApp.UserControls
 
         private async Task PerformLoginAsync()
         {
+            // Clear all inline errors at the start
+            txtEmailError.Visibility = Visibility.Collapsed;
+            txtPasswordError.Visibility = Visibility.Collapsed;
+            txtGeneralError.Visibility = Visibility.Collapsed;
 
             string email = txtUsername.Text.Trim();
             string password = txtPassword.Password;
 
+            bool isValid = true;
+
+            // Validate Email
             if (string.IsNullOrEmpty(email))
             {
-                MessageBox.Show("Please enter your email", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtUsername.Focus();
-                return;
+                txtEmailError.Text = "Email is required.";
+                txtEmailError.Visibility = Visibility.Visible;
+                isValid = false;
             }
-
-            if (!email.Contains("@", StringComparison.Ordinal))
+            else if (!email.Contains("@", StringComparison.Ordinal) || !email.Contains("."))
             {
-                MessageBox.Show("Please enter a valid email",
-                               "Validation Error",
-                               MessageBoxButton.OK,
-                               MessageBoxImage.Warning);
-                txtUsername.Focus();
-                return;
+                txtEmailError.Text = "Enter a valid email address.";
+                txtEmailError.Visibility = Visibility.Visible;
+                isValid = false;
             }
 
+            // Validate Password
             if (string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Please enter your password.",
-                               "Validation Error",
-                               MessageBoxButton.OK,
-                               MessageBoxImage.Warning);
-                txtPassword.Focus();
+                txtPasswordError.Text = "Password is required.";
+                txtPasswordError.Visibility = Visibility.Visible;
+                isValid = false;
+            }
+
+            if (!isValid)
+            {
+                txtUsername.Focus();
                 return;
             }
 
@@ -89,45 +96,42 @@ namespace AdminApp.UserControls
                     Path = "api/Guest/Login"
                 };
 
-                var loginVm = new LoginViewModel
-                {
-                    Email = email,
-                    Password = password
-                };
-
+                var loginVm = new LoginViewModel { Email = email, Password = password };
                 User user = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
 
                 if (user == null)
                 {
-                    MessageBox.Show("Invalid Email or Password.",
-                               "Validation Error",
-                               MessageBoxButton.OK,
-                               MessageBoxImage.Warning);
+                    txtGeneralError.Text = "Invalid email or password.";
+                    txtGeneralError.Visibility = Visibility.Visible;
                     txtPassword.Clear();
-                    txtUsername.Focus();
+                    return;
+                }
+
+                if (user.User_Ban)
+                {
+                    txtGeneralError.Text = "This account has been banned.";
+                    txtGeneralError.Visibility = Visibility.Visible;
+                    txtPassword.Clear();
                     return;
                 }
 
                 if (user.Role_Id != "0")
                 {
-                    MessageBox.Show("Only admins can access the admin panel.",
-                               "Validation Error",
-                               MessageBoxButton.OK,
-                               MessageBoxImage.Warning);
+                    txtGeneralError.Text = "Only admins can access the admin panel.";
+                    txtGeneralError.Visibility = Visibility.Visible;
                     txtPassword.Clear();
-                    txtUsername.Focus();
                     return;
                 }
 
                 var mainWindow = Window.GetWindow(this) as MainWindow;
                 if (mainWindow == null)
                 {
-                    MessageBox.Show("Was unable to access the window.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    txtGeneralError.Text = "Could not open the main window. Please restart the app.";
+                    txtGeneralError.Visibility = Visibility.Visible;
                     return;
                 }
 
                 string adminDisplayName = await ResolveAdminFullNameAsync(user);
-
                 mainWindow.ShowSidebar();
                 mainWindow.SetAdminName(adminDisplayName);
                 mainWindow.SetAdminProfileImage(user.User_Image ?? string.Empty);
@@ -135,11 +139,8 @@ namespace AdminApp.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Login failed: {ex.Message}",
-                               "Validation Error",
-                               MessageBoxButton.OK,
-                               MessageBoxImage.Warning);
-                
+                txtGeneralError.Text = $"Login failed: {ex.Message}";
+                txtGeneralError.Visibility = Visibility.Visible;
             }
         }
 

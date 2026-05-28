@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 
 
+
 namespace SkyPathWS.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -362,6 +363,61 @@ namespace SkyPathWS.Controllers
             finally
             {
                 this.repositoryUOW.HelperOleDb.CloseConnection();
+            }
+        }
+
+        [HttpPost]
+        public bool PurchaseTicket([FromBody] CheckoutViewModel vm)
+        {
+            try
+            {
+                if (vm == null || string.IsNullOrEmpty(vm.UserId) || string.IsNullOrEmpty(vm.OutboundFlightId))
+                    return false;
+
+                repositoryUOW.HelperOleDb.OpenConnection();
+
+                // Create the outbound ticket
+                var outboundTicket = new Ticket
+                {
+                    User_Id = vm.UserId,
+                    Flight_Id = vm.OutboundFlightId,
+                    Purchase_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                    Status = true
+                };
+
+                bool ok = repositoryUOW.TicketRepository.Create(outboundTicket);
+                if (!ok) return false;
+
+                // Reduce seats for the outbound flight
+                repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
+
+                // If the user also selected a return flight, create that ticket too
+                if (!string.IsNullOrEmpty(vm.ReturnFlightId))
+                {
+                    var returnTicket = new Ticket
+                    {
+                        User_Id = vm.UserId,
+                        Flight_Id = vm.ReturnFlightId,
+                        Purchase_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                        Status = true
+                    };
+
+                    ok = repositoryUOW.TicketRepository.Create(returnTicket);
+                    if (!ok) return false;
+
+                    repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+            finally
+            {
+                repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
 

@@ -201,3 +201,21 @@
         transform: translateY(-1px);
     }
 
+/* ── Validation error messages ── */
+.field-error {
+    display: block;
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.general-error {
+    background: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #fc8181;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    text-align: center;
+}

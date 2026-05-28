@@ -1,0 +1,94 @@
+﻿@using SkyPath_Models.Models
+@using SkyPath_Models.ViewModel
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
+
+    var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
+    string CityName(string id) =>
+        (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
+            ? cityDict[id] : "Unknown";
+
+    var f = Model.OutboundFlight;
+}
+
+<link rel="stylesheet" href="~/css/CheckoutCSS.css" />
+
+<div class="checkout-container">
+    <h1 class="checkout-title">Confirm Your Booking</h1>
+
+    @if (TempData["BookingError"] != null)
+    {
+        <div class="booking-error">@TempData["BookingError"]</div>
+    }
+
+    @* ── Outbound Flight Details ── *@
+    <div class="checkout-card">
+        <h2 class="section-label">Outbound Flight</h2>
+        <div class="flight-summary">
+            <div class="route-display">
+                <span class="city">@CityName(f.Departure_Id)</span>
+                <span class="arrow">✈</span>
+                <span class="city">@CityName(f.Arrival_Id)</span>
+            </div>
+            <div class="flight-meta">
+                <span>@f.Airline</span>
+                <span>Flight @f.Flight_Number</span>
+                <span>@f.Departure_Date at @f.Departure_Time</span>
+                <span>Arrives: @f.Arrival_Date at @f.Arrival_Time</span>
+                <span>Duration: @f.DurationDisplay</span>
+                <span>Seats left: @f.Seats_Available</span>
+            </div>
+            <div class="price-display">@f.Price $</div>
+        </div>
+    </div>
+
+    @* ── Return Flight (optional) ── *@
+    @if (Model.AvailableReturnFlights != null && Model.AvailableReturnFlights.Count > 0)
+    {
+        <div class="checkout-card">
+            <h2 class="section-label">Add a Return Flight (Optional)</h2>
+            <p class="hint">Select a return flight to make this a round trip.</p>
+
+            <form asp-controller="User" asp-action="Purchase" method="post">
+                <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
+
+                <div class="form-group">
+                    <select name="ReturnFlightId" class="return-select">
+                        <option value="">— One-Way (no return) —</option>
+                        @foreach (var r in Model.AvailableReturnFlights)
+                        {
+                            <option value="@r.Flight_Id">
+                                @CityName(r.Departure_Id) → @CityName(r.Arrival_Id)
+                                | @r.Departure_Date @r.Departure_Time
+                                | @r.Price $
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="checkout-actions">
+                    <a href="/User/Browse" class="btn-back">← Back to Flights</a>
+                    <button type="submit" class="btn-confirm">Confirm Purchase</button>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        @* No return flights available — one-way only *@
+        <div class="checkout-card">
+            <p class="hint">No return flights are available for this route. This will be a one-way ticket.</p>
+
+            <form asp-controller="User" asp-action="Purchase" method="post">
+                <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
+
+                <div class="checkout-actions">
+                    <a href="/User/Browse" class="btn-back">← Back to Flights</a>
+                    <button type="submit" class="btn-confirm">Confirm Purchase</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

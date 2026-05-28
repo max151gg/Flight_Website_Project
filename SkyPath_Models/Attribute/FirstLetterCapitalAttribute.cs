@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SkyPath_Models
 {
@@ -11,11 +6,14 @@ namespace SkyPath_Models
     {
         public override bool IsValid(object? value)
         {
+            // null/empty is handled by [Required]
+            if (value == null) return true;
+
             string word = value.ToString();
-            char FirstLetter = word[0];
-            if (FirstLetter < 'A' || FirstLetter > 'Z')
-                return false;
-            return true;
+            if (string.IsNullOrEmpty(word)) return true;
+
+            char firstLetter = word[0];
+            return firstLetter >= 'A' && firstLetter <= 'Z';
         }
     }
 }

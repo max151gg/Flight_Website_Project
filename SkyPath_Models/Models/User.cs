@@ -44,6 +44,7 @@ namespace SkyPath_Models.Models
             set { email = value; ValidateProperty(value, "Email"); }
         }
         [Required(ErrorMessage = "Password is required")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters.")]
         public string Password
         {
             get { return password; }

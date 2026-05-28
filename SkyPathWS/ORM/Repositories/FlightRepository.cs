@@ -183,5 +183,19 @@ namespace SkyPathWS.ORM.Repositories
                 return Convert.ToInt32(reader["FlightCount"]);
             }
         }
+
+        public bool ReduceSeats(string flightId, int amount)
+        {
+            // Check current availability before reducing
+            Flight flight = GetById(flightId);
+            if (flight == null || flight.Seats_Available < amount)
+                return false;
+
+            string sql = @"UPDATE Flight SET Seats_Available = Seats_Available - @Amount
+                   WHERE Flight_Id = @Flight_Id";
+            helperOleDb.AddParameter("@Amount", amount);
+            helperOleDb.AddParameter("@Flight_Id", flightId);
+            return helperOleDb.Update(sql) > 0;
+        }
     }
 }

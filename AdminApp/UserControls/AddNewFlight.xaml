@@ -201,42 +201,48 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Departure -->
+                            <!-- Departure City -->
                             <StackPanel Grid.Column="0" Grid.Row="0">
-                                <TextBlock Text="DEPARTURE CITY" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="DEPARTURE CITY"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <ComboBox x:Name="cmbDeparture"
                                     Style="{StaticResource ModernComboBoxStyle}"
                                     DisplayMemberPath="CityName"
                                     SelectedValuePath="CityId"/>
+                                <TextBlock x:Name="errDeparture" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
-                            <!-- Destination -->
+                            <!-- Arrival City -->
                             <StackPanel Grid.Column="2" Grid.Row="0">
-                                <TextBlock Text="ARRIVAL CITY" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="ARRIVAL CITY"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <ComboBox x:Name="cmbArrival"
                                     Style="{StaticResource ModernComboBoxStyle}"
                                     DisplayMemberPath="CityName"
                                     SelectedValuePath="CityId"/>
+                                <TextBlock x:Name="errArrival" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
                             <!-- Airline -->
                             <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,15,0,0">
-                                <TextBlock Text="AIRLINE" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="AIRLINE"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtAirline"
-                                          Style="{StaticResource ModernInputStyle}"
-                                          Text="{Binding Flight, UpdateSourceTrigger=PropertyChanged}"/>
-                                
+                                    Style="{StaticResource ModernInputStyle}"/>
+                                <TextBlock x:Name="errAirline" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
                             <!-- Flight Number -->
                             <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,15,0,0">
-                                <TextBlock Text="FLIGHT NUMBER" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="FLIGHT NUMBER"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtFlightNumber"
-                                        Style="{StaticResource ModernInputStyle}"/>
+                                    Style="{StaticResource ModernInputStyle}"/>
+                                <TextBlock x:Name="errFlightNumber" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -262,36 +268,44 @@
 
                             <!-- Departure Date -->
                             <StackPanel Grid.Column="0" Grid.Row="0">
-                                <TextBlock Text="DEPARTURE DATE" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="DEPARTURE DATE"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <DatePicker x:Name="dpDepartureDate"
-                                           Style="{StaticResource ModernDatePickerStyle}"/>
+                                    Style="{StaticResource ModernDatePickerStyle}"/>
+                                <TextBlock x:Name="errDepartureDate" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
                             <!-- Departure Time -->
                             <StackPanel Grid.Column="2" Grid.Row="0">
-                                <TextBlock Text="DEPARTURE TIME" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="DEPARTURE TIME"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtDepartureTime"
-                                        Style="{StaticResource ModernInputStyle}"
-                                        Text="00:00"/>
+                                    Style="{StaticResource ModernInputStyle}"
+                                    Text="00:00"/>
+                                <TextBlock x:Name="errDepartureTime" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
                             <!-- Arrival Date -->
                             <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,15,0,0">
-                                <TextBlock Text="ARRIVAL DATE" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="ARRIVAL DATE"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <DatePicker x:Name="dpArrivalDate"
-                                           Style="{StaticResource ModernDatePickerStyle}"/>
+                                    Style="{StaticResource ModernDatePickerStyle}"/>
+                                <TextBlock x:Name="errArrivalDate" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
                             <!-- Arrival Time -->
                             <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,15,0,0">
-                                <TextBlock Text="ARRIVAL TIME" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="ARRIVAL TIME"
+                                     Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtArrivalTime"
-                                        Style="{StaticResource ModernInputStyle}"
-                                        Text="00:00"/>
+                                    Style="{StaticResource ModernInputStyle}"
+                                    Text="00:00"/>
+                                <TextBlock x:Name="errArrivalTime" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -313,20 +327,24 @@
 
                             <!-- Price -->
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="PRICE (USD)" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="PRICE (USD)"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtPrice"
-                                        Style="{StaticResource ModernInputStyle}"
-                                        Text="0.00"/>
+                                    Style="{StaticResource ModernInputStyle}"
+                                    Text="0.00"/>
+                                <TextBlock x:Name="errPrice" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
 
-                            <!-- Seats Available -->
+                            <!-- Seats -->
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="TOTAL SEATS" 
-                                          Style="{StaticResource InputLabelStyle}"/>
+                                <TextBlock Text="TOTAL SEATS"
+                                    Style="{StaticResource InputLabelStyle}"/>
                                 <TextBox x:Name="txtSeats"
-                                        Style="{StaticResource ModernInputStyle}"
-                                        Text="180"/>
+                                    Style="{StaticResource ModernInputStyle}"
+                                    Text="180"/>
+                                <TextBlock x:Name="errSeats" Text="" Foreground="#E53E3E"
+                                    FontSize="11" Visibility="Collapsed" Margin="2,4,0,0"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

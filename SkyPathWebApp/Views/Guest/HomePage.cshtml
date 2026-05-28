@@ -7,131 +7,101 @@
 }
 @{
     var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
-
     string NameOrUnknown(string id) =>
         (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
-            ? cityDict[id]
-            : "Unknown";
+            ? cityDict[id] : "Unknown";
 }
 <link rel="stylesheet" href="~/CSS/HomeCSS.css" />
+
 <div class="content">
     <div class="hero">
         <h1>The best site to set up<br>your vacation</h1>
         <p>Compare flights, discover the best prices, and plan your journey with confidence.</p>
         <a class="btn-cta" href="http://localhost:5076/Guest/Browse">Find Your Flight Now</a>
     </div>
-<div class="main-container">
-    <!-- Search Section -->
+
+    <div class="main-container">
         @{
             var discountedFlights = (Model?.flights ?? new List<Flight>())
-            .Where(f => f != null)   // your threshold
-            .OrderBy(f => f.Price)                    // optional: cheapest first
-            .Take(5)
-            .ToList();
+            .Where(f => f != null).OrderBy(f => f.Price).Take(5).ToList();
         }
 
         <div class="flights-section">
             <p class="section-title">Cheapest Flights Available Right Now</p>
-
             <div class="flight-cards">
                 @foreach (var flight in discountedFlights)
                 {
-                    <a asp-controller="Guest"
-                       asp-action="Browse"
-                       asp-route-openFlightId="@flight.Flight_Id"
-                       class="flight-card-link">
-
-
-
+                    <a asp-controller="Guest" asp-action="Browse"
+                       asp-route-openFlightId="@flight.Flight_Id" class="flight-card-link">
                         <div class="flight-card">
                             <img class="flight-card-icon"
                                  src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
                                  onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
                                  alt="Destination image" />
-
-
                             <div class="flight-card-title">
-                                @NameOrUnknown(flight.Departure_Id)
-                                →
-                                @NameOrUnknown(flight.Arrival_Id)
-                                - @flight.Price$
+                                @NameOrUnknown(flight.Departure_Id) → @NameOrUnknown(flight.Arrival_Id) - @flight.Price$
                             </div>
                         </div>
-
                     </a>
                 }
             </div>
         </div>
 
-
-    <!-- Content Layout -->
         <div class="content-layout">
-            <!-- Sidebar -->
             <div class="signup-section" id="signup-section">
                 <h2>Sign Up</h2>
-                <p class="signup-subtitle">Signup now. Its free and takes less than a minute</p>
+                <p class="signup-subtitle">Signup now. It's free and takes less than a minute</p>
 
-                <form asp-controller="Guest"
-                      asp-action="Register"
-                      method="post">
+                @* novalidate disables browser bubbles so our field-level errors appear *@
+                <form asp-controller="Guest" asp-action="Register" method="post" novalidate>
+
+                    @* Show a general error (e.g. "Registration failed") *@
+                    @if (ViewData.ModelState.ContainsKey("") &&
+                                        ViewData.ModelState[""].Errors.Count > 0)
+                    {
+                        <div class="general-error">
+                            @ViewData.ModelState[""].Errors[0].ErrorMessage
+                        </div>
+                    }
 
                     <div class="form-group">
-                        <input asp-for="user.User_FullName"
-                               type="text"
-                               placeholder="Full Name"
-                               required>
+                        <input asp-for="user.User_FullName" type="text" placeholder="Full Name" />
+                        <span asp-validation-for="user.User_FullName" class="field-error"></span>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="user.UserName"
-                               type="text"
-                               placeholder="UserName"
-                               required>
+                        <input asp-for="user.UserName" type="text" placeholder="Username" />
+                        <span asp-validation-for="user.UserName" class="field-error"></span>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="user.Email"
-                               type="email"
-                               placeholder="Email address"
-                               required>
+                        <input asp-for="user.Email" type="email" placeholder="Email address" />
+                        <span asp-validation-for="user.Email" class="field-error"></span>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="user.Password"
-                               type="password"
-                               placeholder="Password"
-                               required>
+                        <input asp-for="user.Password" type="password" placeholder="Password" />
+                        <span asp-validation-for="user.Password" class="field-error"></span>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="user.User_Telephone"
-                               type="text"
-                               placeholder="Phone Number"
-                               required>
+                        <input asp-for="user.User_Telephone" type="text" placeholder="Phone Number" />
+                        <span asp-validation-for="user.User_Telephone" class="field-error"></span>
                     </div>
 
                     <div class="form-group">
-                        <input asp-for="user.User_Adress"
-                               type="text"
-                               placeholder="Adress"
-                               required>
+                        <input asp-for="user.User_Adress" type="text" placeholder="Address" />
+                        <span asp-validation-for="user.User_Adress" class="field-error"></span>
                     </div>
-
-                    
 
                     <div class="checkbox-group">
-                        <input type="checkbox" id="terms">
+                        <input type="checkbox" id="terms" />
                         <label for="terms">Notify me about recent discounts</label>
                     </div>
 
                     <div class="checkbox-group">
-                        <input type="checkbox" id="agree" required>
-                        <label for="agree">Agree with terms of service</label>
-                    </div>
-
-                    <div class="checkbox-group">
                         <label>
-                            have an account already?
+                            Already have an account?
                             <a href="http://localhost:5076/Guest/LoginHome#login-section">Log In</a>
                         </label>
                     </div>
@@ -140,6 +110,14 @@
                 </form>
             </div>
         </div>
-
     </div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var section = document.getElementById('signup-section');
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        </script>
+    }
 </div>

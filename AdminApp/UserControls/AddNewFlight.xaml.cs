@@ -222,114 +222,118 @@ namespace AdminApp.Pages
         }
         private bool ValidateInputs()
         {
+            bool isValid = true;
+
+            // Clear all error messages first
+            ClearAllErrors();
+
             // Departure City
             if (cmbDeparture.SelectedIndex == -1)
             {
-                ShowValidationError("Please select a departure city.");
-                cmbDeparture.Focus();
-                return false;
+                ShowError(errDeparture, "Please select a departure city.");
+                isValid = false;
             }
 
-            // Destination City
+            // Arrival City
             if (cmbArrival.SelectedIndex == -1)
             {
-                ShowValidationError("Please select a destination city.");
-                cmbArrival.Focus();
-                return false;
+                ShowError(errArrival, "Please select an arrival city.");
+                isValid = false;
             }
-
-            // Check if departure and destination are different
-            var depId = cmbDeparture.SelectedValue?.ToString();
-            var arrId = cmbArrival.SelectedValue?.ToString();
-
-            if (!string.IsNullOrWhiteSpace(depId) && depId == arrId)
+            else if (cmbDeparture.SelectedIndex != -1)
             {
-                ShowValidationError("Departure and destination cities must be different.");
-                cmbArrival.Focus();
-                return false;
+                var depId = cmbDeparture.SelectedValue?.ToString();
+                var arrId = cmbArrival.SelectedValue?.ToString();
+                if (!string.IsNullOrWhiteSpace(depId) && depId == arrId)
+                {
+                    ShowError(errArrival, "Departure and arrival cities cannot be the same.");
+                    isValid = false;
+                }
             }
 
             // Airline
             if (string.IsNullOrWhiteSpace(txtAirline.Text))
             {
-                ShowValidationError("Please enter an airline name.");
-                txtFlightNumber.Focus();
-                return false;
+                ShowError(errAirline, "Airline name is required.");
+                isValid = false;
             }
 
             // Flight Number
             if (string.IsNullOrWhiteSpace(txtFlightNumber.Text))
             {
-                ShowValidationError("Please enter a flight number.");
-                txtFlightNumber.Focus();
-                return false;
+                ShowError(errFlightNumber, "Flight number is required.");
+                isValid = false;
             }
 
             // Departure Date
             if (!dpDepartureDate.SelectedDate.HasValue)
             {
-                ShowValidationError("Please select a departure date.");
-                dpDepartureDate.Focus();
-                return false;
+                ShowError(errDepartureDate, "Please select a departure date.");
+                isValid = false;
             }
 
             // Arrival Date
             if (!dpArrivalDate.SelectedDate.HasValue)
             {
-                ShowValidationError("Please select an arrival date.");
-                dpArrivalDate.Focus();
-                return false;
+                ShowError(errArrivalDate, "Please select an arrival date.");
+                isValid = false;
             }
-
-            // Check if arrival is after departure
-            if (dpArrivalDate.SelectedDate < dpDepartureDate.SelectedDate)
+            else if (dpDepartureDate.SelectedDate.HasValue &&
+                     dpArrivalDate.SelectedDate < dpDepartureDate.SelectedDate)
             {
-                ShowValidationError("Arrival date must be on or after departure date.");
-                dpArrivalDate.Focus();
-                return false;
+                ShowError(errArrivalDate, "Arrival date must be on or after departure date.");
+                isValid = false;
             }
 
             // Departure Time
             if (!TimeSpan.TryParse(txtDepartureTime.Text, out _))
             {
-                ShowValidationError("Please enter a valid departure time (HH:mm format).");
-                txtDepartureTime.Focus();
-                return false;
+                ShowError(errDepartureTime, "Enter a valid departure time (HH:mm).");
+                isValid = false;
             }
 
             // Arrival Time
             if (!TimeSpan.TryParse(txtArrivalTime.Text, out _))
             {
-                ShowValidationError("Please enter a valid arrival time (HH:mm format).");
-                txtArrivalTime.Focus();
-                return false;
+                ShowError(errArrivalTime, "Enter a valid arrival time (HH:mm).");
+                isValid = false;
             }
 
             // Price
             if (!decimal.TryParse(txtPrice.Text, out decimal price) || price <= 0)
             {
-                ShowValidationError("Please enter a valid price greater than 0.");
-                txtPrice.Focus();
-                return false;
+                ShowError(errPrice, "Price must be greater than 0.");
+                isValid = false;
             }
 
             // Seats
-            if (!int.TryParse(txtSeats.Text, out int seats) || seats <= 0)
+            if (!int.TryParse(txtSeats.Text, out int seats) || seats < 0)
             {
-                ShowValidationError("Please enter a valid number of seats greater than 0.");
-                txtSeats.Focus();
-                return false;
+                ShowError(errSeats, "Seats must be 0 or greater.");
+                isValid = false;
             }
 
-            return true;
+            return isValid;
         }
 
-        private void ShowValidationError(string message)
+        private void ClearAllErrors()
         {
-            MessageBox.Show(message,
-                          "Validation Error",
-                          MessageBoxButton.OK,
-                          MessageBoxImage.Warning);
+            errDeparture.Visibility = Visibility.Collapsed;
+            errArrival.Visibility = Visibility.Collapsed;
+            errAirline.Visibility = Visibility.Collapsed;
+            errFlightNumber.Visibility = Visibility.Collapsed;
+            errDepartureDate.Visibility = Visibility.Collapsed;
+            errDepartureTime.Visibility = Visibility.Collapsed;
+            errArrivalDate.Visibility = Visibility.Collapsed;
+            errArrivalTime.Visibility = Visibility.Collapsed;
+            errPrice.Visibility = Visibility.Collapsed;
+            errSeats.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowError(System.Windows.Controls.TextBlock block, string message)
+        {
+            block.Text = message;
+            block.Visibility = Visibility.Visible;
         }
 
         //private void ChooseImage_Click(object sender, RoutedEventArgs e)

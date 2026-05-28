@@ -406,8 +406,11 @@
             document.getElementById('modalPrice').textContent = shownPrice;
             document.getElementById('modalTotalPrice').textContent = shownPrice + '$';
 
-            // Booking: redirect User to signup with flightId
-            document.getElementById('modalBookLink').href = `http://localhost:5076/User/`;
+            // Navigate to checkout for this specific flight
+            document.getElementById('modalBookLink').onclick = function(e) {
+                e.preventDefault();
+                window.location.href = '/User/Checkout?flight_id=' + flightId;
+            };
 
             // Destination images (placeholders you will add later):
             // /images/destinations/{arrivalId}_1.jpg ... _4.jpg

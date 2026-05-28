@@ -1,0 +1,139 @@
+﻿.checkout-container {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+}
+
+.checkout-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.checkout-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.section-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.flight-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.route-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+}
+
+.arrow {
+    color: #667eea;
+}
+
+.flight-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+    color: #666;
+}
+
+    .flight-meta span {
+        background: #f5f5f5;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+.price-display {
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+}
+
+.hint {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 16px;
+}
+
+.return-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+    .return-select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+.checkout-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.btn-back {
+    padding: 12px 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+    background: white;
+    transition: background 0.2s;
+}
+
+    .btn-back:hover {
+        background: #f5f5f5;
+    }
+
+.btn-confirm {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+    .btn-confirm:hover {
+        opacity: 0.9;
+    }
+
+.booking-error {
+    background: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #fc8181;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
