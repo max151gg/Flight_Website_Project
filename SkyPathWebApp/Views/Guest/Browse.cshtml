@@ -118,11 +118,7 @@
                 @foreach (Flight flight in Model.flights)
                 {
                     <a class="flight-card" href="/Guest/LoginHome">
-                        <div class="flight-image">
-                            <img src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
-                                 onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
-                                 alt="Destination image" />
-                        </div>
+                        
 
                         <div class="flight-details">
                             <div class="flight-route">

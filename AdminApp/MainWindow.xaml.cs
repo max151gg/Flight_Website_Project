@@ -122,18 +122,7 @@ namespace AdminApp
         }
         
 
-        private void NavigateToCities(object sender, RoutedEventArgs e)
-        {
-            SetActiveButton(sender as Button);
-            try
-            {
-                MainFrame.Navigate(new CitiesPage());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to open Cities page: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        
 
         private void NavigateToSettings(object sender, RoutedEventArgs e)
         {

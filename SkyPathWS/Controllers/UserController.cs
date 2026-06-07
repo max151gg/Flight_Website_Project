@@ -370,52 +370,54 @@ namespace SkyPathWS.Controllers
         public IActionResult PurchaseTicket([FromBody] CheckoutViewModel vm)
         {
             if (vm == null || string.IsNullOrEmpty(vm.UserId) || string.IsNullOrEmpty(vm.OutboundFlightId))
-                return BadRequest();
+                return BadRequest("Missing user or flight information.");
 
             try
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
-                repositoryUOW.HelperOleDb.OpenTransaction();
 
+                // 1) Flight must exist and have a free seat
                 Flight outbound = repositoryUOW.FlightRepository.GetById(vm.OutboundFlightId);
                 if (outbound == null || outbound.Seats_Available <= 0)
+                    return BadRequest("This flight is not available.");
+
+                // 2) If a discount was chosen, it must belong to THIS user
+                Discount discountToUse = null;
+                if (!string.IsNullOrEmpty(vm.DiscountId))
                 {
-                    repositoryUOW.Rollback();
-                    return BadRequest("Flight not available.");
+                    List<Discount> userDiscounts = repositoryUOW.DiscountRepository.GetByUserId(vm.UserId);
+                    discountToUse = userDiscounts?.FirstOrDefault(d => d.Discount_Id == vm.DiscountId);
+                    if (discountToUse == null)
+                        return BadRequest("That discount is not valid for this account.");
                 }
 
-                string today = DateTime.Now.ToString("dd-MM-yyyy");
-
+                // 3) Create the ticket
                 Ticket ticket = new Ticket
                 {
                     User_Id = vm.UserId,
                     Flight_Id = vm.OutboundFlightId,
-                    Purchase_Date = today,
+                    Purchase_Date = DateTime.Now.ToString("dd-MM-yyyy"),
                     Status = true
                 };
 
                 bool created = repositoryUOW.TicketRepository.Create(ticket);
                 if (!created)
-                {
-                    repositoryUOW.Rollback();
-                    return BadRequest("Failed to create ticket.");
-                }
+                    return BadRequest("Could not create the ticket.");
 
-                bool reduced = repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
-                if (!reduced)
-                {
-                    repositoryUOW.Rollback();
-                    return BadRequest("Failed to reduce seats.");
-                }
+                // 4) Take one seat
+                repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
 
-                repositoryUOW.commit();
+                // 5) Purchase succeeded -> NOW (and only now) remove the used discount.
+                //    If any step above failed we returned early, so the discount is untouched.
+                if (discountToUse != null)
+                    repositoryUOW.DiscountRepository.Delete(discountToUse.Discount_Id);
+
                 return Ok(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                repositoryUOW.Rollback();
-                return BadRequest();
+                return BadRequest(ex.Message); // real reason is surfaced to the web app
             }
             finally
             {

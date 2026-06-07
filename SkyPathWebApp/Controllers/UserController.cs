@@ -226,7 +226,7 @@ namespace SkyPathWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Checkout(string flight_id)
+        public async Task<IActionResult> Checkout(string flight_id, string currency = null, string discountId = null)
         {
             string userId = HttpContext.Session.GetString("user_Id");
             if (string.IsNullOrEmpty(userId))
@@ -257,39 +257,70 @@ namespace SkyPathWebApp.Controllers
             List<City> cities = await cityClient.GetAsync() ?? new List<City>();
             ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
 
-            var vm = new CheckoutViewModel
-            {
-                UserId = userId,
-                OutboundFlightId = flight_id,
-                OutboundFlight = outboundFlight
-            };
-            return View(vm);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ValidateDiscount(string code)
-        {
-            string userId = HttpContext.Session.GetString("user_Id");
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
-                return Json(new { valid = false });
-
-            var client = new ApiClient<DiscountViewModel>
+            var discountClient = new ApiClient<DiscountViewModel>
             {
                 Scheme = "http",
                 Host = "localhost",
                 Port = 5125,
                 Path = "api/User/GetDiscountByUserId"
             };
-            client.SetQueryParameter("user_id", userId);
+            discountClient.SetQueryParameter("user_id", userId);
+            DiscountViewModel discountVm = await discountClient.GetAsync();
 
-            DiscountViewModel vm = await client.GetAsync();
+            // Currency is display-only: convert the stored USD price using the live rate.
+            string selectedCurrency = string.IsNullOrWhiteSpace(currency) ? "USD" : currency.ToUpperInvariant();
+            ViewBag.Currency = selectedCurrency;
+            ViewBag.Rate = await GetUsdRateAsync(selectedCurrency);
+            ViewBag.SelectedDiscountId = discountId ?? "";
 
-            var discount = vm?.discounts?.FirstOrDefault(d => d.Discount_Id == code);
-            if (discount == null)
-                return Json(new { valid = false });
-
-            return Json(new { valid = true, percentage = discount.Percentage, description = discount.Description });
+            var vm = new CheckoutViewModel
+            {
+                UserId = userId,
+                OutboundFlightId = flight_id,
+                OutboundFlight = outboundFlight,
+                Discounts = discountVm?.discounts ?? new List<Discount>()
+            };
+            return View(vm);
         }
+
+        // ---- Currency conversion (same API used in the Testing project) ----
+        private static readonly HttpClient CurrencyHttpClient = new HttpClient();
+        private const string CurrencyApiKey = "2d214fc222msh367adbbf02e79b3p1d60dbjsn41a4d1788257";
+        private const string CurrencyApiHost = "currency-conversion-and-exchange-rates.p.rapidapi.com";
+
+        private async Task<double> GetUsdRateAsync(string toCurrency)
+        {
+            if (string.IsNullOrWhiteSpace(toCurrency) ||
+                toCurrency.Equals("USD", StringComparison.OrdinalIgnoreCase))
+                return 1.0;
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"https://{CurrencyApiHost}/convert?from=USD&to={toCurrency}&amount=1"),
+                    Headers =
+                    {
+                        { "x-rapidapi-key", CurrencyApiKey },
+                        { "x-rapidapi-host", CurrencyApiHost },
+                    },
+                };
+
+                using var response = await CurrencyHttpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                string body = await response.Content.ReadAsStringAsync();
+
+                using var doc = System.Text.Json.JsonDocument.Parse(body);
+                return doc.RootElement.GetProperty("result").GetDouble(); // amount=1 => result is the rate
+            }
+            catch
+            {
+                return 1.0; // API unavailable/rate-limited -> just show USD
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Purchase(CheckoutViewModel vm)
@@ -300,19 +331,19 @@ namespace SkyPathWebApp.Controllers
 
             vm.UserId = userId;
 
-            var client = new ApiClient<CheckoutViewModel>
-            {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/User/PurchaseTicket"
-            };
+            using var http = new HttpClient();
+            string json = System.Text.Json.JsonSerializer.Serialize(vm);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var resp = await http.PostAsync("http://localhost:5125/api/User/PurchaseTicket", content);
 
-            bool ok = await client.PostAsync(vm);
-            if (ok)
+            if (resp.IsSuccessStatusCode)
                 return RedirectToAction("Ticket");
 
-            TempData["PurchaseError"] = "Booking failed. Please try again or choose a different flight.";
+            // Show the web service's real error message on the checkout page.
+            string error = await resp.Content.ReadAsStringAsync();
+            TempData["PurchaseError"] = string.IsNullOrWhiteSpace(error)
+                ? "Booking failed. Please try again."
+                : $"Booking failed: {error}";
             return RedirectToAction("Checkout", new { flight_id = vm.OutboundFlightId });
         }
 

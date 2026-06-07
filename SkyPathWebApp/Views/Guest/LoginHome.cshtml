@@ -31,13 +31,8 @@
             <div class="flight-cards">
                 @foreach (var flight in discountedFlights)
                 {
-                    <a asp-controller="Guest" asp-action="Browse"
-                       asp-route-openFlightId="@flight.Flight_Id" class="flight-card-link">
+                    <a href="/Guest/FlightDetail?flight_id=@flight.Flight_Id" class="flight-card-link">
                         <div class="flight-card">
-                            <img class="flight-card-icon"
-                                 src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
-                                 onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
-                                 alt="Destination image" />
                             <div class="flight-card-title">
                                 @NameOrUnknown(flight.Departure_Id) → @NameOrUnknown(flight.Arrival_Id) - @flight.Price$
                             </div>

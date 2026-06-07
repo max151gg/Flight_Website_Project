@@ -224,5 +224,40 @@ namespace SkyPathWebApp.Controllers
 
         [HttpGet]
         public IActionResult ViewRegisterForm() => View();
+
+
+        [HttpGet]
+        public async Task<IActionResult> FlightDetail(string flight_id)
+        {
+            if (string.IsNullOrEmpty(flight_id))
+                return RedirectToAction("Browse");
+
+            var allFlightsClient = new ApiClient<List<Flight>>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/Guest/GetAllFlights"
+            };
+            List<Flight> allFlights = await allFlightsClient.GetAsync() ?? new List<Flight>();
+
+            Flight flight = allFlights.FirstOrDefault(f => f.Flight_Id == flight_id);
+            if (flight == null)
+                return RedirectToAction("Browse");
+
+            var cityClient = new ApiClient<List<City>>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/City/GetAll"
+            };
+            List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+            ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
+
+            return View(flight);
+        }
     }
+
 }
+

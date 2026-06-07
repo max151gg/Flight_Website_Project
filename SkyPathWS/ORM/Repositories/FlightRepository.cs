@@ -186,15 +186,11 @@ namespace SkyPathWS.ORM.Repositories
 
         public bool ReduceSeats(string flightId, int amount)
         {
-            // Check current availability before reducing
-            Flight flight = GetById(flightId);
-            if (flight == null || flight.Seats_Available < amount)
-                return false;
-
+            // Single guarded UPDATE (autocommit). No SELECT, no transaction.
             string sql = @"UPDATE Flight SET Seats_Available = Seats_Available - @Amount
-                   WHERE Flight_Id = @Flight_Id";
+                           WHERE Flight_Id = @Flight_Id";
             helperOleDb.AddParameter("@Amount", amount);
-            helperOleDb.AddParameter("@Flight_Id", flightId);
+            helperOleDb.AddParameter("@Flight_Id", Convert.ToInt32(flightId));
             return helperOleDb.Update(sql) > 0;
         }
     }

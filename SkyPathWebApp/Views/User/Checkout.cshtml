@@ -7,9 +7,23 @@
     Layout = "~/Views/Shared/MasterPage_User.cshtml";
 
     var cityDict = (Dictionary<string, string>)(ViewBag.CityDict ?? new Dictionary<string, string>());
-
     string CityName(string id) =>
         (!string.IsNullOrEmpty(id) && cityDict.ContainsKey(id)) ? cityDict[id] : "Unknown";
+
+    string currency = (string)(ViewBag.Currency ?? "USD");
+    double rate = ViewBag.Rate != null ? (double)ViewBag.Rate : 1.0;
+    string selectedDiscountId = (string)(ViewBag.SelectedDiscountId ?? "");
+
+    string[] currencies = { "USD", "EUR", "GBP", "ILS", "JPY", "CAD", "AUD", "CHF", "CNY", "INR" };
+
+    var selectedDiscount = Model.Discounts?.FirstOrDefault(d => d.Discount_Id == selectedDiscountId);
+    double pct = selectedDiscount?.Percentage ?? 0;
+
+    double basePrice = Model.OutboundFlight.Price * rate;
+    double discountAmt = basePrice * (pct / 100.0);
+    double total = basePrice - discountAmt;
+
+    string Money(double v) => v.ToString("F2") + " " + currency;
 }
 
 <link rel="stylesheet" href="~/css/CheckoutCSS.css" />
@@ -34,34 +48,12 @@
                     @CityName(Model.OutboundFlight.Arrival_Id)
                 </div>
                 <div class="fdc-grid">
-                    <div class="fdc-box">
-                        <div class="fdc-label">Flight Number</div>
-                        <div class="fdc-value">@Model.OutboundFlight.Flight_Number</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Airline</div>
-                        <div class="fdc-value">@Model.OutboundFlight.Airline</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Departure</div>
-                        <div class="fdc-value">@Model.OutboundFlight.Departure_Date &bull; @Model.OutboundFlight.Departure_Time</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Arrival</div>
-                        <div class="fdc-value">@Model.OutboundFlight.Arrival_Date &bull; @Model.OutboundFlight.Arrival_Time</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Duration</div>
-                        <div class="fdc-value">@(Model.OutboundFlight.DurationDisplay ?? "—")</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Price</div>
-                        <div class="fdc-value fdc-price">@Model.OutboundFlight.Price$</div>
-                    </div>
-                    <div class="fdc-box">
-                        <div class="fdc-label">Seats Left</div>
-                        <div class="fdc-value">@Model.OutboundFlight.Seats_Available</div>
-                    </div>
+                    <div class="fdc-box"><div class="fdc-label">Flight Number</div><div class="fdc-value">@Model.OutboundFlight.Flight_Number</div></div>
+                    <div class="fdc-box"><div class="fdc-label">Airline</div><div class="fdc-value">@Model.OutboundFlight.Airline</div></div>
+                    <div class="fdc-box"><div class="fdc-label">Departure</div><div class="fdc-value">@Model.OutboundFlight.Departure_Date &bull; @Model.OutboundFlight.Departure_Time</div></div>
+                    <div class="fdc-box"><div class="fdc-label">Arrival</div><div class="fdc-value">@Model.OutboundFlight.Arrival_Date &bull; @Model.OutboundFlight.Arrival_Time</div></div>
+                    <div class="fdc-box"><div class="fdc-label">Duration</div><div class="fdc-value">@(Model.OutboundFlight.DurationDisplay ?? "—")</div></div>
+                    <div class="fdc-box"><div class="fdc-label">Seats Left</div><div class="fdc-value">@Model.OutboundFlight.Seats_Available</div></div>
                 </div>
             </div>
         </div>
@@ -71,35 +63,61 @@
             <div class="price-summary">
                 <div class="ps-title">Price Summary</div>
 
+                <!-- Currency + discount: reloads page on change, recalculated server-side -->
+                <form method="get" asp-controller="User" asp-action="Checkout">
+                    <input type="hidden" name="flight_id" value="@Model.OutboundFlightId" />
+
+                    <div class="ps-field">
+                        <label for="currencySelect">Currency</label>
+                        <select id="currencySelect" name="currency" class="ps-select" onchange="this.form.submit()">
+                            @foreach (var c in currencies)
+                            {
+                                var isSelected = c == currency ? "selected" : null;
+                                <option value="@c" selected="@(isSelected)">@c</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="ps-field">
+                        <label for="discountSelect">Discount</label>
+                        <select id="discountSelect" name="discountId" class="ps-select" onchange="this.form.submit()">
+                            <option value="">No discount</option>
+                            @if (Model.Discounts != null)
+                            {
+                                foreach (var d in Model.Discounts)
+                                {
+                                    var isSelected = d.Discount_Id == selectedDiscountId ? "selected" : null;
+                                    <option value="@d.Discount_Id" selected="@(isSelected)">@(d.Percentage)% OFF - @d.Description</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+
                 <div class="ps-row">
                     <span>Flight</span>
-                    <span id="summaryFlight">@Model.OutboundFlight.Price$</span>
+                    <span>@Money(basePrice)</span>
                 </div>
 
-                <div class="ps-row ps-discount-row">
-                    <span>Discount Code</span>
-                    <div class="discount-field">
-                        <input type="text" id="discountCodeInput" class="discount-input" placeholder="Enter code" />
-                        <button type="button" class="apply-discount-btn" onclick="applyDiscount()">Apply</button>
+                @if (pct > 0)
+                {
+                    <div class="ps-row">
+                        <span>Discount (@pct%)</span>
+                        <span style="color:#2a7d4f;">-@Money(discountAmt)</span>
                     </div>
-                    <span id="discountMsg" class="discount-msg"></span>
-                </div>
-
-                <div class="ps-row" id="discountRow" style="display:none;">
-                    <span id="discountLabel">Discount</span>
-                    <span id="summaryDiscount" style="color:#2a7d4f;">-0$</span>
-                </div>
+                }
 
                 <div class="ps-divider"></div>
 
                 <div class="ps-row ps-total">
                     <span>Total</span>
-                    <span id="summaryTotal">@(Model.OutboundFlight.Price.ToString("F2"))$</span>
+                    <span>@Money(total)</span>
                 </div>
 
+                <!-- Actual purchase. (Charge is in USD; the currency above is display only.) -->
                 <form method="post" asp-controller="User" asp-action="Purchase">
                     <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
-                    <input type="hidden" name="DiscountCode" id="discountCodeHidden" value="" />
+                    <input type="hidden" name="DiscountId" value="@selectedDiscountId" />
                     <button type="submit" class="confirm-btn">Confirm Purchase</button>
                 </form>
 
@@ -109,61 +127,3 @@
 
     </div>
 </div>
-
-<script>
-    const flightPrice = @Model.OutboundFlight.Price;
-    let appliedDiscountPct = 0;
-
-    function updateSummary() {
-        const discountAmt = flightPrice * (appliedDiscountPct / 100);
-        const total = flightPrice - discountAmt;
-
-        document.getElementById('summaryFlight').textContent = flightPrice.toFixed(2) + '$';
-        document.getElementById('summaryTotal').textContent = total.toFixed(2) + '$';
-
-        const discountRow = document.getElementById('discountRow');
-        if (appliedDiscountPct > 0) {
-            discountRow.style.display = 'flex';
-            document.getElementById('summaryDiscount').textContent = '-' + discountAmt.toFixed(2) + '$';
-        } else {
-            discountRow.style.display = 'none';
-        }
-    }
-
-    async function applyDiscount() {
-        const code = document.getElementById('discountCodeInput').value.trim();
-        const msg = document.getElementById('discountMsg');
-
-        if (!code) {
-            msg.textContent = 'Please enter a code.';
-            msg.className = 'discount-msg error';
-            return;
-        }
-
-        msg.textContent = 'Checking...';
-        msg.className = 'discount-msg';
-
-        try {
-            const res = await fetch('/User/ValidateDiscount?code=' + encodeURIComponent(code));
-            const data = await res.json();
-
-            if (data.valid) {
-                appliedDiscountPct = data.percentage;
-                document.getElementById('discountLabel').textContent = 'Discount (' + data.percentage + '%)';
-                document.getElementById('discountCodeHidden').value = code;
-                msg.textContent = 'Code applied!';
-                msg.className = 'discount-msg success';
-            } else {
-                appliedDiscountPct = 0;
-                document.getElementById('discountCodeHidden').value = '';
-                msg.textContent = 'Invalid or expired code.';
-                msg.className = 'discount-msg error';
-            }
-        } catch {
-            msg.textContent = 'Could not validate code.';
-            msg.className = 'discount-msg error';
-        }
-
-        updateSummary();
-    }
-</script>

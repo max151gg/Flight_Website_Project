@@ -1,4 +1,5 @@
-﻿using SkyPath_Models.Models;
+﻿using System.Collections.Generic;
+using SkyPath_Models.Models;
 
 namespace SkyPath_Models.ViewModel
 {
@@ -6,7 +7,8 @@ namespace SkyPath_Models.ViewModel
     {
         public string UserId { get; set; }
         public string OutboundFlightId { get; set; }
-        public string DiscountCode { get; set; }
-        public Flight OutboundFlight { get; set; }
+        public string? DiscountId { get; set; }
+        public Flight? OutboundFlight { get; set; }
+        public List<Discount>? Discounts { get; set; }
     }
 }
