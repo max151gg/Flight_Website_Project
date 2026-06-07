@@ -20,8 +20,8 @@ namespace SkyPathWS.ORM.Repositories
                             (
                                 @User_Id, @Flight_Id, @Purchase_Date, @Status
                             )";
-            helperOleDb.AddParameter("@User_Id", model.User_Id);
-            helperOleDb.AddParameter("@Flight_Id", model.Flight_Id);
+            helperOleDb.AddParameter("@User_Id", Convert.ToInt32(model.User_Id));
+            helperOleDb.AddParameter("@Flight_Id", Convert.ToInt32(model.Flight_Id));
             helperOleDb.AddParameter("@Purchase_Date", model.Purchase_Date);
             helperOleDb.AddParameter("@Status", model.Status);
             return helperOleDb.Insert(sql) > 0;

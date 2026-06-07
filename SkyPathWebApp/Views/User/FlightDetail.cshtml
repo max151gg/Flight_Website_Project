@@ -1,0 +1,105 @@
+﻿@using SkyPath_Models.Models
+@model Flight
+
+@{
+    var cityDict = (Dictionary<string, string>)ViewBag.CityDict;
+
+    string CityName(string id) =>
+        (!string.IsNullOrEmpty(id) && cityDict != null && cityDict.ContainsKey(id))
+            ? cityDict[id]
+            : "Unknown";
+
+    ViewData["Title"] = "Flight Details";
+    Layout = "~/Views/Shared/MasterPage_User.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/FlightDetailCSS.css" />
+
+<div class="fd-container">
+
+    <!-- Route Header -->
+    <div class="fd-header">
+        <div class="fd-route">
+            <div class="fd-city">
+                <div class="fd-city-name">@CityName(Model.Departure_Id)</div>
+            </div>
+            <div class="fd-arrow">
+                <div class="fd-arrow-line"></div>
+                <span class="fd-plane">✈</span>
+            </div>
+            <div class="fd-city">
+                <div class="fd-city-name">@CityName(Model.Arrival_Id)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="fd-body">
+
+        <!-- Destination Gallery -->
+        <div class="fd-gallery">
+            <div class="fd-gallery-main">
+                <img src="/images/destinations/@(Model.Arrival_Id)_1.jpg"
+                     onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
+                     alt="Destination"
+                     id="mainImage" />
+            </div>
+            <div class="fd-gallery-thumbs">
+                @for (int i = 1; i <= 4; i++)
+                {
+                    <img src="/images/destinations/@(Model.Arrival_Id)_@(i).jpg"
+                         onerror="this.onerror=null; this.src='/images/destinations/placeholder_@(i).jpg';"
+                         alt="View @i"
+                         onclick="document.getElementById('mainImage').src = this.src" />
+                }
+            </div>
+        </div>
+
+        <!-- Flight Info -->
+        <div class="fd-info">
+            <h3>Flight Details</h3>
+
+            <div class="fd-grid">
+                <div class="fd-box">
+                    <div class="fd-label">Flight Number</div>
+                    <div class="fd-value">@Model.Flight_Number</div>
+                </div>
+                <div class="fd-box">
+                    <div class="fd-label">Airline</div>
+                    <div class="fd-value">@Model.Airline</div>
+                </div>
+                <div class="fd-box">
+                    <div class="fd-label">Departure</div>
+                    <div class="fd-value">@Model.Departure_Date &bull; @Model.Departure_Time</div>
+                </div>
+                <div class="fd-box">
+                    <div class="fd-label">Arrival</div>
+                    <div class="fd-value">@Model.Arrival_Date &bull; @Model.Arrival_Time</div>
+                </div>
+                <div class="fd-box">
+                    <div class="fd-label">Duration</div>
+                    <div class="fd-value">@(Model.DurationDisplay ?? "—")</div>
+                </div>
+                <div class="fd-box">
+                    <div class="fd-label">Seats Left</div>
+                    <div class="fd-value">@Model.Seats_Available</div>
+                </div>
+            </div>
+
+            <!-- Booking Bar -->
+            <div class="fd-booking">
+                <div class="fd-price-block">
+                    <div class="fd-price-label">Price per person</div>
+                    <div class="fd-price">@Model.Price$</div>
+                </div>
+                <a class="fd-book-btn" href="/User/Checkout?flight_id=@Model.Flight_Id">
+                    Book this Flight
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/User/Browse" class="fd-back">← Back to flights</a>
+
+</div>

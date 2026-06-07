@@ -15,15 +15,16 @@
     ViewData["Title"] = "Browse";
     Layout = "~/Views/Shared/MasterPage_User.cshtml";
 }
-<link rel="stylesheet" href="~/CSS/BrowseCSS.css" />
+<link rel="stylesheet" href="~/css/BrowseCSS.css" />
+
 <div class="main-container">
+
     <!-- Search Section -->
     @{
         string selectedDeparture = Context.Request.Query["departure_id"];
         string selectedArrival = Context.Request.Query["arrival_id"];
-        string selectedDepDate = Context.Request.Query["departure_date"];     // From (yyyy-MM-dd)
-        string selectedDepDateTo = Context.Request.Query["departure_date_to"];  // To   (yyyy-MM-dd)
-
+        string selectedDepDate = Context.Request.Query["departure_date"];
+        string selectedDepDateTo = Context.Request.Query["departure_date_to"];
     }
 
     <div class="search-section">
@@ -59,16 +60,11 @@
 
                 <div class="filter-group">
                     <input type="date" name="departure_date_to" value="@selectedDepDateTo" />
-
                 </div>
             </div>
 
             <div class="additional-options">
-                <button type="submit" class="search-btn">
-                    Search Flights 🔍
-                </button>
-
-                <!-- optional: clear -->
+                <button type="submit" class="search-btn">Search Flights 🔍</button>
                 <a class="search-btn"
                    style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;"
                    asp-controller="User" asp-action="Browse">
@@ -78,12 +74,9 @@
         </form>
     </div>
 
-
-
-
-
     <!-- Content Layout -->
     <div class="content-layout">
+
         <!-- Sidebar -->
         @{
             string selectedSort = Context.Request.Query["sort"];
@@ -94,7 +87,6 @@
                 <div class="sidebar-title">sort by</div>
 
                 <form method="get" asp-controller="User" asp-action="Browse">
-                    <!-- Preserve current filters when sorting -->
                     <input type="hidden" name="departure_id" value="@selectedDeparture" />
                     <input type="hidden" name="arrival_id" value="@selectedArrival" />
                     <input type="hidden" name="departure_date" value="@selectedDepDate" />
@@ -111,7 +103,6 @@
             </div>
         </div>
 
-
         @{
             int showing = Model?.flights?.Count ?? 0;
             int total = Model?.TotalCount ?? 0;
@@ -123,44 +114,11 @@
                 <span class="results-count">Showing @showing of @total flights</span>
             </div>
 
-            <!-- Flight Card -->
             <div class="flights-grid">
                 @foreach (Flight flight in Model.flights)
                 {
-                    <div class="flight-card"
-                         id="flight-@flight.Flight_Id"
-                         data-flight-id="@flight.Flight_Id"
-                         data-flight-number="@flight.Flight_Number"
-                         data-departure-name="@NameOrUnknown(flight.Departure_Id)"
-                         data-arrival-name="@NameOrUnknown(flight.Arrival_Id)"
-                         data-airline="@flight.Airline"
-                         data-departure-date="@flight.Departure_Date"
-                         data-departure-time="@flight.Departure_Time"
-                         data-arrival-date="@flight.Arrival_Date"
-                         data-arrival-time="@flight.Arrival_Time"
-                         data-duration="@(flight.DurationDisplay ?? "—")"
-                         data-price="@flight.Price"
-                         data-arrival-id="@flight.Arrival_Id"
-                         data-seats-available="@flight.Seats_Available"
-                         onclick="openFlightModal(
-                '@flight.Flight_Id',
-                '@flight.Flight_Number',
-                '@NameOrUnknown(flight.Departure_Id)',
-                '@NameOrUnknown(flight.Arrival_Id)',
-                '@flight.Airline',
-                '@flight.Departure_Date',
-                '@flight.Departure_Time',
-                '@flight.Arrival_Date',
-                '@flight.Arrival_Time',
-                '@(flight.DurationDisplay ?? "—")',
-                '@flight.Price',
-                '@flight.Arrival_Id',
-                '@flight.Seats_Available'
-             )">
-
-
+                    <a class="flight-card" href="/User/FlightDetail?flight_id=@flight.Flight_Id">
                         <div class="flight-image">
-                            <!-- First destination image (placeholder path pattern; will add files later) -->
                             <img src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
                                  onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
                                  alt="Destination image" />
@@ -181,31 +139,11 @@
                                     <div class="price">@flight.Price$</div>
                                     <div class="price-label">per person</div>
                                 </div>
-
-                                <!-- Book button: opens modal, does not book, does not alert -->
-                                <button class="book-btn"
-                                        onclick="event.stopPropagation(); openFlightModal(
-                                    '@flight.Flight_Id',
-                                    '@flight.Flight_Number',
-                                    '@NameOrUnknown(flight.Departure_Id)',
-                                    '@NameOrUnknown(flight.Arrival_Id)',
-                                    '@flight.Airline',
-                                    '@flight.Departure_Date',
-                                    '@flight.Departure_Time',
-                                    '@flight.Arrival_Date',
-                                    '@flight.Arrival_Time',
-                                    '@(flight.DurationDisplay ?? "—")',
-                                    '@flight.Price',
-                                    '@flight.Arrival_Id',
-                                    '@flight.Seats_Available'
-                                )">
-                                    Book Now
-                                </button>
+                                <span class="book-btn">View Details</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 }
-
             </div>
 
             <!-- Pagination -->
@@ -218,15 +156,11 @@
                 string departureDate = ViewBag.DepartureDate as string;
                 string departureDateTo = ViewBag.DepartureDateTo as string;
                 string sort = ViewBag.Sort as string;
-
-
             }
 
             <div class="pagination">
-                <!-- Prev -->
                 <a class="page-btn @(current <= 1 ? "disabled" : "")"
-                   asp-controller="User"
-                   asp-action="Browse"
+                   asp-controller="User" asp-action="Browse"
                    asp-route-page="@(current - 1)"
                    asp-route-departure_id="@departureId"
                    asp-route-arrival_id="@arrivalId"
@@ -239,8 +173,7 @@
                 @for (int i = 1; i <= pages; i++)
                 {
                     <a class="page-btn @(i == current ? "active" : "")"
-                       asp-controller="User"
-                       asp-action="Browse"
+                       asp-controller="User" asp-action="Browse"
                        asp-route-page="@i"
                        asp-route-departure_id="@departureId"
                        asp-route-arrival_id="@arrivalId"
@@ -251,10 +184,8 @@
                     </a>
                 }
 
-                <!-- Next -->
                 <a class="page-btn @(current >= pages ? "disabled" : "")"
-                   asp-controller="User"
-                   asp-action="Browse"
+                   asp-controller="User" asp-action="Browse"
                    asp-route-page="@(current + 1)"
                    asp-route-departure_id="@departureId"
                    asp-route-arrival_id="@arrivalId"
@@ -265,233 +196,6 @@
                 </a>
             </div>
 
-
         </div>
     </div>
 </div>
-
-<!-- Flight Details Modal -->
-<div id="flightModal" class="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true">
-        <button class="close-modal" type="button" onclick="closeFlightModal()" aria-label="Close">×</button>
-
-        <div class="modal-header">
-            <div class="modal-route">
-                <div class="route-city">
-                    <div class="city-name" id="modalDepartureName">Departure</div>
-                </div>
-
-                <div class="route-arrow">
-                    <div class="arrow-line"></div>
-                    <span class="plane-icon">✈</span>
-                </div>
-
-                <div class="route-city">
-                    <div class="city-name" id="modalArrivalName">Arrival</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-body">
-            <!-- Destination Gallery -->
-            <div class="destination-gallery">
-                <div class="gallery-main">
-                    <img src="/images/destinations/placeholder_1.jpg"
-                         alt="Destination"
-                         id="mainGalleryImage">
-                </div>
-                <div class="gallery-thumbnails">
-                    <img src="/images/destinations/placeholder_1.jpg" alt="View 1" onclick="changeMainImage(this.src)">
-                    <img src="/images/destinations/placeholder_2.jpg" alt="View 2" onclick="changeMainImage(this.src)">
-                    <img src="/images/destinations/placeholder_3.jpg" alt="View 3" onclick="changeMainImage(this.src)">
-                    <img src="/images/destinations/placeholder_4.jpg" alt="View 4" onclick="changeMainImage(this.src)">
-                </div>
-            </div>
-
-            <!-- Flight Information -->
-            <div class="flight-info-section">
-                <h3>Flight Details</h3>
-
-                <div class="info-grid">
-                    <div class="info-box">
-                        <div class="info-label">Flight Number</div>
-                        <div class="info-value" id="modalFlightNumber">—</div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Airline</div>
-                        <div class="info-value" id="modalAirline">—</div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Departure</div>
-                        <div class="info-value"><span id="modalDepartureDate">—</span> • <span id="modalDepartureTime">—</span></div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Arrival</div>
-                        <div class="info-value"><span id="modalArrivalDate">—</span> • <span id="modalArrivalTime">—</span></div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Duration</div>
-                        <div class="info-value" id="modalDuration">—</div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Price</div>
-                        <div class="info-value"><span id="modalPrice">—</span>$</div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-label">Seats Left</div>
-                        <div class="info-value" id="modalSeats">—</div>
-                    </div>
-                </div>
-
-                <!-- Booking Section -->
-                <div class="modal-booking">
-                    <div class="total-price">
-                        <span>Continue to booking:</span>
-                        <span class="total-amount" id="modalTotalPrice">—$</span>
-                    </div>
-
-                    <a class="modal-book-btn" id="modalBookLink" href="http://localhost:5076/User/">
-                        Book Now
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script>
-        function openFlightModal(
-            flightId,
-            flightNumber,
-            departureName,
-            arrivalName,
-            airline,
-            departureDate,
-            departureTime,
-            arrivalDate,
-            arrivalTime,
-            duration,
-            price,
-            arrivalId,
-            seats
-        ) {
-            const modal = document.getElementById('flightModal');
-            modal.style.display = 'block';
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-
-            // Populate text fields
-            document.getElementById('modalFlightNumber').textContent = flightNumber || '—';
-            document.getElementById('modalAirline').textContent = airline || '—';
-            document.getElementById('modalDepartureDate').textContent = departureDate || '—';
-            document.getElementById('modalDepartureTime').textContent = departureTime || '—';
-            document.getElementById('modalArrivalDate').textContent = arrivalDate || '—';
-            document.getElementById('modalArrivalTime').textContent = arrivalTime || '—';
-            document.getElementById('modalDuration').textContent = duration || '—';
-            document.getElementById('modalSeats').textContent = (seats !== undefined && seats !== null && seats !== '') ? seats : '—';
-
-
-            document.getElementById('modalDepartureName').textContent = departureName || '—';
-            document.getElementById('modalArrivalName').textContent = arrivalName || '—';
-
-            const p = parseFloat(price);
-            const shownPrice = Number.isFinite(p) ? p : 0;
-            document.getElementById('modalPrice').textContent = shownPrice;
-            document.getElementById('modalTotalPrice').textContent = shownPrice + '$';
-
-            // Navigate to checkout for this specific flight
-            document.getElementById('modalBookLink').onclick = function(e) {
-                e.preventDefault();
-                window.location.href = '/User/Checkout?flight_id=' + flightId;
-            };
-
-            // Destination images (placeholders you will add later):
-            // /images/destinations/{arrivalId}_1.jpg ... _4.jpg
-            setDestinationImages(arrivalId);
-        }
-
-        function setDestinationImages(arrivalId) {
-            const base = `/images/destinations/${arrivalId}`;
-            const fallback = (i) => `/images/destinations/placeholder_${i}.jpg`;
-
-            const main = document.getElementById('mainGalleryImage');
-            const thumbs = document.querySelectorAll('.gallery-thumbnails img');
-
-            // Build the 4 URLs; if they 404, the onerror handler will fallback.
-            const urls = [1,2,3,4].map(i => `${base}_${i}.jpg`);
-
-            // Set main
-            main.src = urls[0];
-            main.onerror = function() { this.onerror = null; this.src = fallback(1); };
-
-            // Set thumbs
-            thumbs.forEach((img, idx) => {
-                const i = idx + 1;
-                img.src = urls[idx] || fallback(i);
-                img.onerror = function() { this.onerror = null; this.src = fallback(i); };
-            });
-        }
-
-        function closeFlightModal() {
-            const modal = document.getElementById('flightModal');
-            modal.style.display = 'none';
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = 'auto';
-        }
-
-        window.onclick = function (event) {
-            const modal = document.getElementById('flightModal');
-            if (event.target === modal) {
-                closeFlightModal();
-            }
-        }
-
-        function changeMainImage(src) {
-            document.getElementById('mainGalleryImage').src = src;
-        }
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                closeFlightModal();
-            }
-        });
-
-            (function autoOpenFromQuery() {
-            const params = new URLSearchParams(window.location.search);
-            const openFlightId = params.get('openFlightId');
-            if (!openFlightId) return;
-
-            const card = document.getElementById('flight-' + openFlightId);
-            if (!card) return;
-
-            openFlightModal(
-                card.dataset.flightId,
-                card.dataset.flightNumber,
-                card.dataset.departureName,
-                card.dataset.arrivalName,
-                card.dataset.airline,
-                card.dataset.departureDate,
-                card.dataset.departureTime,
-                card.dataset.arrivalDate,
-                card.dataset.arrivalTime,
-                card.dataset.duration,
-                card.dataset.price,
-                card.dataset.arrivalId,
-                card.dataset.seatsAvailable
-    );
-
-
-            // 🔴 THIS IS THE IMPORTANT LINE
-            const url = new URL(window.location.href);
-            url.searchParams.delete('openFlightId');
-            window.history.replaceState({}, '', url.toString());
-        })();
-
-</script>

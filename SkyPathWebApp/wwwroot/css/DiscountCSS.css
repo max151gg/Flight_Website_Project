@@ -18,30 +18,9 @@ h1 {
     margin-bottom: 40px;
 }
 
-/* Discounts Grid */
 .discounts-wrapper {
-    max-height: 700px;
-    overflow-y: auto;
     padding-right: 10px;
 }
-
-    .discounts-wrapper::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .discounts-wrapper::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-
-    .discounts-wrapper::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 4px;
-    }
-
-        .discounts-wrapper::-webkit-scrollbar-thumb:hover {
-            background: #999;
-        }
 
 .discounts-grid {
     display: grid;
@@ -49,7 +28,6 @@ h1 {
     gap: 25px;
 }
 
-/* Discount Card */
 .discount-card {
     background: white;
     border-radius: 12px;
@@ -210,7 +188,6 @@ h1 {
         background: #555;
     }
 
-/* Different color themes */
 .discount-card:nth-child(3n+1) .discount-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }

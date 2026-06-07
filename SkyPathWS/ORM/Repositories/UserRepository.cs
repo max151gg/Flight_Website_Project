@@ -41,7 +41,7 @@ namespace SkyPathWS.ORM.Repositories
                             helperOleDb.AddParameter("@User_Telephone", model.User_Telephone);
                             helperOleDb.AddParameter("@User_Adress", model.User_Adress);
                             helperOleDb.AddParameter("@User_FullName", model.User_FullName);
-                            helperOleDb.AddParameter("@Role_Id", model.Role_Id);
+                            helperOleDb.AddParameter("@Role_Id", Convert.ToInt32(model.Role_Id));
                             helperOleDb.AddParameter("@UserSalt", salt);
                             helperOleDb.AddParameter("@User_Image", model.User_Image);
                             helperOleDb.AddParameter("@User_Ban", model.User_Ban);
@@ -103,7 +103,7 @@ namespace SkyPathWS.ORM.Repositories
             helperOleDb.AddParameter("@User_Id", id);
             using(IDataReader reader = helperOleDb.Select(sql))
             {
-                reader.Read();
+                if (!reader.Read()) return null;
                 return modelCreators.UserCreator.CreateModel(reader);
             }
         }

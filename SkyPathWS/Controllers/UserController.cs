@@ -369,57 +369,52 @@ namespace SkyPathWS.Controllers
         [HttpPost]
         public IActionResult PurchaseTicket([FromBody] CheckoutViewModel vm)
         {
+            if (vm == null || string.IsNullOrEmpty(vm.UserId) || string.IsNullOrEmpty(vm.OutboundFlightId))
+                return BadRequest();
+
             try
             {
-                if (vm == null || string.IsNullOrEmpty(vm.UserId) || string.IsNullOrEmpty(vm.OutboundFlightId))
-                    return BadRequest();
-
                 repositoryUOW.HelperOleDb.OpenConnection();
+                repositoryUOW.HelperOleDb.OpenTransaction();
 
-                List<Flight> allFlights = repositoryUOW.FlightRepository.GetALL();
-
-                Flight outbound = allFlights.FirstOrDefault(f => f.Flight_Id == vm.OutboundFlightId);
+                Flight outbound = repositoryUOW.FlightRepository.GetById(vm.OutboundFlightId);
                 if (outbound == null || outbound.Seats_Available <= 0)
-                    return BadRequest();
+                {
+                    repositoryUOW.Rollback();
+                    return BadRequest("Flight not available.");
+                }
 
                 string today = DateTime.Now.ToString("dd-MM-yyyy");
 
-                Ticket ticket1 = new Ticket
+                Ticket ticket = new Ticket
                 {
                     User_Id = vm.UserId,
                     Flight_Id = vm.OutboundFlightId,
                     Purchase_Date = today,
                     Status = true
                 };
-                bool created = repositoryUOW.TicketRepository.Create(ticket1);
+
+                bool created = repositoryUOW.TicketRepository.Create(ticket);
                 if (!created)
-                    return BadRequest("Failed to create ticket.");
-                repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
-
-                if (!string.IsNullOrEmpty(vm.ReturnFlightId))
                 {
-                    Flight returnFlight = allFlights.FirstOrDefault(f => f.Flight_Id == vm.ReturnFlightId);
-                    if (returnFlight != null && returnFlight.Seats_Available > 0)
-                    {
-                        Ticket ticket2 = new Ticket
-                        {
-                            User_Id = vm.UserId,
-                            Flight_Id = vm.ReturnFlightId,
-                            Purchase_Date = today,
-                            Status = true
-                        };
-                        bool created2 = repositoryUOW.TicketRepository.Create(ticket2);
-                        if (created2)
-                            repositoryUOW.FlightRepository.ReduceSeats(vm.ReturnFlightId, 1);
-
-                    }
+                    repositoryUOW.Rollback();
+                    return BadRequest("Failed to create ticket.");
                 }
 
-                return Ok();
+                bool reduced = repositoryUOW.FlightRepository.ReduceSeats(vm.OutboundFlightId, 1);
+                if (!reduced)
+                {
+                    repositoryUOW.Rollback();
+                    return BadRequest("Failed to reduce seats.");
+                }
+
+                repositoryUOW.commit();
+                return Ok(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                repositoryUOW.Rollback();
                 return BadRequest();
             }
             finally

@@ -66,7 +66,7 @@ namespace SkyPathWS.ORM.Repositories
             this.helperOleDb.AddParameter("@Flight_Id", id);
             using (IDataReader reader = this.helperOleDb.Select(sql))
             {
-                reader.Read();
+                if (!reader.Read()) return null;
                 return this.modelCreators.FlightCreator.CreateModel(reader);
             }
         }

@@ -18,14 +18,13 @@
     <div class="hero">
         <h1>The best site to set up<br>your vacation</h1>
         <p>Compare flights, discover the best prices, and plan your journey with confidence.</p>
-        <a class="btn-cta" href="http://localhost:5076/User/Browse">Find Your Flight Now</a>
+        <a class="btn-cta" href="/User/Browse">Find Your Flight Now</a>
     </div>
-<div class="main-container">
-    <!-- Search Section -->
+    <div class="main-container">
         @{
             var discountedFlights = (Model?.flights ?? new List<Flight>())
-            .Where(f => f != null)   // your threshold
-            .OrderBy(f => f.Price)                    // optional: cheapest first
+            .Where(f => f != null)
+            .OrderBy(f => f.Price)
             .Take(5)
             .ToList();
         }
@@ -36,20 +35,12 @@
             <div class="flight-cards">
                 @foreach (var flight in discountedFlights)
                 {
-                    <a asp-controller="User"
-                       asp-action="Browse"
-                       asp-route-openFlightId="@flight.Flight_Id"
-                       class="flight-card-link">
-
-
-
+                    <a href="/User/FlightDetail?flight_id=@flight.Flight_Id" class="flight-card-link">
                         <div class="flight-card">
                             <img class="flight-card-icon"
                                  src="~/images/destinations/@(flight.Arrival_Id)_1.jpg"
                                  onerror="this.onerror=null; this.src='/images/destinations/placeholder_1.jpg';"
                                  alt="Destination image" />
-
-
                             <div class="flight-card-title">
                                 @NameOrUnknown(flight.Departure_Id)
                                 →
@@ -57,15 +48,12 @@
                                 - @flight.Price$
                             </div>
                         </div>
-
                     </a>
                 }
             </div>
         </div>
 
-
-    <!-- Content Layout -->
-    <div class="content-layout">
-        
+        <div class="content-layout">
+        </div>
     </div>
 </div>

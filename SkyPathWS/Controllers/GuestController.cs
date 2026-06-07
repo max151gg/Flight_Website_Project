@@ -278,24 +278,20 @@ namespace SkyPathWS.Controllers
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
 
-                user.Role_Id = string.IsNullOrWhiteSpace(user.Role_Id) ? "1" : user.Role_Id;
-                user.User_Image = user.User_Image ?? "";
-                user.User_Ban = false;
+               
+                user.User_Image = "";
+                
 
                 bool created = repositoryUOW.UserRepository.Create(user);
 
-                if (!created)
-                    return BadRequest(false);
+                return created ? Ok() : BadRequest("User creation returned false");
 
-                return Ok(true);
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-
-                // For development, this helps you actually see the real cause.
-                // Later, replace ex.Message with a generic message.
-                return StatusCode(500, ex.Message);
+                Console.WriteLine("Register ERROR: " + ex);
+                return BadRequest(ex.Message);
             }
             finally
             {

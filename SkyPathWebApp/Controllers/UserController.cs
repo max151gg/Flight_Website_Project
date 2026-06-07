@@ -4,16 +4,13 @@ using SkyPath_Models.ViewModel;
 using SkyPathWSClient;
 using System.Net.Http.Headers;
 
-
 namespace SkyPathWebApp.Controllers
 {
     public class UserController : Controller
     {
-
         [HttpGet]
         public async Task<IActionResult> HomePage()
         {
-            // 1) Call WS endpoint that returns ALL flights (no pagination)
             ApiClient<List<Flight>> flightsClient = new ApiClient<List<Flight>>();
             flightsClient.Scheme = "http";
             flightsClient.Host = "localhost";
@@ -22,13 +19,11 @@ namespace SkyPathWebApp.Controllers
 
             List<Flight> flights = await flightsClient.GetAsync() ?? new List<Flight>();
 
-            // 2) Create BrowseViewModel LOCALLY (THIS is what I meant)
             BrowseViewModel browseViewModel = new BrowseViewModel
             {
                 flights = flights
             };
 
-            // 3) Get cities (same as Browse page)
             ApiClient<List<City>> cityClient = new ApiClient<List<City>>();
             cityClient.Scheme = "http";
             cityClient.Host = "localhost";
@@ -36,10 +31,8 @@ namespace SkyPathWebApp.Controllers
             cityClient.Path = "api/City/GetAll";
 
             List<City> cities = await cityClient.GetAsync() ?? new List<City>();
-
             ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
 
-            // 4) Return model to Home view
             return View(browseViewModel);
         }
 
@@ -53,9 +46,8 @@ namespace SkyPathWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Ticket()
         {
-            string userId = HttpContext.Session.GetString("user_Id"); // replace with session/claims later
+            string userId = HttpContext.Session.GetString("user_Id");
 
-            // 1) Tickets (and flights) for this user
             var client = new ApiClient<TicketViewModel>
             {
                 Scheme = "http",
@@ -67,7 +59,6 @@ namespace SkyPathWebApp.Controllers
 
             TicketViewModel ticketViewModel = await client.GetAsync();
 
-            // 2) Cities dict
             var cityClient = new ApiClient<List<City>>
             {
                 Scheme = "http",
@@ -80,13 +71,12 @@ namespace SkyPathWebApp.Controllers
             ViewBag.CityDict = (cities ?? new List<City>())
                 .ToDictionary(c => c.CityId, c => c.CityName);
 
-            // 3) Single user (NEW) — requires a WS endpoint like api/User/GetById
             var userClient = new ApiClient<User>
             {
                 Scheme = "http",
                 Host = "localhost",
                 Port = 5125,
-                Path = "api/User/GetById" // <-- implement this in WS if you don't have it yet
+                Path = "api/User/GetById"
             };
             userClient.SetQueryParameter("user_id", userId);
 
@@ -95,11 +85,11 @@ namespace SkyPathWebApp.Controllers
 
             return View(ticketViewModel);
         }
+
         [HttpGet]
         public async Task<IActionResult> Discount()
         {
-            string userId = HttpContext.Session.GetString("user_Id"); // replace with session/claims later
-
+            string userId = HttpContext.Session.GetString("user_Id");
 
             var client = new ApiClient<DiscountViewModel>
             {
@@ -111,12 +101,13 @@ namespace SkyPathWebApp.Controllers
             client.SetQueryParameter("user_id", userId);
 
             DiscountViewModel discountViewModel = await client.GetAsync();
+
             var userClient = new ApiClient<User>
             {
                 Scheme = "http",
                 Host = "localhost",
                 Port = 5125,
-                Path = "api/User/GetById" // <-- implement this in WS if you don't have it yet
+                Path = "api/User/GetById"
             };
             userClient.SetQueryParameter("user_id", userId);
 
@@ -124,14 +115,12 @@ namespace SkyPathWebApp.Controllers
             ViewBag.PassengerFullName = user?.User_FullName ?? "Unknown";
 
             return View(discountViewModel);
-
         }
 
         [HttpGet]
         public async Task<IActionResult> Announcement()
         {
-            string userId = HttpContext.Session.GetString("user_Id"); // replace with session/claims later
-
+            string userId = HttpContext.Session.GetString("user_Id");
 
             var client = new ApiClient<AnnouncementViewModel>
             {
@@ -145,21 +134,16 @@ namespace SkyPathWebApp.Controllers
             AnnouncementViewModel announcementViewModel = await client.GetAsync();
 
             return View(announcementViewModel);
-
         }
 
         [HttpGet]
         public async Task<IActionResult> Browse(
-           string flight_id = null,
-           int page = 1,
-           string departure_id = null,
-           string arrival_id = null,
-           string departure_date = null,
-           string departure_date_to = null,
-           string sort = null,
-           string openFlightId = null)
-
-
+            int page = 1,
+            string departure_id = null,
+            string arrival_id = null,
+            string departure_date = null,
+            string departure_date_to = null,
+            string sort = null)
         {
             var client = new ApiClient<BrowseViewModel>
             {
@@ -168,9 +152,6 @@ namespace SkyPathWebApp.Controllers
                 Port = 5125,
                 Path = "api/User/GetFlightCatalog"
             };
-
-            if (!string.IsNullOrEmpty(flight_id))
-                client.SetQueryParameter("flight_id", flight_id);
 
             if (!string.IsNullOrEmpty(departure_id))
                 client.SetQueryParameter("departure_id", departure_id);
@@ -187,19 +168,11 @@ namespace SkyPathWebApp.Controllers
             if (!string.IsNullOrEmpty(sort))
                 client.SetQueryParameter("sort", sort);
 
-
-
-            // Always send a normalized page
             if (page < 1) page = 1;
             client.SetQueryParameter("page", page.ToString());
 
-            // Forward openFlightId so WS can compute correct page
-            if (!string.IsNullOrEmpty(openFlightId))
-                client.SetQueryParameter("openFlightId", openFlightId);
-
             BrowseViewModel browseViewModel = await client.GetAsync();
 
-            // Cities (for NameOrUnknown)
             var cityClient = new ApiClient<List<City>>
             {
                 Scheme = "http",
@@ -211,16 +184,45 @@ namespace SkyPathWebApp.Controllers
             List<City> cities = await cityClient.GetAsync() ?? new List<City>();
             ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
 
-            // Keep these so the view can preserve filters in pagination links
             ViewBag.DepartureId = departure_id;
             ViewBag.ArrivalId = arrival_id;
-            ViewBag.OpenFlightId = openFlightId;
             ViewBag.DepartureDate = departure_date;
             ViewBag.DepartureDateTo = departure_date_to;
             ViewBag.Sort = sort;
 
-
             return View(browseViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FlightDetail(string flight_id)
+        {
+            if (string.IsNullOrEmpty(flight_id))
+                return RedirectToAction("Browse");
+
+            var allFlightsClient = new ApiClient<List<Flight>>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/User/GetAllFlights"
+            };
+            List<Flight> allFlights = await allFlightsClient.GetAsync() ?? new List<Flight>();
+
+            Flight flight = allFlights.FirstOrDefault(f => f.Flight_Id == flight_id);
+            if (flight == null)
+                return RedirectToAction("Browse");
+
+            var cityClient = new ApiClient<List<City>>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/City/GetAll"
+            };
+            List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+            ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
+
+            return View(flight);
         }
 
         [HttpGet]
@@ -245,12 +247,6 @@ namespace SkyPathWebApp.Controllers
             if (outboundFlight == null)
                 return RedirectToAction("Browse");
 
-            List<Flight> returnFlights = allFlights
-                .Where(f => f.Departure_Id == outboundFlight.Arrival_Id
-                         && f.Arrival_Id == outboundFlight.Departure_Id
-                         && f.Seats_Available > 0)
-                .ToList();
-
             var cityClient = new ApiClient<List<City>>
             {
                 Scheme = "http",
@@ -265,10 +261,34 @@ namespace SkyPathWebApp.Controllers
             {
                 UserId = userId,
                 OutboundFlightId = flight_id,
-                OutboundFlight = outboundFlight,
-                AvailableReturnFlights = returnFlights
+                OutboundFlight = outboundFlight
             };
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ValidateDiscount(string code)
+        {
+            string userId = HttpContext.Session.GetString("user_Id");
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
+                return Json(new { valid = false });
+
+            var client = new ApiClient<DiscountViewModel>
+            {
+                Scheme = "http",
+                Host = "localhost",
+                Port = 5125,
+                Path = "api/User/GetDiscountByUserId"
+            };
+            client.SetQueryParameter("user_id", userId);
+
+            DiscountViewModel vm = await client.GetAsync();
+
+            var discount = vm?.discounts?.FirstOrDefault(d => d.Discount_Id == code);
+            if (discount == null)
+                return Json(new { valid = false });
+
+            return Json(new { valid = true, percentage = discount.Percentage, description = discount.Description });
         }
 
         [HttpPost]
@@ -319,14 +339,11 @@ namespace SkyPathWebApp.Controllers
             if (user == null)
                 return RedirectToAction("LoginHome", "Guest");
 
-            // refresh session values so header stays correct
             HttpContext.Session.SetString("user_FullName", user.User_FullName ?? "My Account");
             HttpContext.Session.SetString("user_Image", user.User_Image ?? "");
 
-
             return View(user);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetProfileImage(string user_id)
@@ -347,8 +364,6 @@ namespace SkyPathWebApp.Controllers
             return File(bytes, contentType);
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> UpdateProfileImage(IFormFile profileImage)
         {
@@ -365,13 +380,10 @@ namespace SkyPathWebApp.Controllers
 
             var streamContent = new StreamContent(profileImage.OpenReadStream());
             streamContent.Headers.ContentType = new MediaTypeHeaderValue(profileImage.ContentType);
-
-            // WS reads Request.Form.Files[0] so any name is fine; "file" is clean
             form.Add(streamContent, "file", profileImage.FileName);
 
             var wsUrl = $"http://localhost:5125/api/User/UpdateProfileImage?user_id={Uri.EscapeDataString(userId)}";
             var resp = await http.PostAsync(wsUrl, form);
-
 
             var body = await resp.Content.ReadAsStringAsync();
 
@@ -384,21 +396,12 @@ namespace SkyPathWebApp.Controllers
                 return RedirectToAction("Account");
             }
 
-            // body already contains the returned path
             string newPath = body.Trim('"', ' ', '\n', '\r');
             HttpContext.Session.SetString("user_Image", newPath);
-
-
-            // Update session
-            HttpContext.Session.SetString("user_Image", newPath);
-
-            // OPTIONAL but recommended: cache-buster version for fixed filenames
             HttpContext.Session.SetString("user_Image_V", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
 
             return RedirectToAction("Account");
-
         }
-
 
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)

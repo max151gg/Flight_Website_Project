@@ -17,12 +17,16 @@
 <div class="checkout-container">
     <h2 class="checkout-title">Booking Summary</h2>
 
+    @if (TempData["PurchaseError"] != null)
+    {
+        <div class="purchase-error-msg">@TempData["PurchaseError"]</div>
+    }
+
     <div class="checkout-layout">
+
         <!-- LEFT: Flight details -->
         <div class="checkout-left">
-
-            <!-- Outbound Flight Card -->
-            <div class="section-label">Outbound Flight</div>
+            <div class="section-label">Your Flight</div>
             <div class="flight-detail-card">
                 <div class="fdc-route">
                     @CityName(Model.OutboundFlight.Departure_Id)
@@ -60,63 +64,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Return Flight Section -->
-            <div class="section-label" style="margin-top:24px;">Return Flight (optional)</div>
-
-            @if (Model.AvailableReturnFlights != null && Model.AvailableReturnFlights.Count > 0)
-            {
-                <select class="return-select" id="returnFlightSelect" onchange="onReturnFlightChanged()">
-                    <option value="">— One-way, no return —</option>
-                    @foreach (var rf in Model.AvailableReturnFlights)
-                    {
-                        <option value="@rf.Flight_Id">
-                            @CityName(rf.Departure_Id) → @CityName(rf.Arrival_Id)
-                            | @rf.Departure_Date @rf.Departure_Time
-                            | @rf.Price$
-                        </option>
-                    }
-                </select>
-
-                <!-- Return flight detail card (hidden until selected) -->
-                <div class="flight-detail-card" id="returnFlightCard" style="display:none; margin-top:16px;">
-                    <div class="fdc-route" id="retRoute">—</div>
-                    <div class="fdc-grid">
-                        <div class="fdc-box">
-                            <div class="fdc-label">Flight Number</div>
-                            <div class="fdc-value" id="retFlightNumber">—</div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Airline</div>
-                            <div class="fdc-value" id="retAirline">—</div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Departure</div>
-                            <div class="fdc-value"><span id="retDepDate">—</span> &bull; <span id="retDepTime">—</span></div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Arrival</div>
-                            <div class="fdc-value"><span id="retArrDate">—</span> &bull; <span id="retArrTime">—</span></div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Duration</div>
-                            <div class="fdc-value" id="retDuration">—</div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Price</div>
-                            <div class="fdc-value fdc-price" id="retPrice">—</div>
-                        </div>
-                        <div class="fdc-box">
-                            <div class="fdc-label">Seats Left</div>
-                            <div class="fdc-value" id="retSeats">—</div>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="no-return-note">No return flights available for this route.</div>
-            }
         </div>
 
         <!-- RIGHT: Price summary -->
@@ -125,108 +72,98 @@
                 <div class="ps-title">Price Summary</div>
 
                 <div class="ps-row">
-                    <span>Flight 1</span>
-                    <span id="summaryFlight1">@Model.OutboundFlight.Price$</span>
-                </div>
-
-                <div class="ps-row" id="summaryFlight2Row" style="display:none;">
-                    <span>Flight 2</span>
-                    <span id="summaryFlight2">0$</span>
-                </div>
-
-                <div class="ps-divider"></div>
-
-                <div class="ps-row">
-                    <span>Tax (17%)</span>
-                    <span id="summaryTax">@((Model.OutboundFlight.Price * 0.17).ToString("F2"))$</span>
+                    <span>Flight</span>
+                    <span id="summaryFlight">@Model.OutboundFlight.Price$</span>
                 </div>
 
                 <div class="ps-row ps-discount-row">
                     <span>Discount Code</span>
-                    <input type="text" class="discount-input" placeholder="Enter code" disabled />
+                    <div class="discount-field">
+                        <input type="text" id="discountCodeInput" class="discount-input" placeholder="Enter code" />
+                        <button type="button" class="apply-discount-btn" onclick="applyDiscount()">Apply</button>
+                    </div>
+                    <span id="discountMsg" class="discount-msg"></span>
+                </div>
+
+                <div class="ps-row" id="discountRow" style="display:none;">
+                    <span id="discountLabel">Discount</span>
+                    <span id="summaryDiscount" style="color:#2a7d4f;">-0$</span>
                 </div>
 
                 <div class="ps-divider"></div>
 
                 <div class="ps-row ps-total">
                     <span>Total</span>
-                    <span id="summaryTotal">@((Model.OutboundFlight.Price * 1.17).ToString("F2"))$</span>
+                    <span id="summaryTotal">@(Model.OutboundFlight.Price.ToString("F2"))$</span>
                 </div>
 
-                <!-- Purchase Form -->
                 <form method="post" asp-controller="User" asp-action="Purchase">
                     <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
-                    <input type="hidden" name="ReturnFlightId" id="returnFlightIdInput" value="" />
+                    <input type="hidden" name="DiscountCode" id="discountCodeHidden" value="" />
                     <button type="submit" class="confirm-btn">Confirm Purchase</button>
                 </form>
 
                 <a href="/User/Browse" class="back-link">← Back to flights</a>
             </div>
         </div>
+
     </div>
 </div>
 
-@if (TempData["PurchaseError"] != null)
-{
-    <div class="purchase-error-msg">@TempData["PurchaseError"]</div>
-}
-
 <script>
-    const returnFlightsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AvailableReturnFlights ?? new List<Flight>()));
-    const cityDictJs = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(cityDict));
-    const outboundPrice = @Model.OutboundFlight.Price;
+    const flightPrice = @Model.OutboundFlight.Price;
+    let appliedDiscountPct = 0;
 
-    function onReturnFlightChanged() {
-        const select = document.getElementById('returnFlightSelect');
-        if (!select) return;
-        const selectedId = select.value;
-        const retCard = document.getElementById('returnFlightCard');
-        const retInput = document.getElementById('returnFlightIdInput');
+    function updateSummary() {
+        const discountAmt = flightPrice * (appliedDiscountPct / 100);
+        const total = flightPrice - discountAmt;
 
-        retInput.value = selectedId;
+        document.getElementById('summaryFlight').textContent = flightPrice.toFixed(2) + '$';
+        document.getElementById('summaryTotal').textContent = total.toFixed(2) + '$';
 
-        if (!selectedId) {
-            if (retCard) retCard.style.display = 'none';
-            updatePriceSummary(null);
+        const discountRow = document.getElementById('discountRow');
+        if (appliedDiscountPct > 0) {
+            discountRow.style.display = 'flex';
+            document.getElementById('summaryDiscount').textContent = '-' + discountAmt.toFixed(2) + '$';
+        } else {
+            discountRow.style.display = 'none';
+        }
+    }
+
+    async function applyDiscount() {
+        const code = document.getElementById('discountCodeInput').value.trim();
+        const msg = document.getElementById('discountMsg');
+
+        if (!code) {
+            msg.textContent = 'Please enter a code.';
+            msg.className = 'discount-msg error';
             return;
         }
 
-        const flight = returnFlightsData.find(f => f.Flight_Id === selectedId);
-        if (!flight) return;
+        msg.textContent = 'Checking...';
+        msg.className = 'discount-msg';
 
-        document.getElementById('retRoute').textContent =
-            (cityDictJs[flight.Departure_Id] || '?') + ' ✈ ' + (cityDictJs[flight.Arrival_Id] || '?');
-        document.getElementById('retAirline').textContent = flight.Airline || '—';
-        document.getElementById('retFlightNumber').textContent = flight.Flight_Number || '—';
-        document.getElementById('retDepDate').textContent = flight.Departure_Date || '—';
-        document.getElementById('retDepTime').textContent = flight.Departure_Time || '—';
-        document.getElementById('retArrDate').textContent = flight.Arrival_Date || '—';
-        document.getElementById('retArrTime').textContent = flight.Arrival_Time || '—';
-        document.getElementById('retDuration').textContent = flight.DurationDisplay || '—';
-        document.getElementById('retPrice').textContent = flight.Price + '$';
-        document.getElementById('retSeats').textContent = flight.Seats_Available;
+        try {
+            const res = await fetch('/User/ValidateDiscount?code=' + encodeURIComponent(code));
+            const data = await res.json();
 
-        if (retCard) retCard.style.display = 'block';
-        updatePriceSummary(flight);
-    }
-
-    function updatePriceSummary(returnFlight) {
-        const retPrice = returnFlight ? returnFlight.Price : 0;
-        const subtotal = outboundPrice + retPrice;
-        const tax = subtotal * 0.17;
-        const total = subtotal + tax;
-
-        document.getElementById('summaryFlight1').textContent = outboundPrice.toFixed(2) + '$';
-
-        const flight2Row = document.getElementById('summaryFlight2Row');
-        if (returnFlight) {
-            flight2Row.style.display = 'flex';
-            document.getElementById('summaryFlight2').textContent = retPrice.toFixed(2) + '$';
-        } else {
-            flight2Row.style.display = 'none';
+            if (data.valid) {
+                appliedDiscountPct = data.percentage;
+                document.getElementById('discountLabel').textContent = 'Discount (' + data.percentage + '%)';
+                document.getElementById('discountCodeHidden').value = code;
+                msg.textContent = 'Code applied!';
+                msg.className = 'discount-msg success';
+            } else {
+                appliedDiscountPct = 0;
+                document.getElementById('discountCodeHidden').value = '';
+                msg.textContent = 'Invalid or expired code.';
+                msg.className = 'discount-msg error';
+            }
+        } catch {
+            msg.textContent = 'Could not validate code.';
+            msg.className = 'discount-msg error';
         }
 
-        document.getElementById('summaryTax').textContent = tax.toFixed(2) + '$';
-        document.getElementById('summaryTotal').textContent = total.toFixed(2) + '$';
+        updateSummary();
     }
 </script>
