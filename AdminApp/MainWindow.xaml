@@ -204,33 +204,7 @@
                                 Background="#E0E0E0" 
                                 Margin="20,15"/>
 
-                        <!-- Section Title -->
-                        <TextBlock Text="SYSTEM" 
-                                   FontSize="11" 
-                                   FontWeight="Bold"
-                                   Foreground="#999999"
-                                   Margin="20,10,0,10"
-                                   Padding="5,0"/>
-
-                        <!-- Settings -->
-                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                x:Name="btnSettings"
-                                Click="NavigateToSettings">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="⚙️" FontSize="18" Margin="0,0,12,0"/>
-                                <TextBlock Text="Settings" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Reports -->
-                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                x:Name="btnReports"
-                                Click="NavigateToReports">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📈" FontSize="18" Margin="0,0,12,0"/>
-                                <TextBlock Text="Reports" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
+                       
                     </StackPanel>
                 </ScrollViewer>
 

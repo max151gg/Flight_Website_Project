@@ -2,6 +2,9 @@
 
 namespace SkyPathWS.ORM
 {
+    // Holds one shared instance of every "creator" (UserCreator, FlightCreator, ...).
+    // A creator's job is to turn a database row into a C# object. Each one is built only
+    // the first time it is used (lazy loading), so we never create creators we don't need.
     public class ModelCreators
     {
         UserCreator userCreator;

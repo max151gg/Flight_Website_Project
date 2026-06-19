@@ -1,56 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ModelSkyPath.Models.Announcement">
-    <Position X="4.5" Y="3.25" Width="1.5" />
+  <Class Name="ModelSkyPath.Models.Announcement" Collapsed="true">
+    <Position X="11.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQCACAAQgAAAEAAAAAAAAQAAAAEAAAAIAAAAAAEAAA=</HashCode>
+      <HashCode>ACQCAAAgQgAAAEAAAAAAAAQAAAAEAAAAAAAAAAAEAAA=</HashCode>
       <FileName>Models\Announcement.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.Arrival_City">
-    <Position X="11.25" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.Arrival_City" Collapsed="true">
+    <Position X="9" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAYAAAACAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEAAAIBAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Arrival_City.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.Departure_City">
-    <Position X="15.75" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.Departure_City" Collapsed="true">
+    <Position X="13.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAIAAAACAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAIAAAACAAA=</HashCode>
       <FileName>Models\Departure_City.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.Discount">
-    <Position X="6.75" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.Discount" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAAAAAAAAAAgAAAQIAAgAAAAAAiAAAAIAAAgAAAAABA=</HashCode>
+      <HashCode>gCAAAAAgAAAgAAAQIAAgAAAAAAiAAAAIAAAgAAAAABA=</HashCode>
       <FileName>Models\Discount.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.Flight">
-    <Position X="13.5" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.Flight" Collapsed="true">
+    <Position X="12.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>wAABAIAAAQAAAAAAIAAAICAAABAAAAAQIgIAIEICAAA=</HashCode>
+      <HashCode>wAABAIAAAQACAAAAIEYAYCBEADAAAAIwIgIAIEICAAA=</HashCode>
       <FileName>Models\Flight.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.Ticket">
-    <Position X="18" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.Ticket" Collapsed="true">
+    <Position X="14" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACQACAAkAQAAAAEAAAAAKAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
       <FileName>Models\Ticket.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Models.User">
-    <Position X="9" Y="3.25" Width="1.5" />
+  <Class Name="SkyPath_Models.Models.User" Collapsed="true">
+    <Position X="10.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EiABAAAgACACAAAgAgAAAAAAAAAAAAAiAQAAIgMAAAA=</HashCode>
+      <HashCode>AiABBAAgACQKAAAgCgABAAAABAAAAAQiAQAAIgMAAAA=</HashCode>
       <FileName>Models\User.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SkyPath_Models.Model">
-    <Position X="11.25" Y="2" Width="1.5" />
+  <Class Name="SkyPath_Models.Model" Collapsed="true">
+    <Position X="11.25" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAEiACAABIAkAAAAAAAEAAAAIAAAAAAABIAA=</HashCode>
       <FileName>Models\Model.cs</FileName>

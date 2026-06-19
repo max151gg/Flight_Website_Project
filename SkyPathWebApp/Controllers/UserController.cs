@@ -43,6 +43,7 @@ namespace SkyPathWebApp.Controllers
             return RedirectToAction("LoginHome", "Guest");
         }
 
+        // Shows the logged-in user's purchased tickets (user id comes from the session).
         [HttpGet]
         public async Task<IActionResult> Ticket()
         {
@@ -136,6 +137,7 @@ namespace SkyPathWebApp.Controllers
             return View(announcementViewModel);
         }
 
+        // Browse flights page. Passes the search filters to the API and shows one page of results.
         [HttpGet]
         public async Task<IActionResult> Browse(
             int page = 1,
@@ -225,6 +227,8 @@ namespace SkyPathWebApp.Controllers
             return View(flight);
         }
 
+        // Checkout page. Loads the chosen flight, the user's discounts, and the live
+        // currency rate, then shows the price summary before the user confirms.
         [HttpGet]
         public async Task<IActionResult> Checkout(string flight_id, string currency = null, string discountId = null)
         {
@@ -322,6 +326,8 @@ namespace SkyPathWebApp.Controllers
 
 
 
+        // Confirm Purchase button. Sends the booking to the API; on success goes to the
+        // user's tickets, otherwise shows the error message back on the checkout page.
         [HttpPost]
         public async Task<IActionResult> Purchase(CheckoutViewModel vm)
         {

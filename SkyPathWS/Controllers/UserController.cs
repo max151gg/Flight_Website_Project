@@ -20,6 +20,7 @@ namespace SkyPathWS.Controllers
             this.repositoryUOW = new RepositoryUOW();
         }
 
+        // Sorts the flight list by the option the user picked (price, duration, or departure time).
         private static List<Flight> ApplySort(List<Flight> flights, string sort)
         {
             if (flights == null) return new List<Flight>();
@@ -77,8 +78,8 @@ namespace SkyPathWS.Controllers
 
         private static DateTime TryParseDepartureDateTime(string date, string time)
         {
-            // Your DB date format: "dd-MM-yyyy"
-            // Your time might be "HH:mm" (example: "23:40")
+            //  DB date format: "dd-MM-yyyy"
+            //  time might be "HH:mm" (example: "23:40")
             if (string.IsNullOrWhiteSpace(date)) return DateTime.MaxValue;
 
             var dtString = string.IsNullOrWhiteSpace(time) ? date : $"{date} {time}";
@@ -92,6 +93,8 @@ namespace SkyPathWS.Controllers
                 : DateTime.MaxValue;
         }
 
+        // Main "Browse flights" endpoint. Filters flights by city and date, sorts them,
+        // splits them into pages (12 per page), and returns one page to the website.
         [HttpGet]
         public BrowseViewModel GetFlightCatalog(
             string flight_id = null,
@@ -133,8 +136,7 @@ namespace SkyPathWS.Controllers
 
                 if (!string.IsNullOrEmpty(departure_id) && !string.IsNullOrEmpty(arrival_id))
                 {
-                    // NOTE: your repository call order looks suspicious (arrival_id, departure_id).
-                    // Keep as-is to avoid breaking your existing logic, but verify the repository signature.
+                    
                     filtered = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
                 }
                 else if (!string.IsNullOrEmpty(departure_id))
@@ -366,6 +368,8 @@ namespace SkyPathWS.Controllers
             }
         }
 
+        // Buys a ticket: checks the flight has a free seat, creates the ticket,
+        // reduces the seat count, and removes the discount if one was used.
         [HttpPost]
         public IActionResult PurchaseTicket([FromBody] CheckoutViewModel vm)
         {
@@ -600,9 +604,6 @@ namespace SkyPathWS.Controllers
                 repositoryUOW.HelperOleDb.CloseConnection();
             }
         
-
-
-
 
         }
 

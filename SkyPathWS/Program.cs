@@ -1,3 +1,5 @@
+// Startup file for the Web API (server). It registers the controllers and Swagger,
+// then runs the API that the website and the WPF admin app call.
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,11 +28,3 @@ app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();
-
-//class Program
-//{
-//    public static void Main()
-//    {
-//        Console.WriteLine("Test");
-//    }
-//}

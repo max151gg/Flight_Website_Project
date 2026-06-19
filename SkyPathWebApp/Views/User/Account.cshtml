@@ -47,6 +47,8 @@
         <div class="account-sidebar">
             <!-- Profile Card -->
             <div class="profile-card">
+                @* Clicking the avatar opens the file picker; choosing a file auto-submits this
+                   form to upload the new profile picture (see onchange on the file input). *@
                 <form asp-controller="User" asp-action="UpdateProfileImage" method="post" enctype="multipart/form-data" id="imgForm">
                     <div class="profile-image-wrapper" onclick="document.getElementById('imageUpload').click()">
                         @if (hasImage)
@@ -177,6 +179,8 @@
     </div>
 </div>
 <script>
+    // Page interactions: open/close the "Edit Profile" pop-out, switch between the
+    // Profile and Security tabs, and stop the password form if the two passwords differ.
     (() => {
         const popout = document.getElementById('profilePopout');
         const overlay = document.getElementById('profileOverlay');
@@ -224,6 +228,7 @@
 
     if (passwordForm && newPassword && confirmNewPassword && passwordError) {
         passwordForm.addEventListener('submit', (event) => {
+            // Don't send the form if the two passwords are different; show an error instead.
             if (newPassword.value !== confirmNewPassword.value) {
                 event.preventDefault();
                 passwordError.classList.add('show');

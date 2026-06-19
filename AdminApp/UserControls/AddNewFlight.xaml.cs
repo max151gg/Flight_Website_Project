@@ -131,8 +131,11 @@ namespace AdminApp.Pages
             txtSeats.Text = flight.Seats_Available.ToString();
         }
 
+        // Create/Accept button. Checks the form, builds a Flight, then either adds a new
+        // flight or updates the existing one through the API.
         private async void SubmitFlight_Click(object sender, RoutedEventArgs e)
         {
+            // Stop if any field is invalid (error messages are shown next to the fields).
             if (!ValidateInputs())
                 return;
 
@@ -220,6 +223,8 @@ namespace AdminApp.Pages
             return await client.PostAsyncReturn<Flight, bool>(flight);
 
         }
+        // Checks every field (cities, dates, times, price, seats) and shows an error
+        // message under any field that is wrong. Returns true only if everything is valid.
         private bool ValidateInputs()
         {
             bool isValid = true;
@@ -335,35 +340,6 @@ namespace AdminApp.Pages
             block.Text = message;
             block.Visibility = Visibility.Visible;
         }
-
-        //private void ChooseImage_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var openFileDialog = new OpenFileDialog
-
-        //    {
-        //        Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif",
-        //        Title = "Select Flight Image"
-        //    };
-
-        //    if (openFileDialog.ShowDialog() == true)
-        //    {
-        //        selectedImagePath = openFileDialog.FileName;
-        //        txtImageName.Text = System.IO.Path.GetFileName(selectedImagePath);
-        //    }
-        //}
-        //private void ChooseImage_Click(object sender, RoutedEventArgs e)
-        //{
-        //    OpenFileDialog openFileDialog = new OpenFileDialog()
-        //    openFileDialog.Filter = "Image Files (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|All Files (*.*)|*.*";
-        //    bool? result = openFileDialog.ShowDialog();
-        //    if (result == true)
-        //    {
-        //        string fileName = openFileDialog.FileName;
-        //        selectedImagePath = fileName;
-        //        Uri uri = new Uri(fileName);
-        //        BitmapImage bitmap = new BitmapImage(uri);
-        //    }
-        //}
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {

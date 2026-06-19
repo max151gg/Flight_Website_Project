@@ -10,8 +10,13 @@ using System.Threading.Tasks;
 
 namespace SkyPath_Models
 {
+    // Base class for the data models (User, Flight, ...). It runs the validation rules
+    // written as [Required], [EmailAddress] etc. on each property, and remembers any errors.
+    // Call Validate() to check the whole object; IsValid is true when there are no errors.
     public abstract class Model : INotifyDataErrorInfo
     {
+        // Stores the validation errors. Key = property name (e.g. "Email"),
+        // Value = the list of error messages for that property.
         private Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
         private object threadLock = new object();
@@ -71,6 +76,8 @@ namespace SkyPath_Models
             }
         }
 
+        // Checks every property against its validation rules at once.
+        // The website calls this before sign-up to make sure the form is filled in correctly.
         public void Validate()
         {
             this.isValid = true; //reset IsValid before validation
@@ -78,6 +85,7 @@ namespace SkyPath_Models
             {
                 var validationContext = new ValidationContext(this, null, null);
                 var validationResults = new List<ValidationResult>();
+                // Runs all the [Required]/[EmailAddress]/etc. rules and collects any failures.
                 Validator.TryValidateObject(this, validationContext, validationResults, true);
 
                 //clear all previous errors

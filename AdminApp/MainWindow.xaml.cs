@@ -37,17 +37,18 @@ namespace AdminApp
             // Load login page initially
             MainFrame.Navigate(new LoginPage());
 
-            //HideSidebar();
+            HideSidebar();
             SetAdminName("Admin User");
             SetAdminProfileImage(string.Empty);
         }
 
-        // Navigate to different pages
+        // Sidebar buttons. Each one highlights itself and shows its page inside MainFrame.
         private void NavigateToDashboard(object sender, RoutedEventArgs e)
         {
             SetActiveButton(sender as Button);
             try
             {
+                // Swap the page shown in the main frame.
                 MainFrame.Navigate(new DashboardPage());
             }
             catch (Exception ex)
@@ -124,19 +125,7 @@ namespace AdminApp
 
         
 
-        private void NavigateToSettings(object sender, RoutedEventArgs e)
-        {
-            SetActiveButton(sender as Button);
-            // MainFrame.Navigate(new SettingsPage());
-            MessageBox.Show("Settings page - To be implemented");
-        }
-
-        private void NavigateToReports(object sender, RoutedEventArgs e)
-        {
-            SetActiveButton(sender as Button);
-            // MainFrame.Navigate(new ReportsPage());
-            MessageBox.Show("Reports page - To be implemented");
-        }
+        
 
         // Set active button style
         private void SetActiveButton(Button button)
@@ -179,7 +168,7 @@ namespace AdminApp
             }
         }
 
-        // Public method to show sidebar after successful login
+        // Turns on the sidebar menu buttons after a successful admin login.
         public void ShowSidebar()
         {
             // Enable all sidebar buttons
@@ -189,8 +178,7 @@ namespace AdminApp
             btnTickets.IsEnabled = true;
             btnDiscounts.IsEnabled = true;
             btnAnnouncements.IsEnabled = true;
-            btnSettings.IsEnabled = true;
-            btnReports.IsEnabled = true;
+            
 
 
             // Default active button
@@ -208,8 +196,7 @@ namespace AdminApp
             btnTickets.IsEnabled = false;
             btnDiscounts.IsEnabled = false;
             btnAnnouncements.IsEnabled = false;
-            btnSettings.IsEnabled = false;
-            btnReports.IsEnabled = false;
+            
         }
 
         // Update admin name in sidebar

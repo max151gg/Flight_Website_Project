@@ -32,6 +32,7 @@ namespace AdminApp.UserControls
             this.Loaded += (s, e) => txtUsername.Focus();
         }
 
+        // Login button click -> run the login.
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             await PerformLoginAsync();
@@ -96,6 +97,7 @@ namespace AdminApp.UserControls
                     Path = "api/Guest/Login"
                 };
 
+                // Send email + password to the API and get the user back (null if wrong).
                 var loginVm = new LoginViewModel { Email = email, Password = password };
                 User user = await loginClient.PostAsyncReturn<LoginViewModel, User>(loginVm);
 
@@ -115,6 +117,7 @@ namespace AdminApp.UserControls
                     return;
                 }
 
+                // Role_Id "0" means admin. Block everyone else from the admin panel.
                 if (user.Role_Id != "0")
                 {
                     txtGeneralError.Text = "Only admins can access the admin panel.";

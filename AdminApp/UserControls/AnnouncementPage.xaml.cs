@@ -94,7 +94,6 @@ namespace AdminApp.UserControls
                 Announcement announcement = new Announcement
                 {
                     Announcement_Id = "",
-                    Admin_Id = "0",
                     Title = NormalizeTitle(txtTitle.Text),
                     Content = txtContent.Text.Trim(),
                     Announcement_Date = dpAnnouncementDate.SelectedDate?.ToString("dd-MM-yyyy") ?? string.Empty,

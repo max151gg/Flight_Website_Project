@@ -11,7 +11,6 @@ namespace ModelSkyPath.Models
     public class Announcement : Model
     {
         string announcement_Id;
-        string admin_Id;
         string title;
         string content;
         string announcement_Date;
@@ -23,11 +22,6 @@ namespace ModelSkyPath.Models
         {
             get { return announcement_Id; }
             set { announcement_Id = value;}
-        }
-        public string Admin_Id
-        {
-            get { return admin_Id; }
-            set { admin_Id = value; }
         }
         [FirstLetterCapital(ErrorMessage = "Title must start with a capital letter")]
         [Required(ErrorMessage = "Title is required")]

@@ -97,7 +97,6 @@ namespace Testing
             announcement.Announcement_Date = "17/10/2025";
             announcement.Title = "Title";
             announcement.Content = "content";
-            announcement.Admin_Id = "010";
             if (announcement.HasErrors == true)
             {
                 foreach (KeyValuePair<string, List<string>> keyValuePair in announcement.AllErrors())

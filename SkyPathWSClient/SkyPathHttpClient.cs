@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SkyPathWSClient
 {
+    // Gives the whole app ONE shared HttpClient (the Singleton pattern).
+    // Reusing one client instead of creating a new one for every request avoids
+    // running out of network connections. ApiClient gets this client through Instance.
     public class SkyPathHttpClient
     {
         private static HttpClient createClient()

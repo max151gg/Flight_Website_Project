@@ -27,12 +27,16 @@
         string selectedDepDateTo = Context.Request.Query["departure_date_to"];
     }
 
+    @* Search filters. Submitting sends the chosen cities/dates to the Browse action as
+       URL query values (method="get"), which the API uses to filter the flights. *@
     <div class="search-section">
         <form method="get" asp-controller="User" asp-action="Browse">
             <div class="search-filters">
                 <div class="filter-group">
                     <select name="departure_id">
                         <option value="">departure</option>
+                        @* Build one option per city. city.Key = city id (sent to the server),
+                           city.Value = city name (shown to the user). *@
                         @foreach (var city in cityDict)
                         {
                             <option value="@city.Key" selected="@(city.Key == selectedDeparture)">
@@ -86,6 +90,8 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">sort by</div>
 
+                @* Sort dropdown. The hidden fields keep the current search filters so that
+                   changing the sort does not lose them. onchange auto-submits the form. *@
                 <form method="get" asp-controller="User" asp-action="Browse">
                     <input type="hidden" name="departure_id" value="@selectedDeparture" />
                     <input type="hidden" name="arrival_id" value="@selectedArrival" />
@@ -114,6 +120,7 @@
                 <span class="results-count">Showing @showing of @total flights</span>
             </div>
 
+            @* Show one clickable card for each flight on this page. Clicking opens its details. *@
             <div class="flights-grid">
                 @foreach (Flight flight in Model.flights)
                 {
@@ -166,6 +173,8 @@
                     ←
                 </a>
 
+                @* One numbered button per page. Each link keeps the current filters + sort
+                   so paging does not reset the search. The current page gets the "active" style. *@
                 @for (int i = 1; i <= pages; i++)
                 {
                     <a class="page-btn @(i == current ? "active" : "")"

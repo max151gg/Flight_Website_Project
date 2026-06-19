@@ -19,16 +19,8 @@ namespace SkyPathWS.ORM
         OleDbTransaction dbTransaction;
 
 
-        //public DbHelperOleDb()
-        //{
-        //    oleDbConnetction = new OleDbConnection();
-        //    //הסבר לאיזה מוסד נתונים ליצור קשר על ידי מחרוזת התחברות
-        //    oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\maxka\source\repos\Flight_Website_Project\SkyPathWS\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
-        //    //this.oleDbConnetction.ConnectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={Directory.GetCurrentDirectory()}\App_Data\Database_SkyPath.accdb;Persist Security Info=True";
-        //    dbCommand = new OleDbCommand();
-        //    dbCommand.Connection = oleDbConnetction;
-        //}
-
+        // Builds the connection to the Access database file (App_Data/Database_SkyPath.accdb)
+        // using the ACE OLEDB provider. The path is relative so it works on any machine.
         public DbHelperOleDb()
         {
             oleDbConnetction = new OleDbConnection();
@@ -64,6 +56,7 @@ namespace SkyPathWS.ORM
             return records;
         }
 
+        // Runs an INSERT and returns how many rows were added (used to confirm success).
         public int Insert(string sql)
         {
             dbCommand.CommandText = sql;
@@ -88,6 +81,7 @@ namespace SkyPathWS.ORM
             dbTransaction?.Rollback();
         }
 
+        // Runs a SELECT and returns a reader to loop through the rows.
         public IDataReader Select(string sql)
         {
             dbCommand.CommandText = sql;
@@ -104,6 +98,8 @@ namespace SkyPathWS.ORM
             dbCommand.Parameters.Clear();
             return records;
         }
+        // Adds a value for a @parameter in the SQL. Using parameters (instead of building
+        // the SQL string by hand) keeps the app safe from SQL injection.
         public void AddParameter(string name, object value)
         {
             dbCommand.Parameters.Add(new OleDbParameter(name, value));

@@ -63,7 +63,8 @@
             <div class="price-summary">
                 <div class="ps-title">Price Summary</div>
 
-                <!-- Currency + discount: reloads page on change, recalculated server-side -->
+                @* Currency + discount pickers. Changing one auto-submits this form so the
+                   server recalculates the price (see onchange="this.form.submit()" below). *@
                 <form method="get" asp-controller="User" asp-action="Checkout">
                     <input type="hidden" name="flight_id" value="@Model.OutboundFlightId" />
 
@@ -114,7 +115,8 @@
                     <span>@Money(total)</span>
                 </div>
 
-                <!-- Actual purchase. (Charge is in USD; the currency above is display only.) -->
+                @* Confirm Purchase. Posts the flight + chosen discount to UserController.Purchase.
+                   (The charge is in USD; the currency picker above is for display only.) *@
                 <form method="post" asp-controller="User" asp-action="Purchase">
                     <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
                     <input type="hidden" name="DiscountId" value="@selectedDiscountId" />

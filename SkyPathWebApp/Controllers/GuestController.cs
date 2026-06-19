@@ -8,6 +8,7 @@ namespace SkyPathWebApp.Controllers
 {
     public class GuestController : Controller
     {
+        // Loads the data the home/login pages need: all flights plus a city id->name lookup.
         private async Task<BrowseViewModel> LoadBrowseViewModelAsync()
         {
             var flightsClient = new ApiClient<List<Flight>>
@@ -27,6 +28,8 @@ namespace SkyPathWebApp.Controllers
                 Path = "api/City/GetAll"
             };
             List<City> cities = await cityClient.GetAsync() ?? new List<City>();
+            // CityDict: Key = city id, Value = city name. The pages store city ids on flights,
+            // so this lets the views show the city name without searching the list each time.
             ViewBag.CityDict = cities.ToDictionary(c => c.CityId, c => c.CityName);
 
             return new BrowseViewModel { flights = flights };
@@ -48,6 +51,8 @@ namespace SkyPathWebApp.Controllers
             return View(vm);
         }
 
+        // Handles the login form. On success it saves the user in the session and goes to
+        // the user home page; on failure it shows an error on the login page.
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginviewmodel)
         {
@@ -90,6 +95,8 @@ namespace SkyPathWebApp.Controllers
             return RedirectToAction("HomePage", "User");
         }
 
+        // Handles the sign-up form: validates the input, sends the new user to the API,
+        // and (if it worked) logs them in automatically.
         [HttpPost]
         public async Task<IActionResult> Register(User user)
         {
@@ -118,11 +125,13 @@ namespace SkyPathWebApp.Controllers
                 Path = "api/Guest/Register"
             };
 
+            // Send the new user to the API. PostAsync returns false if the API rejected it
+            // (for example a duplicate email/username); LastError holds the API's message.
             bool ok = await registerClient.PostAsync(user);
 
             if (!ok)
             {
-                ModelState.AddModelError("", "Registration failed. Please check the API/database error.");
+                ModelState.AddModelError("", registerClient.LastError ?? "Registration failed. Please try again.");
                 BrowseViewModel vm = await LoadBrowseViewModelAsync();
                 vm.user = user;
                 return View("HomePage", vm);

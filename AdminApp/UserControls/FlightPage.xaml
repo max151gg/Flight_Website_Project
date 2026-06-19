@@ -133,6 +133,8 @@
         <ScrollViewer Grid.Row="1" 
                      VerticalScrollBarVisibility="Visible"
                      Padding="30,20">
+            <!-- Shows one card per flight. ItemsSource binds to the flights list set as DataContext;
+                 the DataTemplate below describes what each flight card looks like. -->
             <ItemsControl x:Name="FlightsList" ItemsSource="{Binding}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -173,7 +175,8 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- Route + airline -->
+                                    <!-- Route + airline. The flight only stores city ids, so the
+                                         cityNameConverter turns each id into its city name for display. -->
                                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
                                         <TextBlock Text="{Binding Departure_Id, Converter={StaticResource cityNameConverter}}"
                                             FontSize="24"
@@ -296,6 +299,8 @@
                                 <StackPanel Grid.Column="2"
                                 VerticalAlignment="Center"
                                 Margin="20,0,0,0">
+                                    <!-- Tag="{Binding}" passes this row's whole Flight object to the
+                                         click handler, so the code knows which flight to edit/delete. -->
                                     <Button Content="Update"
                                 Style="{StaticResource ActionButtonStyle}"
                                 Background="#667EEA"

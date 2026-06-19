@@ -9,8 +9,12 @@ using System.Windows.Data;
 
 namespace AdminApp.Converters
 {
+    // WPF converter: builds a ticket's route text ("Tel Aviv → Paris") from its flight id,
+    // shown on the admin tickets screen.
     public class TicketFlightRouteConverter : IValueConverter
     {
+        // Lookup table. Key = flight id, Value = the full Flight object.
+        // Used to find a ticket's flight (and its two cities) without another database call.
         public static Dictionary<string, Flight> FlightsById { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

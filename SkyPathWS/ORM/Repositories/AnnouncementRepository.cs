@@ -13,14 +13,13 @@ namespace SkyPathWS.ORM.Repositories
         {
             string sql = $@"Insert into Announcement
                             (
-                            Admin_Id, Title, Content,
+                            Title, Content,
                             Announcement_Date, User_Id
                             )
                             values
                             (
-                                @Admin_Id, @Title, @Content, @Announcement_Date, @User_Id
+                                @Title, @Content, @Announcement_Date, @User_Id
                             )";
-            helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
             helperOleDb.AddParameter("@Title", model.Title);
             helperOleDb.AddParameter("@Content", model.Content);
             helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);
@@ -80,9 +79,8 @@ namespace SkyPathWS.ORM.Repositories
         public bool Update(Announcement model)
         {
             string sql = @"Update Announcement set 
-                            Admin_Id=@Admin_Id, Title=@Title, Content=@Content,
+                            Title=@Title, Content=@Content,
                             Announcement_Date=@Announcement_Date, User_Id=@User_Id";
-            helperOleDb.AddParameter("@Admin_Id", model.Admin_Id);
             helperOleDb.AddParameter("@Title", model.Title);
             helperOleDb.AddParameter("@Content", model.Content);
             helperOleDb.AddParameter("@Announcement_Date", model.Announcement_Date);

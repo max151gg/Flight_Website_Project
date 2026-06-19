@@ -10,6 +10,8 @@ using System.Text.Json.Serialization;
 
 namespace SkyPathWS.Controllers
 {
+    // API used by the WPF admin app. Each method does one admin job:
+    // managing users, flights, tickets, discounts and announcements in the database.
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -161,6 +163,7 @@ namespace SkyPathWS.Controllers
             }
         }
 
+        // Deletes a user from the database and also removes their saved profile image file.
         [HttpGet]
         public bool DeleteUser(string user_id, [FromServices] IWebHostEnvironment env)
         {
@@ -362,6 +365,7 @@ namespace SkyPathWS.Controllers
         }
 
 
+        // Adds a new flight (used by the "Add New Flight" page in the admin app).
         [HttpPost]
         public bool CreateFlight(Flight flight)
         {
@@ -399,14 +403,6 @@ namespace SkyPathWS.Controllers
                 repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
-
-        //[HttpPost]
-        //public bool AddNewFlight(Flight flight)
-        //{
-        //    string json = Request.Form["model"].ToString();
-        //    FlightViewModel newflightviewmodel = JsonSerializableAttribute.Deserialize<FlightViewModel>(json);
-        //}
-
 
         [HttpGet]
         public List<Flight> GetAllFlights()

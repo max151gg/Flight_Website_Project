@@ -204,6 +204,8 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
 
+                                            <!-- A ticket only stores ids. The converters turn those ids into
+                                                 friendly text: user id -> full name, flight id -> route ("X → Y"). -->
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="USER" FontSize="11" Foreground="#999999" Margin="0,0,0,5"/>
                                                 <TextBlock Text="{Binding User_Id, Converter={StaticResource userNameConverter}}" FontSize="14" FontWeight="SemiBold" Foreground="#333333"/>

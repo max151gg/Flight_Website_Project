@@ -47,6 +47,7 @@
                 <h2>Sign Up</h2>
                 <p class="signup-subtitle">Signup now. It's free and takes less than a minute</p>
 
+                @* Sign-up form. On submit it posts to GuestController.Register. *@
                 <form asp-controller="Guest" asp-action="Register" method="post" novalidate>
 
                     @if (ViewData.ModelState.ContainsKey("") &&
@@ -101,6 +102,7 @@
 
     @if (!ViewData.ModelState.IsValid)
     {
+        @* If sign-up failed, scroll the page down to the form so the user sees the errors. *@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var section = document.getElementById('signup-section');

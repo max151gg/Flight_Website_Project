@@ -60,9 +60,10 @@ namespace AdminApp.UserControls
             await LoadFlights();
         }
 
+        // Loads all flights from the API and shows them in the list (DataContext binds to the UI).
         private async Task LoadFlights()
         {
-            // 1) Load city dictionary first
+            // 1) Load city dictionary first (so ids can be shown as city names)
             await LoadCityDictionary();
 
             // 2) Load flights
@@ -79,12 +80,13 @@ namespace AdminApp.UserControls
             DataContext = flights;
         }
 
+        // Opens the Add New Flight page (empty form).
         private void AddFlight_Click(object sender, RoutedEventArgs e)
         {
-            // Navigate to Add Flight page
             NavigationService?.Navigate(new AddNewFlight());
         }
 
+        // Opens the same form in edit mode for the flight on the clicked row (button Tag).
         private void UpdateFlight_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.Tag is not Flight flight)
@@ -99,6 +101,7 @@ namespace AdminApp.UserControls
             NavigationService?.Navigate(new AddNewFlight(flight));
         }
 
+        // Asks for confirmation, then deletes the flight and reloads the list.
         private async void DeleteFlight_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.Tag is not Flight flight)
@@ -195,34 +198,6 @@ namespace AdminApp.UserControls
                 //     f.Airline.ToLower().Contains(searchTerm));
             }
         }
-
-        // Helper method to create flight card programmatically
-        /*
-        private Border CreateFlightCard(Flight flight)
-        {
-            var border = new Border
-            {
-                Background = Brushes.White,
-                CornerRadius = new CornerRadius(12),
-                Margin = new Thickness(0, 0, 0, 15),
-                Padding = new Thickness(20)
-            };
-            
-            border.Effect = new DropShadowEffect
-            {
-                Color = Colors.Black,
-                Direction = 270,
-                ShadowDepth = 2,
-                BlurRadius = 10,
-                Opacity = 0.08
-            };
-            
-            // Create grid and add flight details
-            // ... (implementation details)
-            
-            return border;
-        }
-        */
 
         public System.Windows.Navigation.NavigationService NavigationService
         {

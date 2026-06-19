@@ -34,7 +34,7 @@ namespace SkyPathWS.Controllers
                 // NEW: sort newest -> oldest by dd-MM-yyyy
                 announcementViewModel.announcements = announcementViewModel.announcements
                     .OrderByDescending(a => DateTime.ParseExact(
-                        a.Announcement_Date,   // <-- change property name if different
+                        a.Announcement_Date,   
                         "dd-MM-yyyy",
                         CultureInfo.InvariantCulture))
                     .ToList();
@@ -163,8 +163,7 @@ namespace SkyPathWS.Controllers
 
                 if (!string.IsNullOrEmpty(departure_id) && !string.IsNullOrEmpty(arrival_id))
                 {
-                    // NOTE: your repository call order looks suspicious (arrival_id, departure_id).
-                    // Keep as-is to avoid breaking your existing logic, but verify the repository signature.
+                    
                     filtered = this.repositoryUOW.FlightRepository.GetFlightsByDepartureAndArrival(arrival_id, departure_id);
                 }
                 else if (!string.IsNullOrEmpty(departure_id))
@@ -278,15 +277,19 @@ namespace SkyPathWS.Controllers
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
 
-               
                 user.User_Image = "";
-                
 
+                // Email and username must be unique. Check first so we can show a clear
+                // message instead of letting the database throw a confusing duplicate-key error.
+                if (repositoryUOW.UserRepository.EmailExists(user.Email))
+                    return BadRequest("This email is already registered.");
+                if (repositoryUOW.UserRepository.UserNameExists(user.UserName))
+                    return BadRequest("This username is already taken.");
+
+                // Save the new user (returns true when one row was inserted).
                 bool created = repositoryUOW.UserRepository.Create(user);
 
-                return created ? Ok() : BadRequest("User creation returned false");
-
-                
+                return created ? Ok(true) : BadRequest("User creation returned false");
             }
             catch (Exception ex)
             {
@@ -301,6 +304,7 @@ namespace SkyPathWS.Controllers
 
 
 
+        // Checks the email + password. Returns the full user if correct, or null if not.
         [HttpPost]
         public User Login([FromBody] LoginViewModel loginViewModel)
         {

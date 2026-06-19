@@ -11,19 +11,10 @@ namespace SkyPathWS.ORM.Repositories
         public UserRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
         {
         }
+        // Adds a new user to the database. The password is never stored as plain text:
+        // we make a random salt and save the SHA256 hash of (password + salt).
         public bool Create(User model)
         {
-            //string sql = $@"Insert into User
-            //                (
-            //                UserName, Email, Password,
-            //                User_Telephone, User_Adress, User_FullName, Role_Id
-            //                )
-            //                values
-            //                (
-            //                    '{model.UserName}', '{model.Email}', '{model.Password}', '{model.User_Telephone}',
-            //                    '{model.User_Adress}', '{model.User_FullName}', {model.Role_Id}
-            //                )";
-
             string sql = $@"Insert into [User]
                             (
                             UserName, Email, [Password],
@@ -68,6 +59,28 @@ namespace SkyPathWS.ORM.Repositories
             RandomNumberGenerator.Fill(bytes);
             return Convert.ToBase64String(bytes);
         }
+        // Returns true if a user with this email already exists (email must be unique).
+        public bool EmailExists(string email)
+        {
+            string sql = "Select User_Id from [User] where Email=@Email";
+            helperOleDb.AddParameter("@Email", email);
+            using (IDataReader reader = helperOleDb.Select(sql))
+            {
+                return reader.Read();
+            }
+        }
+
+        // Returns true if a user with this username already exists (username must be unique).
+        public bool UserNameExists(string userName)
+        {
+            string sql = "Select User_Id from [User] where UserName=@UserName";
+            helperOleDb.AddParameter("@UserName", userName);
+            using (IDataReader reader = helperOleDb.Select(sql))
+            {
+                return reader.Read();
+            }
+        }
+
         public bool BanUser(string user_Id, bool user_Ban)
         {
             string sql = @"Update [User] set User_Ban=@User_Ban where User_Id=@User_Id";
@@ -164,7 +177,9 @@ namespace SkyPathWS.ORM.Repositories
 
 
         
-        public string Login(string Email, string password) 
+        // Checks a login. We hash the typed password with the user's saved salt and
+        // compare it to the saved hash. Returns the User_Id on success, or null if wrong.
+        public string Login(string Email, string password)
         {
             string sql = @"Select UserSalt, User_Id, Password from [User]
                    where [Email]=@Email";

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SkyPath_Models.ViewModel.AnnouncementViewModel" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\AnnouncementViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.BrowseViewModel" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAEAAAAAJAAAAACAAAAAQAAAAAAQI=</HashCode>
+      <FileName>ViewModel\BrowseViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.ChangePasswordViewModel" Collapsed="true">
+    <Position X="10" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\ChangePasswordViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.CheckoutViewModel" Collapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAgAAAgAAAAAAgAAABAAAAA=</HashCode>
+      <FileName>ViewModel\CheckoutViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.DiscountViewModel" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>ViewModel\DiscountViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.FlightViewModel" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\FlightViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.LoginViewModel" Collapsed="true">
+    <Position X="10" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\LoginViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.SignUpViewModel" Collapsed="true">
+    <Position X="11.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>ViewModel\SignUpViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.TicketViewModel" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\TicketViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.UpdateProfileViewModel" Collapsed="true">
+    <Position X="9" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAgABAAAAAAAAAAAgAQAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\UpdateProfileViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SkyPath_Models.ViewModel.UserViewModel" Collapsed="true">
+    <Position X="13.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\UserViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

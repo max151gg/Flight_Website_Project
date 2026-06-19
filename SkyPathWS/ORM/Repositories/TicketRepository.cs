@@ -9,6 +9,7 @@ namespace SkyPathWS.ORM.Repositories
         public TicketRepository(DbHelperOleDb helperOleDb, ModelCreators modelCreators) : base(helperOleDb, modelCreators)
         {
         }
+        // Saves one new ticket row when a user buys a flight (called by PurchaseTicket).
         public bool Create(Ticket model)
         {
             string sql = $@"Insert into Ticket
@@ -59,6 +60,7 @@ namespace SkyPathWS.ORM.Repositories
                 return modelCreators.TicketCreator.CreateModel(reader);
             }
         }
+        // Returns all tickets that belong to one user (used by the "My Tickets" page).
         public List<Ticket> GetByUserId(string user_id)
         {
             string sql = "Select * from Ticket where User_Id=@User_Id";
@@ -66,6 +68,7 @@ namespace SkyPathWS.ORM.Repositories
             List<Ticket> tickets = new List<Ticket>();
             using (IDataReader reader = helperOleDb.Select(sql))
             {
+                // Loop through each returned row and turn it into a Ticket object.
                 while (reader.Read())
                 {
                     tickets.Add(modelCreators.TicketCreator.CreateModel(reader));

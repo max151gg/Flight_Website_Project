@@ -2,10 +2,14 @@
 using System.Data;
 namespace SkyPathWS.ORM.CreatorsModels
 {
+    // Turns one row from the Flight table into a Flight object.
+    // Input: a DataReader sitting on a flight row. Output: a filled Flight.
+    // Used by FlightRepository every time it reads flights from the database.
     public class FlightCreator : IModelCreator<Flight>
     {
         public Flight CreateModel(IDataReader dataReader)
         {
+            // Read each column by its name and convert it to the matching C# type.
             Flight flight = new Flight
             {
                 Flight_Id = Convert.ToString(dataReader["Flight_Id"]),

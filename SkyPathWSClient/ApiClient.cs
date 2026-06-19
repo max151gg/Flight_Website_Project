@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SkyPathWSClient
 {
+    // Small helper used by the website and the WPF admin app to call the Web API.
+    // You set Scheme/Host/Port/Path, then call GetAsync or PostAsync.
+    // <T> is the type we expect back (for example List<Flight> or User).
     public class ApiClient<T>
     {
         HttpClient httpClient = SkyPathHttpClient.Instance;
@@ -42,6 +45,7 @@ namespace SkyPathWSClient
         }
 
 
+        // Adds "?key=value" (or "&key=value") to the URL, e.g. ?user_id=5
         public void SetQueryParameter(string key, string value)
         {
             if (this.uriBuilder.Query == string.Empty)
@@ -51,6 +55,7 @@ namespace SkyPathWSClient
             else this.uriBuilder.Query += "&";
             this.uriBuilder.Query += $"{key}={value}";
         }
+        // Sends a GET request and turns the JSON response into an object of type T.
         public async Task<T> GetAsync()
         {
             using (HttpRequestMessage httpRequest = new HttpRequestMessage())
@@ -64,6 +69,7 @@ namespace SkyPathWSClient
                         string result = await httpResponse.Content.ReadAsStringAsync();
                         JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
                         jsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                        // Convert the JSON text from the API into a C# object of type T.
                         T model = JsonSerializer.Deserialize<T>(result, jsonSerializerOptions);
                         return model;
                     }
@@ -72,7 +78,10 @@ namespace SkyPathWSClient
             }
         }
 
-
+        // Holds the API's error text when the last PostAsync failed (used to show the reason to the user).
+        public string LastError { get; private set; }
+        // Sends an object as JSON with POST. Returns true if the API accepted it.
+        // If it failed, the reason is stored in LastError.
         public async Task<bool> PostAsync(T model)
         {
             using (HttpRequestMessage httpRequest = new HttpRequestMessage())
@@ -80,6 +89,7 @@ namespace SkyPathWSClient
                 httpRequest.Method = HttpMethod.Post;
                 httpRequest.RequestUri = this.uriBuilder.Uri;
 
+                // Turn the C# object into JSON text to send in the request body.
                 string json = JsonSerializer.Serialize<T>(model);
                 httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -89,6 +99,7 @@ namespace SkyPathWSClient
 
                     if (!httpResponse.IsSuccessStatusCode)
                     {
+                        LastError = responseBody?.Trim('"');
                         Console.WriteLine($"POST failed: {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
                         Console.WriteLine(responseBody);
                         return false;
@@ -97,7 +108,8 @@ namespace SkyPathWSClient
                     if (bool.TryParse(responseBody, out bool apiResult))
                         return apiResult;
 
-                    return false;
+                    // success status with empty/non-bool body still counts as success
+                    return true;
                 }
             }
         }
@@ -152,6 +164,8 @@ namespace SkyPathWSClient
             }
         }
 
+        // Like PostAsync, but also reads a JSON object back from the API.
+        // Example: send a LoginViewModel, get a User in return.
         public async Task<TResponse> PostAsyncReturn<TRequest, TResponse>(TRequest model)
         {
 

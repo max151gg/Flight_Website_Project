@@ -8,6 +8,10 @@ using SkyPath_Models;
 
 namespace SkyPath_Models.Models
 {
+    // A user (customer or admin). The [Required], [EmailAddress], [MinLength] and
+    // [FirstLetterCapital] attributes below are the sign-up validation rules that run
+    // when Validate() is called. Note: the Password here is the plain text from the form;
+    // it is turned into a salted hash inside UserRepository before it is saved.
     public class User : Model
     {
         string user_Id;

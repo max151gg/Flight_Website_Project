@@ -45,6 +45,7 @@ namespace SkyPathWS.ORM.Repositories
             return this.helperOleDb.Delete(sql) > 0;
         }
 
+        // Reads every flight from the database and builds a list of Flight objects.
         public List<Flight> GetALL()
         {
             string sql = "Select * from Flight";
@@ -184,9 +185,10 @@ namespace SkyPathWS.ORM.Repositories
             }
         }
 
+        // Lowers the available seats for a flight (called after a ticket is bought).
         public bool ReduceSeats(string flightId, int amount)
         {
-            // Single guarded UPDATE (autocommit). No SELECT, no transaction.
+            // One UPDATE statement subtracts the seats directly in the database.
             string sql = @"UPDATE Flight SET Seats_Available = Seats_Available - @Amount
                            WHERE Flight_Id = @Flight_Id";
             helperOleDb.AddParameter("@Amount", amount);
