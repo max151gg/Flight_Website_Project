@@ -115,11 +115,55 @@
                     <span>@Money(total)</span>
                 </div>
 
-                @* Confirm Purchase. Posts the flight + chosen discount to UserController.Purchase.
-                   (The charge is in USD; the currency picker above is for display only.) *@
+                @* Purchase form. Posts only the chosen flight + discount to UserController.Purchase.
+                   The card fields below are display-only for the school project: they have no
+                   "name" attribute, so they are NOT posted, NOT validated, and NOT saved.
+                   The user can buy even if every card field is left empty. *@
                 <form method="post" asp-controller="User" asp-action="Purchase">
                     <input type="hidden" name="OutboundFlightId" value="@Model.OutboundFlightId" />
                     <input type="hidden" name="DiscountId" value="@selectedDiscountId" />
+
+                    <div class="card-fields">
+                        <div class="card-title">Payment Details</div>
+
+                        <div class="card-group">
+                            <label>Card Holder Name</label>
+                            <input class="card-input" type="text" placeholder="Name on card" />
+                        </div>
+                        <div class="card-group">
+                            <label>Card Number</label>
+                            <input class="card-input" type="text" placeholder="1234 5678 9012 3456" />
+                        </div>
+                        <div class="card-row">
+                            <div class="card-group">
+                                <label>Expiration</label>
+                                <input class="card-input" type="text" placeholder="MM/YY" />
+                            </div>
+                            <div class="card-group">
+                                <label>CVV</label>
+                                <input class="card-input" type="text" placeholder="123" />
+                            </div>
+                        </div>
+                        <div class="card-group">
+                            <label>Billing Address</label>
+                            <input class="card-input" type="text" placeholder="Street address" />
+                        </div>
+                        <div class="card-row">
+                            <div class="card-group">
+                                <label>City</label>
+                                <input class="card-input" type="text" placeholder="City" />
+                            </div>
+                            <div class="card-group">
+                                <label>ZIP / Postal Code</label>
+                                <input class="card-input" type="text" placeholder="ZIP" />
+                            </div>
+                        </div>
+                        <div class="card-group">
+                            <label>Country</label>
+                            <input class="card-input" type="text" placeholder="Country" />
+                        </div>
+                    </div>
+
                     <button type="submit" class="confirm-btn">Confirm Purchase</button>
                 </form>
 

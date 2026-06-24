@@ -224,15 +224,27 @@ namespace SkyPathWS.Controllers
                 this.repositoryUOW.HelperOleDb.CloseConnection();
             }
         }
+        // Cancels or reactivates a flight (it is never physically deleted, which keeps it
+        // safe even when the flight has tickets).
+        //   isActive = false -> mark the flight cancelled AND cancel all of its tickets.
+        //   isActive = true  -> mark the flight active again (its tickets are left as they are;
+        //                       the admin can reactivate individual tickets on the Tickets page).
+        // Returns true only if the flight status was successfully updated.
         [HttpGet]
-        public bool DeleteTicket(string ticket_id)
+        public bool SetFlightActiveStatus(string flight_id, bool isActive)
         {
             try
             {
                 this.repositoryUOW.HelperOleDb.OpenConnection();
-                return this.repositoryUOW.TicketRepository.Delete(ticket_id);
+                bool updated = this.repositoryUOW.FlightRepository.UpdateFlightStatus(flight_id, isActive);
+                if (updated && !isActive)
+                {
+                    // Only when cancelling: also cancel every ticket for this flight.
+                    this.repositoryUOW.TicketRepository.CancelTicketsByFlightId(flight_id);
+                }
+                return updated;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

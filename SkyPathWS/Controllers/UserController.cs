@@ -151,6 +151,10 @@ namespace SkyPathWS.Controllers
                 {
                     filtered = this.repositoryUOW.FlightRepository.GetALL();
                 }
+
+                // Website users must only see active flights (hide cancelled ones).
+                filtered = filtered.Where(f => f.IsActive).ToList();
+
                 filtered = ApplySort(filtered, sort);
 
                 // Optional single-flight filter (if you actually use it)
@@ -338,7 +342,8 @@ namespace SkyPathWS.Controllers
             this.repositoryUOW.HelperOleDb.OpenConnection();
             try
             {
-                return this.repositoryUOW.FlightRepository.GetALL();
+                // Only return active flights to the website (cancelled flights are hidden).
+                return this.repositoryUOW.FlightRepository.GetALL().Where(f => f.IsActive).ToList();
             }
             catch
             {
@@ -380,9 +385,13 @@ namespace SkyPathWS.Controllers
             {
                 repositoryUOW.HelperOleDb.OpenConnection();
 
-                // 1) Flight must exist and have a free seat
+                // 1) Flight must exist, still be active, and have a free seat
                 Flight outbound = repositoryUOW.FlightRepository.GetById(vm.OutboundFlightId);
-                if (outbound == null || outbound.Seats_Available <= 0)
+                if (outbound == null)
+                    return BadRequest("This flight is not available.");
+                if (!outbound.IsActive)
+                    return BadRequest("This flight is cancelled.");
+                if (outbound.Seats_Available <= 0)
                     return BadRequest("This flight is not available.");
 
                 // 2) If a discount was chosen, it must belong to THIS user

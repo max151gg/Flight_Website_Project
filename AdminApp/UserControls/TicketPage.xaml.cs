@@ -229,52 +229,5 @@ namespace AdminApp.UserControls
             UpdateStatistics();
         }
 
-        private async void DeleteTicket_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button btn || btn.Tag is not Ticket ticket)
-            {
-                MessageBox.Show("Could not determine which ticket to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(ticket.Ticket_Id))
-            {
-                MessageBox.Show("Ticket ID is missing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-
-            var result = MessageBox.Show(
-                $"Are you sure you want to delete Ticket {ticket.Ticket_Id}?\n\nThis action cannot be undone.",
-                "Delete Ticket",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-            var apiClient = new ApiClient<bool>
-            {
-                Scheme = "http",
-                Host = "localhost",
-                Port = 5125,
-                Path = "api/Admin/DeleteTicket"
-            };
-            apiClient.SetQueryParameter("ticket_id", ticket.Ticket_Id);
-
-            bool ok = await apiClient.GetAsync();
-            if (!ok)
-            {
-                MessageBox.Show("Failed to delete ticket.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            allTickets.RemoveAll(t => t.Ticket_Id == ticket.Ticket_Id);
-            ApplyFilterAndBind();
-            UpdateStatistics();
-        }
-
     }
 }

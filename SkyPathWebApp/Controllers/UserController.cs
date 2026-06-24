@@ -328,6 +328,7 @@ namespace SkyPathWebApp.Controllers
 
         // Confirm Purchase button. Sends the booking to the API; on success goes to the
         // user's tickets, otherwise shows the error message back on the checkout page.
+        // (The card fields on Checkout are display-only and are NOT posted here.)
         [HttpPost]
         public async Task<IActionResult> Purchase(CheckoutViewModel vm)
         {
@@ -349,7 +350,7 @@ namespace SkyPathWebApp.Controllers
             string error = await resp.Content.ReadAsStringAsync();
             TempData["PurchaseError"] = string.IsNullOrWhiteSpace(error)
                 ? "Booking failed. Please try again."
-                : $"Booking failed: {error}";
+                : $"Booking failed: {error.Trim('"')}";
             return RedirectToAction("Checkout", new { flight_id = vm.OutboundFlightId });
         }
 

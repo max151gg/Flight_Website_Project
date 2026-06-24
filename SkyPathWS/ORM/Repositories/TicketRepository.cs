@@ -83,6 +83,15 @@ namespace SkyPathWS.ORM.Repositories
             helperOleDb.AddParameter("@Ticket_Id", ticketId);
             return helperOleDb.Update(sql) > 0;
         }
+
+        // Cancels every ticket for a flight (Status = false). Used when an admin cancels a flight.
+        public bool CancelTicketsByFlightId(string flightId)
+        {
+            string sql = @"Update Ticket set Status=@Status where Flight_Id=@Flight_Id";
+            helperOleDb.AddParameter("@Status", false);
+            helperOleDb.AddParameter("@Flight_Id", Convert.ToInt32(flightId));
+            return helperOleDb.Update(sql) > 0;
+        }
         public bool Update(Ticket model)
         {
             string sql = @"Update Ticket set 

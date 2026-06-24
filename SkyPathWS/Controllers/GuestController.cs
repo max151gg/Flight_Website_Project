@@ -178,6 +178,10 @@ namespace SkyPathWS.Controllers
                 {
                     filtered = this.repositoryUOW.FlightRepository.GetALL();
                 }
+
+                // Website users must only see active flights (hide cancelled ones).
+                filtered = filtered.Where(f => f.IsActive).ToList();
+
                 filtered = ApplySort(filtered, sort);
 
                 // Optional single-flight filter (if you actually use it)
@@ -255,7 +259,8 @@ namespace SkyPathWS.Controllers
             this.repositoryUOW.HelperOleDb.OpenConnection();
             try
             {
-                return this.repositoryUOW.FlightRepository.GetALL();
+                // Only return active flights to the website (cancelled flights are hidden).
+                return this.repositoryUOW.FlightRepository.GetALL().Where(f => f.IsActive).ToList();
             }
             catch
             {

@@ -101,12 +101,14 @@ namespace AdminApp.UserControls
             NavigationService?.Navigate(new AddNewFlight(flight));
         }
 
-        // Asks for confirmation, then deletes the flight and reloads the list.
-        private async void DeleteFlight_Click(object sender, RoutedEventArgs e)
+        // One toggle handler for the Cancel/Reactivate button.
+        // If the flight is active  -> cancel it (its tickets also become cancelled).
+        // If the flight is cancelled -> reactivate it (so users can book it again).
+        private async void ToggleFlightStatus_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.Tag is not Flight flight)
             {
-                MessageBox.Show("Could not determine which flight to delete.",
+                MessageBox.Show("Could not determine which flight to update.",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
@@ -123,9 +125,16 @@ namespace AdminApp.UserControls
                 return;
             }
 
+            // Active flight -> we want to cancel (false). Cancelled flight -> reactivate (true).
+            bool makeActive = !flight.IsActive;
+
+            string confirmText = makeActive
+                ? "Reactivate this flight? Users will be able to book it again."
+                : "Cancel this flight? All tickets for this flight will become cancelled.";
+
             var result = MessageBox.Show(
-                $"Are you sure you want to delete flight {flightId}?\n\nThis action cannot be undone.",
-                "Delete Flight",
+                confirmText,
+                makeActive ? "Reactivate Flight" : "Cancel Flight",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -136,67 +145,47 @@ namespace AdminApp.UserControls
 
             try
             {
-                bool deleted = await DeleteFlightFromDatabaseAsync(flightId);
-                if (!deleted)
+                bool ok = await SetFlightActiveStatusAsync(flightId, makeActive);
+                if (!ok)
                 {
-                    MessageBox.Show($"Delete failed for flight {flightId}.",
+                    MessageBox.Show($"Update failed for flight {flightId}.",
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
                     return;
                 }
 
-                MessageBox.Show($"Flight {flightId} deleted successfully!",
-                                "Success",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                MessageBox.Show(
+                    makeActive ? $"Flight {flightId} was reactivated." : $"Flight {flightId} was cancelled.",
+                    "Success",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
 
                 await LoadFlights();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to delete flight {flightId}.\n\n{ex.Message}",
+                MessageBox.Show($"Failed to update flight {flightId}.\n\n{ex.Message}",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
         }
-        private async Task<bool> DeleteFlightFromDatabaseAsync(string flightId)
+
+        // Calls the API to set the flight's active status (false = cancel, true = reactivate).
+        private async Task<bool> SetFlightActiveStatusAsync(string flightId, bool isActive)
         {
             var apiClient = new ApiClient<bool>
             {
                 Scheme = "http",
                 Host = "localhost",
                 Port = 5125,
-                Path = "api/Admin/DeleteFlight"
+                Path = "api/Admin/SetFlightActiveStatus"
             };
 
             apiClient.SetQueryParameter("flight_id", flightId);
+            apiClient.SetQueryParameter("isActive", isActive.ToString());
             return await apiClient.GetAsync();
-        }
-
-
-        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string searchTerm = txtSearch.Text.ToLower();
-
-            // TODO: Implement search functionality
-            // Filter flights based on search term
-            // You would filter the flights and refresh the FlightsContainer
-
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                // Show all flights
-                LoadFlights();
-            }
-            else
-            {
-                // Filter and display matching flights
-                // var filteredFlights = flights.Where(f => 
-                //     f.Departure.ToLower().Contains(searchTerm) ||
-                //     f.Destination.ToLower().Contains(searchTerm) ||
-                //     f.Airline.ToLower().Contains(searchTerm));
-            }
         }
 
         public System.Windows.Navigation.NavigationService NavigationService

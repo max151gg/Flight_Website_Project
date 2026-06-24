@@ -244,3 +244,53 @@ body {
         width: 100%;
     }
 }
+
+/* Display-only payment/card fields shown on the Checkout page (school-project UI). */
+.card-fields {
+    margin: 18px 0 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.card-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    flex: 1;
+}
+
+.card-group label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.card-input {
+    padding: 9px 11px;
+    font-size: 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-input:focus {
+    outline: none;
+    border-color: #667EEA;
+}
+
+/* Puts two small fields (e.g. expiration + CVV) side by side. */
+.card-row {
+    display: flex;
+    gap: 10px;
+}

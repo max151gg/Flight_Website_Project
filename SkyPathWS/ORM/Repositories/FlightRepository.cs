@@ -13,17 +13,18 @@ namespace SkyPathWS.ORM.Repositories
         }
         public bool Create(Flight model)
         {
+            // New flights are always created active (IsActive = true).
             string sql = $@"Insert into Flight
                             (
                             Flight_Number, Airline, Departure_Id,
                             Arrival_Id, Departure_Time, Arrival_Time,
-                            Price, Seats_Available, Departure_Date, Arrival_Date
+                            Price, Seats_Available, Departure_Date, Arrival_Date, IsActive
                             )
                             values
                             (
                                 @Flight_Number, @Airline, @Departure_Id,
                                 @Arrival_Id, @Departure_Time, @Arrival_Time,
-                                @Price, @Seats_Available, @Departure_Date, @Arrival_Date
+                                @Price, @Seats_Available, @Departure_Date, @Arrival_Date, @IsActive
                             )";
             this.helperOleDb.AddParameter("@Flight_Number", model.Flight_Number);
             this.helperOleDb.AddParameter("@Airline", model.Airline);
@@ -35,6 +36,7 @@ namespace SkyPathWS.ORM.Repositories
             this.helperOleDb.AddParameter("@Seats_Available", model.Seats_Available);
             this.helperOleDb.AddParameter("@Departure_Date", model.Departure_Date);
             this.helperOleDb.AddParameter("@Arrival_Date", model.Arrival_Date);
+            this.helperOleDb.AddParameter("@IsActive", true);
             return this.helperOleDb.Insert(sql) > 0;
         }
 
@@ -72,9 +74,11 @@ namespace SkyPathWS.ORM.Repositories
             }
         }
 
+        // Note: this does NOT change IsActive, so editing a flight keeps its current
+        // active/cancelled state. Use CancelFlight below to change that flag.
         public bool Update(Flight model)
         {
-            string sql = @"Update Flight set 
+            string sql = @"Update Flight set
                             Flight_Number=@Flight_Number, Airline=@Airline, Departure_Id=@Departure_Id,
                             Arrival_Id=@Arrival_Id, Departure_Time=@Departure_Time, Arrival_Time=@Arrival_Time,
                             Price=@Price, Seats_Available=@Seats_Available, Departure_Date=@Departure_Date,
@@ -183,6 +187,17 @@ namespace SkyPathWS.ORM.Repositories
                 reader.Read();
                 return Convert.ToInt32(reader["FlightCount"]);
             }
+        }
+
+        // Sets a flight's active status instead of deleting it.
+        // isActive = false -> cancelled/disabled, isActive = true -> active again.
+        // Safe even when the flight already has tickets, because the row always stays.
+        public bool UpdateFlightStatus(string flightId, bool isActive)
+        {
+            string sql = @"UPDATE Flight SET IsActive = @IsActive WHERE Flight_Id = @Flight_Id";
+            helperOleDb.AddParameter("@IsActive", isActive);
+            helperOleDb.AddParameter("@Flight_Id", Convert.ToInt32(flightId));
+            return helperOleDb.Update(sql) > 0;
         }
 
         // Lowers the available seats for a flight (called after a ticket is bought).

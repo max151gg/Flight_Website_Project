@@ -10,7 +10,7 @@
         <conv:CityIdToNameConverter x:Key="cityNameConverter"/>
 
 
-        <!-- Action Button Style (Update/Delete) -->
+        <!-- Action Button Style (Update/Cancel) -->
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="FontSize" Value="13"/>
@@ -100,32 +100,6 @@
                                Margin="0,5,0,0"/>
                 </StackPanel>
 
-                <!-- Search Box (Right aligned) -->
-                <StackPanel Orientation="Horizontal" 
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center">
-                    <TextBox Width="250" 
-                             Height="38"
-                             Padding="12,8"
-                             FontSize="13"
-                             BorderBrush="#E0E0E0"
-                             BorderThickness="1"
-                             Background="White"
-                             x:Name="txtSearch"
-                             TextChanged="TxtSearch_TextChanged">
-                        <TextBox.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
-                        </TextBox.Resources>
-                    </TextBox>
-                    <TextBlock Text="🔍" 
-                               FontSize="16"
-                               Margin="-35,0,15,0"
-                               VerticalAlignment="Center"
-                               Foreground="#999999"
-                               IsHitTestVisible="False"/>
-                </StackPanel>
             </Grid>
         </Border>
 
@@ -205,6 +179,27 @@
                                             Padding="8,4"
                                             Margin="10,5,0,0">
                                             <TextBlock Text="{Binding Flight_Id, StringFormat=ID: {0}}"
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="White"/>
+                                        </Border>
+
+                                        <!-- "CANCELLED" badge: only shown when the flight's IsActive is False. -->
+                                        <Border CornerRadius="4"
+                                            Padding="8,4"
+                                            Margin="10,5,0,0"
+                                            Background="#DC3545">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="CANCELLED"
                                                 FontSize="11"
                                                 FontWeight="SemiBold"
                                                 Foreground="White"/>
@@ -300,22 +295,47 @@
                                 VerticalAlignment="Center"
                                 Margin="20,0,0,0">
                                     <!-- Tag="{Binding}" passes this row's whole Flight object to the
-                                         click handler, so the code knows which flight to edit/delete. -->
+                                         click handler, so the code knows which flight to edit/cancel. -->
                                     <Button Content="Update"
                                 Style="{StaticResource ActionButtonStyle}"
                                 Background="#667EEA"
                                 Foreground="White"
-                                Width="90"
+                                Width="110"
                                 Tag="{Binding}"
                                 Click="UpdateFlight_Click"/>
-                                    <Button Content="Delete"
-                                Style="{StaticResource ActionButtonStyle}"
-                                Background="#DC3545"
-                                Foreground="White"
-                                Width="90"
+                                    <!-- One toggle button. Active flight shows "Cancel Flight" (amber);
+                                         cancelled flight shows "Reactivate Flight" (green). The text and
+                                         colour switch on the flight's IsActive value. -->
+                                    <Button Foreground="White"
+                                Width="120"
                                 Margin="5,10,5,0"
                                 Tag="{Binding}"
-                                Click="DeleteFlight_Click"/>
+                                Click="ToggleFlightStatus_Click">
+                                        <Button.Content>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="Cancel Flight"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                                <Setter Property="Text" Value="Reactivate Flight"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Button.Content>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                                                <Setter Property="Background" Value="#FFC107"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                        <Setter Property="Background" Value="#28A745"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </Border>

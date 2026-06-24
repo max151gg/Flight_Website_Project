@@ -254,8 +254,6 @@
                                                 </Style>
                                             </Button.Style>
                                         </Button>
-
-                                        <Button Content="Delete Ticket" Style="{StaticResource ActionButtonStyle}" Background="#DC3545" Foreground="White" Margin="5,10,5,0" Click="DeleteTicket_Click" Tag="{Binding}"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>

@@ -90,6 +90,11 @@ namespace SkyPath_Models.Models
             set { arrival_Date = value; ValidateProperty(value, "Arrival_Date"); }
         }
 
+        // True = the flight is active and can be booked.
+        // False = the flight was cancelled by an admin (hidden from website users).
+        // Defaults to true so any new flight is active unless cancelled.
+        public bool IsActive { get; set; } = true;
+
 
         public DateTime? DepartureDateTime
         {
